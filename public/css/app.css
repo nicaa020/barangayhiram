@@ -108,39 +108,82 @@ body {
 }
 
 @media (max-width: 768px) {
+  body {
+    background: #f4f6f8 !important;
+  }
+
   .sidebar {
     position: static !important;
     width: 100% !important;
     min-height: auto !important;
+    background: #0d6efd !important;
+    box-shadow: 0 2px 10px rgba(13,110,253,0.18);
   }
 
   .sidebar-brand {
-    padding: 14px 16px !important;
+    padding: 12px 14px !important;
     flex-direction: row !important;
-    justify-content: center;
+    justify-content: flex-start;
+    text-align: left !important;
+    border-bottom: 1px solid rgba(255,255,255,0.16) !important;
   }
 
   .sidebar-brand svg {
-    width: 42px;
-    height: 42px;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+  }
+
+  .sidebar-brand h5 {
+    font-size: 1rem !important;
+    margin-top: 0 !important;
+  }
+
+  .sidebar-brand small {
+    display: block;
+    line-height: 1.1;
   }
 
   .sidebar-nav {
-    padding: 8px !important;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 6px;
+    padding: 8px 10px !important;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sidebar-nav::-webkit-scrollbar {
+    display: none;
   }
 
   .sidebar-nav .nav-link {
     border-left: 0 !important;
-    border-radius: 8px;
-    justify-content: flex-start;
-    padding: 10px 12px !important;
+    border-radius: 999px;
+    justify-content: center;
+    padding: 9px 12px !important;
+    flex: 0 0 auto;
+    min-width: max-content;
+    background: rgba(255,255,255,0.08);
+    font-size: 0.82rem !important;
+    white-space: nowrap;
+  }
+
+  .sidebar-nav .nav-link.active {
+    background: #ffffff !important;
+    color: #0a58ca !important;
   }
 
   .sidebar-footer {
-    padding: 8px 16px 14px !important;
+    padding: 0 12px 10px !important;
+  }
+
+  .sidebar-footer .nav-link {
+    justify-content: center;
+    background: rgba(0,0,0,0.12);
+    border-radius: 8px;
+    padding: 9px 10px !important;
   }
 
   .main-content {
@@ -149,8 +192,10 @@ body {
 
   .topbar {
     position: static !important;
-    padding: 14px 16px !important;
-    align-items: flex-start !important;
+    padding: 12px 14px !important;
+    align-items: center !important;
+    box-shadow: none !important;
+    border-bottom: 1px solid #e8ecef;
   }
 
   .topbar-right .user-info {
@@ -158,7 +203,7 @@ body {
   }
 
   .page-content {
-    padding: 16px !important;
+    padding: 14px !important;
   }
 
   .card-header {
@@ -177,6 +222,62 @@ body {
     width: 100%;
   }
 
+  .card,
+  .stat-card,
+  .dashboard-alert {
+    border-radius: 8px !important;
+  }
+
+  .stat-card {
+    padding: 14px !important;
+    gap: 12px !important;
+  }
+
+  .stat-icon {
+    width: 46px !important;
+    height: 46px !important;
+    font-size: 1.25rem !important;
+  }
+
+  .stat-info .label {
+    font-size: 0.78rem !important;
+  }
+
+  .dashboard-alert {
+    padding: 14px !important;
+  }
+
+  .dashboard-alert .alert-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 1.1rem;
+  }
+
+  .table {
+    min-width: 760px;
+  }
+
+  .table th,
+  .table td {
+    font-size: 0.8rem !important;
+    padding: 0.65rem 0.55rem;
+  }
+
+  .table-responsive::before {
+    content: "Swipe table sideways";
+    display: block;
+    padding: 8px 12px 0;
+    color: #6c757d;
+    font-size: 0.75rem;
+  }
+
+  .input-group,
+  .form-control,
+  .form-select,
+  .btn {
+    font-size: 0.92rem !important;
+  }
+
   .modal-dialog {
     margin: 10px;
   }
@@ -191,10 +292,6 @@ body {
 }
 
 @media (max-width: 480px) {
-  .sidebar-nav {
-    grid-template-columns: 1fr;
-  }
-
   .topbar h4 {
     font-size: 1rem !important;
   }
@@ -206,5 +303,23 @@ body {
 
   .stat-info .number {
     font-size: 1.45rem !important;
+  }
+
+  .sidebar-nav .nav-link i {
+    margin-right: 0;
+  }
+
+  .page-content {
+    padding: 12px !important;
+  }
+
+  .login-container {
+    align-items: flex-start !important;
+    padding: 16px 12px !important;
+  }
+
+  .login-card {
+    margin-top: 10px;
+    width: 100%;
   }
 }
