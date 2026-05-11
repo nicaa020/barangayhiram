@@ -129,7 +129,10 @@ body {
     transform: translateX(-105%);
     transition: transform 0.22s ease;
     z-index: 1050 !important;
-    overflow: hidden;
+    display: flex !important;
+    flex-direction: column;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .sidebar-open .sidebar {
@@ -150,10 +153,6 @@ body {
   .sidebar-open .sidebar-backdrop {
     opacity: 1;
     pointer-events: auto;
-  }
-
-  .sidebar-open {
-    overflow: hidden;
   }
 
   .sidebar-brand {
@@ -186,7 +185,9 @@ body {
     grid-template-columns: 1fr;
     gap: 7px;
     overflow-y: auto;
-    max-height: calc(100vh - 130px);
+    max-height: none;
+    flex: 1 1 auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .sidebar-nav .nav-link {
@@ -205,6 +206,7 @@ body {
   }
 
   .sidebar-footer {
+    flex: 0 0 auto;
     margin-top: auto;
     padding: 10px 12px 12px !important;
     background: rgba(0,0,0,0.08);
