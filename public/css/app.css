@@ -129,7 +129,7 @@ body {
     transform: translateX(-105%);
     transition: transform 0.22s ease;
     z-index: 1050 !important;
-    overflow-y: auto;
+    overflow: hidden;
   }
 
   .sidebar-open .sidebar {
@@ -185,7 +185,8 @@ body {
     display: grid;
     grid-template-columns: 1fr;
     gap: 7px;
-    overflow: visible;
+    overflow-y: auto;
+    max-height: calc(100vh - 130px);
   }
 
   .sidebar-nav .nav-link {
@@ -204,14 +205,19 @@ body {
   }
 
   .sidebar-footer {
-    padding: 0 12px 10px !important;
+    margin-top: auto;
+    padding: 10px 12px 12px !important;
+    background: rgba(0,0,0,0.08);
+    position: sticky;
+    bottom: 0;
   }
 
   .sidebar-footer .nav-link {
     justify-content: center;
-    background: rgba(0,0,0,0.12);
+    background: rgba(0,0,0,0.2);
     border-radius: 8px;
-    padding: 9px 10px !important;
+    padding: 11px 10px !important;
+    color: #fff !important;
   }
 
   .main-content {
