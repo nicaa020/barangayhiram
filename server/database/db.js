@@ -1,4 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
+const bcrypt = require('bcryptjs');
 
 const dbPath = process.env.DB_PATH || './barangayhiram.db';
 
@@ -32,6 +33,31 @@ db.serialize(() => {
   });
 
   db.run('UPDATE users SET status = "Active" WHERE status IS NULL OR status = ""');
+
+  db.get('SELECT COUNT(*) as total FROM users', [], (err, row) => {
+    if (err) {
+      console.error('Default admin check error:', err.message);
+      return;
+    }
+    if (row.total > 0) return;
+
+    const username = process.env.ADMIN_USERNAME || 'admin';
+    const password = process.env.ADMIN_PASSWORD || 'admin123';
+    const fullName = process.env.ADMIN_FULL_NAME || 'Barangay Admin';
+    const hashed = bcrypt.hashSync(password, 10);
+
+    db.run(
+      'INSERT INTO users (username, password, full_name, role, status) VALUES (?, ?, ?, ?, ?)',
+      [username, hashed, fullName, 'admin', 'Active'],
+      (insertErr) => {
+        if (insertErr) {
+          console.error('Default admin seed error:', insertErr.message);
+        } else {
+          console.log('Default admin account ready.');
+        }
+      }
+    );
+  });
 
   db.run(`CREATE TABLE IF NOT EXISTS equipment (
     equipment_id INTEGER PRIMARY KEY AUTOINCREMENT,
