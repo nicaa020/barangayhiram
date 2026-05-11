@@ -131,7 +131,7 @@ body {
     z-index: 1050 !important;
     display: flex !important;
     flex-direction: column;
-    overflow-y: auto;
+    overflow: hidden;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -156,6 +156,7 @@ body {
   }
 
   .sidebar-brand {
+    flex: 0 0 auto;
     padding: 12px 14px !important;
     flex-direction: row !important;
     justify-content: flex-start;
@@ -184,9 +185,10 @@ body {
     display: grid;
     grid-template-columns: 1fr;
     gap: 7px;
-    overflow-y: auto;
-    max-height: none;
     flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
 
