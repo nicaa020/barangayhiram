@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Accounts - BarangayHiram</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; }
+    .sidebar { width: 250px; min-height: 100vh; background: linear-gradient(180deg, #6ba5fc 0%, #0a58ca 100%); position: fixed; top: 0; left: 0; z-index: 100; display: flex; flex-direction: column; }
+    .sidebar-brand { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+    .sidebar-nav { padding: 15px 0; flex: 1; }
+    .sidebar-nav .nav-link { color: rgba(255,255,255,0.8); padding: 12px 20px; display: flex; align-items: center; gap: 10px; transition: all 0.2s; font-size: 0.9rem; }
+    .sidebar-nav .nav-link:hover, .sidebar-nav .nav-link.active { color: #fff; background: rgba(255,255,255,0.15); border-left: 3px solid #ffc107; }
+    .sidebar-nav .nav-link i { font-size: 1.1rem; width: 20px; }
+    .sidebar-footer { padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.2); }
+    .sidebar-footer .nav-link { color: rgba(255,255,255,0.8); padding: 8px 0; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; cursor: pointer; }
+    .main-content { margin-left: 250px; min-height: 100vh; }
+    .topbar { background: #fff; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 99; }
+    .topbar h4 { margin: 0; font-weight: 700; color: #333; font-size: 1.1rem; }
+    .topbar-right { display: flex; align-items: center; gap: 15px; }
+    .user-info .name { font-weight: 600; color: #333; font-size: 0.9rem; text-align: right; }
+    .user-info .role { color: #6c757d; font-size: 0.75rem; text-align: right; }
+    .avatar { width: 38px; height: 38px; background: #0d6efd; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 1rem; }
+    .page-content { padding: 25px; }
+    .card { border: none; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .card-header { background: #fff; border-bottom: 1px solid #f0f0f0; padding: 15px 20px; font-weight: 600; color: #333; border-radius: 10px 10px 0 0 !important; }
+    .table th { font-size: 0.82rem; color: #6c757d; font-weight: 600; border-bottom: 2px solid #f0f0f0; }
+    .table td { font-size: 0.88rem; vertical-align: middle; }
+    .badge { font-size: 0.75rem; padding: 5px 10px; }
+    .btn-action { padding: 4px 10px; font-size: 0.8rem; }
+    .staff-avatar { width: 35px; height: 35px; background: #0d6efd; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 0.9rem; }
+    @media (max-width: 768px) { .sidebar { position: static; width: 100%; min-height: auto; } .main-content { margin-left: 0; } .topbar { position: static; } }
+  </style>
+  <link href="/css/app.css" rel="stylesheet">
+</head>
+<body>
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <svg viewBox="0 0 100 100" width="55" height="55">
+        <circle cx="50" cy="50" r="48" fill="#ffffff22" /><circle cx="50" cy="50" r="44" fill="#ffffff11" /><circle cx="50" cy="50" r="38" fill="#ffffff" />
+        <path d="M50 18 L72 28 L72 50 C72 65 62 75 50 82 C38 75 28 65 28 50 L28 28 Z" fill="#0d6efd" stroke="#0a58ca" stroke-width="1" />
+        <polygon points="50,24 51.5,28 56,28 52.5,31 54,35 50,32 46,35 47.5,31 44,28 48.5,28" fill="#ffc107" />
+        <path d="M50 48 L40 55 L40 68 L45 68 L45 60 L55 60 L55 68 L60 68 L60 55 Z" fill="#ffffff" /><rect x="47" y="62" width="6" height="6" fill="#0a58ca" />
+      </svg>
+      <h5 class="text-white mb-0 mt-1" style="font-weight:700;">BarangayHiram</h5>
+      <small style="color:rgba(255,255,255,0.7);font-size:0.72rem;">Brgy. 628, Zone 63</small>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a href="equipment.html" class="nav-link"><i class="bi bi-box-seam"></i> Equipment</a>
+      <a href="borrowers.html" class="nav-link"><i class="bi bi-people"></i> Borrowers</a>
+      <a href="transactions.html" class="nav-link"><i class="bi bi-arrow-left-right"></i> Transactions</a>
+      <a href="returns.html" class="nav-link"><i class="bi bi-arrow-return-left"></i> Returns</a>
+      <a href="reports.html" class="nav-link"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+      <a href="staff.html" class="nav-link active admin-only"><i class="bi bi-person-gear"></i> Staff Accounts</a>
+    </nav>
+    <div class="sidebar-footer"><a class="nav-link" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a></div>
+  </div>
+
+  <div class="main-content">
+    <div class="topbar">
+      <h4><i class="bi bi-person-gear me-2 text-primary"></i>Staff Accounts</h4>
+      <div class="topbar-right"><div class="user-info"><div class="name" id="userName">Loading...</div><div class="role" id="userRole"></div></div><div class="avatar" id="userAvatar">A</div></div>
+    </div>
+
+    <div class="page-content">
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="row g-2 align-items-center">
+            <div class="col-md-8">
+              <div class="input-group"><span class="input-group-text"><i class="bi bi-search"></i></span><input type="text" class="form-control" id="searchInput" placeholder="Search name, username, role, or status..."></div>
+            </div>
+            <div class="col-md-4 text-end">
+              <button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-person-plus me-2"></i>Add Staff Account</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center"><span><i class="bi bi-people me-2 text-primary"></i>System Users</span><span class="badge bg-primary" id="staffCount">0 accounts</span></div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light"><tr><th class="ps-3">User</th><th>Username</th><th>Role</th><th>Status</th><th>Date Created</th><th>Actions</th></tr></thead>
+              <tbody id="staffTable"><tr><td colspan="6" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><i class="bi bi-activity me-2 text-primary"></i>Recent Account Activity</div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light"><tr><th class="ps-3">Date</th><th>Admin/User</th><th>Action</th><th>Details</th></tr></thead>
+              <tbody id="activityTable"><tr><td colspan="4" class="text-center py-4 text-muted">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Add Staff Account</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="mb-3"><label class="form-label">Full Name <span class="text-danger">*</span></label><input type="text" class="form-control" id="addFullName"></div>
+        <div class="mb-3"><label class="form-label">Username <span class="text-danger">*</span></label><input type="text" class="form-control" id="addUsername"></div>
+        <div class="mb-3"><label class="form-label">Password <span class="text-danger">*</span></label><input type="password" class="form-control" id="addPassword"></div>
+        <div class="mb-3"><label class="form-label">Role</label><select class="form-select" id="addRole"><option value="staff">Staff</option><option value="admin">Admin</option></select></div>
+        <div class="alert alert-danger d-none" id="addError"></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" onclick="addStaff()"><i class="bi bi-check-circle me-2"></i>Create Account</button></div>
+    </div></div>
+  </div>
+
+  <div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Edit Staff Account</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <input type="hidden" id="editId">
+        <div class="mb-3"><label class="form-label">Full Name <span class="text-danger">*</span></label><input type="text" class="form-control" id="editFullName"></div>
+        <div class="mb-3"><label class="form-label">Username <span class="text-danger">*</span></label><input type="text" class="form-control" id="editUsername"></div>
+        <div class="mb-3"><label class="form-label">New Password</label><input type="password" class="form-control" id="editPassword" placeholder="Leave blank to keep current password"></div>
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label">Role</label><select class="form-select" id="editRole"><option value="staff">Staff</option><option value="admin">Admin</option></select></div>
+          <div class="col-md-6"><label class="form-label">Status</label><select class="form-select" id="editStatus"><option value="Active">Active</option><option value="Inactive">Inactive</option></select></div>
+        </div>
+        <div class="alert alert-danger d-none mt-3" id="editError"></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" onclick="updateStaff()"><i class="bi bi-check-circle me-2"></i>Save Changes</button></div>
+    </div></div>
+  </div>
+
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index:9999"><div id="toast" class="toast align-items-center text-white border-0" role="alert"><div class="d-flex"><div class="toast-body" id="toastMessage"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div></div></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = '/pages/login.html';
+    const fullName = localStorage.getItem('full_name') || 'Admin';
+    const role = localStorage.getItem('role') || 'staff';
+    if (role !== 'admin') window.location.href = '/pages/dashboard.html';
+    document.getElementById('userName').textContent = fullName;
+    document.getElementById('userRole').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+    document.getElementById('userAvatar').textContent = fullName.charAt(0).toUpperCase();
+
+    let allStaff = [];
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, function(char) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+      });
+    }
+
+    function showToast(message, type) {
+      const toast = document.getElementById('toast');
+      toast.className = 'toast align-items-center text-white border-0 bg-' + (type || 'success');
+      document.getElementById('toastMessage').textContent = message;
+      new bootstrap.Toast(toast).show();
+    }
+
+    async function api(path, options) {
+      const headers = Object.assign({ authorization: token }, options && options.headers ? options.headers : {});
+      const res = await fetch(path, Object.assign({}, options || {}, { headers: headers }));
+      if (res.status === 403 && path !== '/api/auth/users') logout();
+      return res;
+    }
+
+    function statusBadge(status) {
+      return '<span class="badge bg-' + (status === 'Active' ? 'success' : 'secondary') + '">' + escapeHtml(status) + '</span>';
+    }
+
+    function renderStaff(data) {
+      const tbody = document.getElementById('staffTable');
+      document.getElementById('staffCount').textContent = data.length + ' accounts';
+      if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No staff accounts found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(function(user) {
+        const initial = (user.full_name || user.username).charAt(0).toUpperCase();
+        const created = user.created_at ? user.created_at.split(' ')[0] : '-';
+        return '<tr>' +
+          '<td class="ps-3"><div class="d-flex align-items-center gap-2"><div class="staff-avatar">' + initial + '</div><span>' + escapeHtml(user.full_name) + '</span></div></td>' +
+          '<td>' + escapeHtml(user.username) + '</td>' +
+          '<td><span class="badge bg-light text-dark">' + escapeHtml(user.role) + '</span></td>' +
+          '<td>' + statusBadge(user.status || 'Active') + '</td>' +
+          '<td>' + created + '</td>' +
+          '<td><button class="btn btn-sm btn-outline-primary btn-action" onclick="openEditModal(' + user.user_id + ')" title="Edit"><i class="bi bi-pencil"></i></button></td>' +
+        '</tr>';
+      }).join('');
+    }
+
+    function filterStaff() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = allStaff.filter(function(user) {
+        return [user.full_name, user.username, user.role, user.status].join(' ').toLowerCase().includes(search);
+      });
+      renderStaff(filtered);
+    }
+
+    async function loadStaff() {
+      try {
+        const res = await api('/api/auth/users');
+        const data = await res.json();
+        if (!res.ok) {
+          showToast(data.message || 'Unable to load staff accounts.', 'danger');
+          return;
+        }
+        allStaff = data;
+        filterStaff();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function loadActivity() {
+      try {
+        const res = await api('/api/activity');
+        const data = await res.json();
+        const tbody = document.getElementById('activityTable');
+        if (!res.ok || data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted">No activity logged yet.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.slice(0, 12).map(function(log) {
+          return '<tr><td class="ps-3">' + escapeHtml(log.timestamp) + '</td><td>' + escapeHtml(log.full_name || log.username || '-') + '</td><td>' + escapeHtml(log.action) + '</td><td>' + escapeHtml(log.details || '-') + '</td></tr>';
+        }).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function openAddModal() {
+      document.getElementById('addFullName').value = '';
+      document.getElementById('addUsername').value = '';
+      document.getElementById('addPassword').value = '';
+      document.getElementById('addRole').value = 'staff';
+      document.getElementById('addError').classList.add('d-none');
+      new bootstrap.Modal(document.getElementById('addModal')).show();
+    }
+
+    async function addStaff() {
+      const payload = {
+        full_name: document.getElementById('addFullName').value.trim(),
+        username: document.getElementById('addUsername').value.trim(),
+        password: document.getElementById('addPassword').value,
+        role: document.getElementById('addRole').value
+      };
+      const errorDiv = document.getElementById('addError');
+      if (!payload.full_name || !payload.username || !payload.password) {
+        errorDiv.textContent = 'Please complete all required fields.';
+        errorDiv.classList.remove('d-none');
+        return;
+      }
+      const res = await api('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const data = await res.json();
+      if (res.ok) {
+        bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
+        showToast('Staff account created successfully!', 'success');
+        loadStaff();
+        loadActivity();
+      } else {
+        errorDiv.textContent = data.message || 'Unable to create account.';
+        errorDiv.classList.remove('d-none');
+      }
+    }
+
+    function openEditModal(id) {
+      const user = allStaff.find(function(item) { return item.user_id === id; });
+      if (!user) return;
+      document.getElementById('editId').value = user.user_id;
+      document.getElementById('editFullName').value = user.full_name || '';
+      document.getElementById('editUsername').value = user.username || '';
+      document.getElementById('editPassword').value = '';
+      document.getElementById('editRole').value = user.role || 'staff';
+      document.getElementById('editStatus').value = user.status || 'Active';
+      document.getElementById('editError').classList.add('d-none');
+      new bootstrap.Modal(document.getElementById('editModal')).show();
+    }
+
+    async function updateStaff() {
+      const id = document.getElementById('editId').value;
+      const payload = {
+        full_name: document.getElementById('editFullName').value.trim(),
+        username: document.getElementById('editUsername').value.trim(),
+        password: document.getElementById('editPassword').value,
+        role: document.getElementById('editRole').value,
+        status: document.getElementById('editStatus').value
+      };
+      const errorDiv = document.getElementById('editError');
+      if (!payload.full_name || !payload.username) {
+        errorDiv.textContent = 'Please complete all required fields.';
+        errorDiv.classList.remove('d-none');
+        return;
+      }
+      const res = await api('/api/auth/users/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const data = await res.json();
+      if (res.ok) {
+        bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+        showToast('Staff account updated successfully!', 'success');
+        loadStaff();
+        loadActivity();
+      } else {
+        errorDiv.textContent = data.message || 'Unable to update account.';
+        errorDiv.classList.remove('d-none');
+      }
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = '/pages/login.html';
+    }
+
+    document.getElementById('searchInput').addEventListener('input', filterStaff);
+    loadStaff();
+    loadActivity();
+  </script>
+</body>
+</html>

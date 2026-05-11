@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transactions - BarangayHiram</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; }
+    .sidebar { width: 250px; min-height: 100vh; background: linear-gradient(180deg, #6ba5fc 0%, #0a58ca 100%); position: fixed; top: 0; left: 0; z-index: 100; display: flex; flex-direction: column; }
+    .sidebar-brand { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+    .sidebar-nav { padding: 15px 0; flex: 1; }
+    .sidebar-nav .nav-link { color: rgba(255,255,255,0.8); padding: 12px 20px; display: flex; align-items: center; gap: 10px; transition: all 0.2s; font-size: 0.9rem; }
+    .sidebar-nav .nav-link:hover, .sidebar-nav .nav-link.active { color: #fff; background: rgba(255,255,255,0.15); border-left: 3px solid #ffc107; }
+    .sidebar-nav .nav-link i { font-size: 1.1rem; width: 20px; }
+    .sidebar-footer { padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.2); }
+    .sidebar-footer .nav-link { color: rgba(255,255,255,0.8); padding: 8px 0; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; cursor: pointer; }
+    .sidebar-footer .nav-link:hover { color: #fff; }
+    .main-content { margin-left: 250px; min-height: 100vh; }
+    .topbar { background: #fff; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 99; }
+    .topbar h4 { margin: 0; font-weight: 700; color: #333; font-size: 1.1rem; }
+    .topbar-right { display: flex; align-items: center; gap: 15px; }
+    .user-info .name { font-weight: 600; color: #333; font-size: 0.9rem; text-align: right; }
+    .user-info .role { color: #6c757d; font-size: 0.75rem; text-align: right; }
+    .avatar { width: 38px; height: 38px; background: #0d6efd; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 1rem; }
+    .page-content { padding: 25px; }
+    .card { border: none; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .card-header { background: #fff; border-bottom: 1px solid #f0f0f0; padding: 15px 20px; font-weight: 600; color: #333; border-radius: 10px 10px 0 0 !important; }
+    .table th { font-size: 0.82rem; color: #6c757d; font-weight: 600; border-bottom: 2px solid #f0f0f0; }
+    .table td { font-size: 0.88rem; vertical-align: middle; }
+    .badge { font-size: 0.75rem; padding: 5px 10px; }
+    .btn-action { padding: 4px 10px; font-size: 0.8rem; }
+    @media (max-width: 768px) { .sidebar { position: static; width: 100%; min-height: auto; } .main-content { margin-left: 0; } .topbar { position: static; } }
+  </style>
+  <link href="/css/app.css" rel="stylesheet">
+</head>
+<body>
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <svg viewBox="0 0 100 100" width="55" height="55">
+        <circle cx="50" cy="50" r="48" fill="#ffffff22" /><circle cx="50" cy="50" r="44" fill="#ffffff11" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(0 50 50)" /><line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(45 50 50)" /><line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(90 50 50)" /><line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(135 50 50)" /><line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(180 50 50)" /><line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(225 50 50)" /><line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(270 50 50)" /><line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(315 50 50)" />
+        <circle cx="50" cy="50" r="38" fill="#ffffff" /><path d="M50 18 L72 28 L72 50 C72 65 62 75 50 82 C38 75 28 65 28 50 L28 28 Z" fill="#0d6efd" stroke="#0a58ca" stroke-width="1" />
+        <polygon points="50,24 51.5,28 56,28 52.5,31 54,35 50,32 46,35 47.5,31 44,28 48.5,28" fill="#ffc107" /><polygon points="36,36 37.2,39 41,39 38,41.5 39,45 36,43 33,45 34,41.5 31,39 34.8,39" fill="#ffc107" /><polygon points="64,36 65.2,39 69,39 66,41.5 67,45 64,43 61,45 62,41.5 59,39 62.8,39" fill="#ffc107" />
+        <path d="M50 48 L40 55 L40 68 L45 68 L45 60 L55 60 L55 68 L60 68 L60 55 Z" fill="#ffffff" /><rect x="47" y="62" width="6" height="6" fill="#0a58ca" />
+      </svg>
+      <h5 class="text-white mb-0 mt-1" style="font-weight:700;">BarangayHiram</h5>
+      <small style="color:rgba(255,255,255,0.7);font-size:0.72rem;">Brgy. 628, Zone 63</small>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a href="equipment.html" class="nav-link"><i class="bi bi-box-seam"></i> Equipment</a>
+      <a href="borrowers.html" class="nav-link"><i class="bi bi-people"></i> Borrowers</a>
+      <a href="transactions.html" class="nav-link active"><i class="bi bi-arrow-left-right"></i> Transactions</a>
+      <a href="returns.html" class="nav-link"><i class="bi bi-arrow-return-left"></i> Returns</a>
+      <a href="reports.html" class="nav-link"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+      <a href="staff.html" class="nav-link admin-only"><i class="bi bi-person-gear"></i> Staff Accounts</a>
+    </nav>
+    <div class="sidebar-footer"><a class="nav-link" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a></div>
+  </div>
+
+  <div class="main-content">
+    <div class="topbar">
+      <h4><i class="bi bi-arrow-left-right me-2 text-primary"></i>Transactions</h4>
+      <div class="topbar-right"><div class="user-info"><div class="name" id="userName">Loading...</div><div class="role" id="userRole"></div></div><div class="avatar" id="userAvatar">A</div></div>
+    </div>
+    <div class="page-content">
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="row g-2 align-items-center">
+            <div class="col-md-5"><div class="input-group"><span class="input-group-text"><i class="bi bi-search"></i></span><input type="text" class="form-control" id="searchInput" placeholder="Search borrower, equipment, purpose..."></div></div>
+            <div class="col-md-3"><select class="form-select" id="statusFilter"><option value="">All Status</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Released">Released</option><option value="Completed">Completed</option></select></div>
+            <div class="col-md-4 text-end"><button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-plus-circle me-2"></i>New Transaction</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center"><span><i class="bi bi-list-check me-2 text-primary"></i>Borrowing Records</span><span class="badge bg-primary" id="transactionCount">0 records</span></div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light"><tr><th class="ps-3">ID</th><th>Borrower</th><th>Equipment</th><th>Qty</th><th>Borrowed</th><th>Due</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="transactionsTable"><tr><td colspan="8" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog modal-lg"><div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>New Borrowing Transaction</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label">Borrower <span class="text-danger">*</span></label><select class="form-select" id="addBorrower"></select></div>
+          <div class="col-md-6"><label class="form-label">Equipment <span class="text-danger">*</span></label><select class="form-select" id="addEquipment"></select></div>
+          <div class="col-md-4"><label class="form-label">Quantity</label><input type="number" class="form-control" id="addQuantity" min="1" value="1"></div>
+          <div class="col-md-4"><label class="form-label">Date Borrowed <span class="text-danger">*</span></label><input type="date" class="form-control" id="addBorrowedDate"></div>
+          <div class="col-md-4"><label class="form-label">Due Date <span class="text-danger">*</span></label><input type="date" class="form-control" id="addDueDate"></div>
+          <div class="col-12"><label class="form-label">Purpose</label><textarea class="form-control" id="addPurpose" rows="2" placeholder="Event, activity, or barangay request details"></textarea></div>
+        </div>
+        <div class="alert alert-danger d-none mt-3" id="addError"></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" onclick="addTransaction()"><i class="bi bi-check-circle me-2"></i>Create Transaction</button></div>
+    </div></div>
+  </div>
+
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index:9999"><div id="toast" class="toast align-items-center text-white border-0" role="alert"><div class="d-flex"><div class="toast-body" id="toastMessage"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div></div></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = '/pages/login.html';
+    const fullName = localStorage.getItem('full_name') || 'Admin';
+    const role = localStorage.getItem('role') || 'staff';
+    if (role !== 'admin') {
+      document.querySelectorAll('.admin-only').forEach(function(link) { link.classList.add('d-none'); });
+    }
+    document.getElementById('userName').textContent = fullName;
+    document.getElementById('userRole').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+    document.getElementById('userAvatar').textContent = fullName.charAt(0).toUpperCase();
+
+    let allTransactions = [];
+    let borrowers = [];
+    let equipment = [];
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, function(char) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+      });
+    }
+
+    function getStatusBadge(status) {
+      const colors = { Pending: 'warning text-dark', Approved: 'primary', Released: 'info text-dark', Completed: 'success' };
+      return '<span class="badge bg-' + (colors[status] || 'secondary') + '">' + escapeHtml(status) + '</span>';
+    }
+
+    function showToast(message, type) {
+      const toast = document.getElementById('toast');
+      toast.className = 'toast align-items-center text-white border-0 bg-' + (type || 'success');
+      document.getElementById('toastMessage').textContent = message;
+      new bootstrap.Toast(toast).show();
+    }
+
+    async function api(path, options) {
+      const res = await fetch(path, Object.assign({ headers: { authorization: token } }, options || {}));
+      if (res.status === 403) logout();
+      return res;
+    }
+
+    async function loadLookups() {
+      const borrowerRes = await api('/api/borrowers');
+      const equipmentRes = await api('/api/equipment');
+      borrowers = await borrowerRes.json();
+      equipment = await equipmentRes.json();
+    }
+
+    async function loadTransactions() {
+      try {
+        const res = await api('/api/transactions');
+        allTransactions = await res.json();
+        filterTable();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById('transactionsTable');
+      document.getElementById('transactionCount').textContent = data.length + ' records';
+      if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">No transactions found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(function(t) {
+        const canReturn = t.status !== 'Completed';
+        return '<tr>' +
+          '<td class="ps-3"><strong>#' + t.transaction_id + '</strong></td>' +
+          '<td>' + escapeHtml(t.borrower_name) + '<br><small class="text-muted">' + escapeHtml(t.borrower_contact || '') + '</small></td>' +
+          '<td>' + escapeHtml(t.equipment_name) + '<br><small class="text-muted">' + escapeHtml(t.purpose || '') + '</small></td>' +
+          '<td>' + t.quantity_borrowed + '</td>' +
+          '<td>' + escapeHtml(t.date_borrowed) + '</td>' +
+          '<td>' + escapeHtml(t.due_date) + '</td>' +
+          '<td>' + getStatusBadge(t.status) + '</td>' +
+          '<td>' +
+            '<select class="form-select form-select-sm d-inline-block me-1" style="width:125px" onchange="updateStatus(' + t.transaction_id + ', this.value)" ' + (t.status === 'Completed' ? 'disabled' : '') + '>' +
+              statusOptions(t.status) +
+            '</select>' +
+            '<a class="btn btn-sm btn-outline-success btn-action ' + (canReturn ? '' : 'disabled') + '" href="returns.html?transaction_id=' + t.transaction_id + '" title="Process Return"><i class="bi bi-arrow-return-left"></i></a>' +
+          '</td>' +
+        '</tr>';
+      }).join('');
+    }
+
+    function statusOptions(current) {
+      const statuses = current === 'Completed' ? ['Completed'] : ['Pending', 'Approved', 'Released'];
+      return statuses.map(function(status) {
+        return '<option value="' + status + '"' + (status === current ? ' selected' : '') + '>' + status + '</option>';
+      }).join('');
+    }
+
+    function filterTable() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const status = document.getElementById('statusFilter').value;
+      const filtered = allTransactions.filter(function(t) {
+        const text = [t.borrower_name, t.equipment_name, t.purpose, t.borrower_contact].join(' ').toLowerCase();
+        return text.includes(search) && (status === '' || t.status === status);
+      });
+      renderTable(filtered);
+    }
+
+    function openAddModal() {
+      document.getElementById('addBorrower').innerHTML = borrowers.map(function(b) { return '<option value="' + b.borrower_id + '">' + escapeHtml(b.full_name) + '</option>'; }).join('');
+      document.getElementById('addEquipment').innerHTML = equipment.filter(function(e) { return e.available_quantity > 0; }).map(function(e) { return '<option value="' + e.equipment_id + '">' + escapeHtml(e.name) + ' (' + e.available_quantity + ' available)</option>'; }).join('');
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('addQuantity').value = '1';
+      document.getElementById('addBorrowedDate').value = today;
+      document.getElementById('addDueDate').value = today;
+      document.getElementById('addPurpose').value = '';
+      document.getElementById('addError').classList.add('d-none');
+      new bootstrap.Modal(document.getElementById('addModal')).show();
+    }
+
+    async function addTransaction() {
+      const payload = {
+        borrower_id: document.getElementById('addBorrower').value,
+        equipment_id: document.getElementById('addEquipment').value,
+        quantity_borrowed: parseInt(document.getElementById('addQuantity').value, 10),
+        purpose: document.getElementById('addPurpose').value.trim(),
+        date_borrowed: document.getElementById('addBorrowedDate').value,
+        due_date: document.getElementById('addDueDate').value
+      };
+      const errorDiv = document.getElementById('addError');
+      if (!payload.borrower_id || !payload.equipment_id || !payload.date_borrowed || !payload.due_date || payload.quantity_borrowed < 1) {
+        errorDiv.textContent = 'Please complete all required fields.';
+        errorDiv.classList.remove('d-none');
+        return;
+      }
+      try {
+        const res = await api('/api/transactions', { method: 'POST', headers: { 'Content-Type': 'application/json', authorization: token }, body: JSON.stringify(payload) });
+        const data = await res.json();
+        if (res.ok) {
+          bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
+          showToast('Transaction created successfully!', 'success');
+          await loadLookups();
+          loadTransactions();
+        } else {
+          errorDiv.textContent = data.message || 'Unable to create transaction.';
+          errorDiv.classList.remove('d-none');
+        }
+      } catch (err) {
+        errorDiv.textContent = 'Error creating transaction.';
+        errorDiv.classList.remove('d-none');
+      }
+    }
+
+    async function updateStatus(id, status) {
+      try {
+        const res = await api('/api/transactions/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json', authorization: token }, body: JSON.stringify({ status: status }) });
+        if (res.ok) {
+          showToast('Transaction status updated.', 'primary');
+          loadTransactions();
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = '/pages/login.html';
+    }
+
+    document.getElementById('searchInput').addEventListener('input', filterTable);
+    document.getElementById('statusFilter').addEventListener('change', filterTable);
+    loadLookups().then(loadTransactions);
+  </script>
+</body>
+</html>

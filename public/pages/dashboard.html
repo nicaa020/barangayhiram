@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - BarangayHiram</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 250px;
+      min-height: 100vh;
+      background: linear-gradient(180deg, #6ba5fc 0%, #0a58ca 100%);
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+    }
+ .sidebar-brand {
+  padding: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+    .sidebar-brand h5 {
+      color: #fff;
+      font-weight: 700;
+      margin: 0;
+      font-size: 1.1rem;
+    }
+    .sidebar-brand small {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.75rem;
+    }
+    .sidebar-nav { padding: 15px 0; flex: 1; }
+    .sidebar-nav .nav-link {
+      color: rgba(255,255,255,0.8);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+    .sidebar-nav .nav-link:hover,
+    .sidebar-nav .nav-link.active {
+      color: #fff;
+      background: rgba(255,255,255,0.15);
+      border-left: 3px solid #ffc107;
+    }
+    .sidebar-nav .nav-link i { font-size: 1.1rem; width: 20px; }
+    .sidebar-footer {
+      padding: 15px 20px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+    .sidebar-footer .nav-link {
+      color: rgba(255,255,255,0.8);
+      padding: 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .sidebar-footer .nav-link:hover { color: #fff; }
+
+    /* ── MAIN CONTENT ── */
+    .main-content { margin-left: 250px; min-height: 100vh; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: #fff;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 99;
+    }
+    .topbar h4 { margin: 0; font-weight: 700; color: #333; font-size: 1.1rem; }
+    .topbar-right { display: flex; align-items: center; gap: 15px; }
+    .topbar-right .user-info { text-align: right; }
+    .topbar-right .user-info .name { font-weight: 600; color: #333; font-size: 0.9rem; }
+    .topbar-right .user-info .role { color: #6c757d; font-size: 0.75rem; }
+    .topbar-right .avatar {
+      width: 38px; height: 38px;
+      background: #0d6efd;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    /* ── PAGE CONTENT ── */
+    .page-content { padding: 25px; }
+
+    /* ── STAT CARDS ── */
+    .stat-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: transform 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-icon {
+      width: 55px; height: 55px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: #fff;
+    }
+    .stat-info .number { font-size: 1.8rem; font-weight: 700; color: #333; line-height: 1; }
+    .stat-info .label  { color: #6c757d; font-size: 0.82rem; margin-top: 3px; }
+
+    /* ── TABLE CARD ── */
+    .card { border: none; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .card-header {
+      background: #fff;
+      border-bottom: 1px solid #f0f0f0;
+      padding: 15px 20px;
+      font-weight: 600;
+      color: #333;
+      border-radius: 10px 10px 0 0 !important;
+    }
+    .table th { font-size: 0.82rem; color: #6c757d; font-weight: 600; border-bottom: 2px solid #f0f0f0; }
+    .table td { font-size: 0.88rem; vertical-align: middle; }
+    .badge { font-size: 0.75rem; padding: 5px 10px; }
+  </style>
+  <link href="/css/app.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ── SIDEBAR ── -->
+    <div class="sidebar">
+    <div class="sidebar-brand">
+  <svg viewBox="0 0 100 100" width="55" height="55">
+    <circle cx="50" cy="50" r="48" fill="#ffffff22" />
+    <circle cx="50" cy="50" r="44" fill="#ffffff11" />
+    <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(0 50 50)" />
+    <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(45 50 50)" />
+    <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(90 50 50)" />
+    <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(135 50 50)" />
+    <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(180 50 50)" />
+    <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(225 50 50)" />
+    <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(270 50 50)" />
+    <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(315 50 50)" />
+    <circle cx="50" cy="50" r="38" fill="#ffffff" />
+    <path d="M50 18 L72 28 L72 50 C72 65 62 75 50 82 C38 75 28 65 28 50 L28 28 Z" fill="#0d6efd" stroke="#0a58ca" stroke-width="1" />
+    <polygon points="50,24 51.5,28 56,28 52.5,31 54,35 50,32 46,35 47.5,31 44,28 48.5,28" fill="#ffc107" />
+    <polygon points="36,36 37.2,39 41,39 38,41.5 39,45 36,43 33,45 34,41.5 31,39 34.8,39" fill="#ffc107" />
+    <polygon points="64,36 65.2,39 69,39 66,41.5 67,45 64,43 61,45 62,41.5 59,39 62.8,39" fill="#ffc107" />
+    <path d="M50 48 L40 55 L40 68 L45 68 L45 60 L55 60 L55 68 L60 68 L60 55 Z" fill="#ffffff" />
+    <rect x="47" y="62" width="6" height="6" fill="#0a58ca" />
+  </svg>
+  <h5 class="text-white mb-0 mt-1" style="font-weight:700;">BarangayHiram</h5>
+  <small style="color:rgba(255,255,255,0.7); font-size:0.72rem;">Brgy. 628, Zone 63</small>
+</div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-link active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a href="equipment.html" class="nav-link"><i class="bi bi-box-seam"></i> Equipment</a>
+      <a href="borrowers.html" class="nav-link"><i class="bi bi-people"></i> Borrowers</a>
+      <a href="transactions.html" class="nav-link"><i class="bi bi-arrow-left-right"></i> Transactions</a>
+      <a href="returns.html" class="nav-link"><i class="bi bi-arrow-return-left"></i> Returns</a>
+      <a href="reports.html" class="nav-link"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+      <a href="staff.html" class="nav-link admin-only"><i class="bi bi-person-gear"></i> Staff Accounts</a>
+    </nav>
+    <div class="sidebar-footer">
+      <a class="nav-link" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a>
+    </div>
+  </div>
+
+  <!-- ── MAIN CONTENT ── -->
+  <div class="main-content">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <h4><i class="bi bi-speedometer2 me-2 text-primary"></i>Dashboard</h4>
+      <div class="topbar-right">
+        <div class="user-info">
+          <div class="name" id="userName">Loading...</div>
+          <div class="role" id="userRole"></div>
+        </div>
+        <div class="avatar" id="userAvatar">A</div>
+      </div>
+    </div>
+
+    <!-- PAGE CONTENT -->
+    <div class="page-content">
+
+      <!-- Date -->
+      <p class="text-muted mb-4" id="currentDate"></p>
+
+      <!-- Alerts -->
+      <div class="row g-3 mb-4" id="dashboardAlerts">
+        <div class="col-md-6">
+          <div class="dashboard-alert alert-clear d-flex gap-3 align-items-center">
+            <div class="alert-icon"><i class="bi bi-check-circle"></i></div>
+            <div>
+              <strong>Loading dashboard alerts...</strong>
+              <span>Checking pending requests and overdue borrowed items.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAT CARDS -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#0d6efd;">
+              <i class="bi bi-box-seam"></i>
+            </div>
+            <div class="stat-info">
+              <div class="number" id="totalEquipment">--</div>
+              <div class="label">Total Equipment</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#fd7e14;">
+              <i class="bi bi-arrow-left-right"></i>
+            </div>
+            <div class="stat-info">
+              <div class="number" id="activeTransactions">--</div>
+              <div class="label">Active Borrowings</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#dc3545;">
+              <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="stat-info">
+              <div class="number" id="overdueTransactions">--</div>
+              <div class="label">Overdue Items</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#198754;">
+              <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="stat-info">
+              <div class="number" id="completedTransactions">--</div>
+              <div class="label">Completed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECOND ROW STATS -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#20c997;">
+              <i class="bi bi-people"></i>
+            </div>
+            <div class="stat-info">
+              <div class="number" id="totalBorrowers">--</div>
+              <div class="label">Total Borrowers</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#6f42c1;">
+              <i class="bi bi-list-check"></i>
+            </div>
+            <div class="stat-info">
+              <div class="number" id="totalTransactions">--</div>
+              <div class="label">Total Transactions</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#ffc107;">
+              <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div class="stat-info">
+              <div class="number" id="pendingTransactions">--</div>
+              <div class="label">Pending</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#0dcaf0;">
+              <i class="bi bi-box-seam-fill"></i>
+            </div>
+            <div class="stat-info">
+              <div class="number" id="availableEquipment">--</div>
+              <div class="label">Available Equipment</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECENT TRANSACTIONS TABLE -->
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span><i class="bi bi-clock-history me-2 text-primary"></i>Recent Transactions</span>
+          <a href="transactions.html" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="ps-3">ID</th>
+                  <th>Borrower</th>
+                  <th>Equipment</th>
+                  <th>Date Borrowed</th>
+                  <th>Due Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="recentTransactions">
+                <tr>
+                  <td colspan="6" class="text-center py-4 text-muted">
+                    <div class="spinner-border spinner-border-sm me-2"></div>Loading...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+
+    // ─── CHECK LOGIN ──────────────────────────────────────
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/pages/login.html';
+    }
+
+    // ─── SHOW USER INFO ───────────────────────────────────
+    const fullName = localStorage.getItem('full_name') || 'Admin';
+    const role     = localStorage.getItem('role') || 'staff';
+    if (role !== 'admin') {
+      document.querySelectorAll('.admin-only').forEach(function(link) { link.classList.add('d-none'); });
+    }
+    document.getElementById('userName').textContent   = fullName;
+    document.getElementById('userRole').textContent   = role.charAt(0).toUpperCase() + role.slice(1);
+    document.getElementById('userAvatar').textContent = fullName.charAt(0).toUpperCase();
+
+    // ─── SHOW CURRENT DATE ────────────────────────────────
+    const now = new Date();
+    document.getElementById('currentDate').textContent = now.toLocaleDateString('en-PH', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // ─── STATUS BADGE COLORS ──────────────────────────────
+    function getStatusBadge(status) {
+      const colors = {
+        'Pending':   'warning text-dark',
+        'Approved':  'primary',
+        'Released':  'warning text-dark',
+        'Completed': 'success',
+      };
+      return '<span class="badge bg-' + (colors[status] || 'secondary') + '">' + status + '</span>';
+    }
+
+    // ─── LOAD DASHBOARD STATS ─────────────────────────────
+    async function loadStats() {
+      try {
+        const res  = await fetch('/api/dashboard/stats', {
+          headers: { 'authorization': token }
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          document.getElementById('totalEquipment').textContent      = data.total_equipment;
+          document.getElementById('activeTransactions').textContent  = data.active_transactions;
+          document.getElementById('overdueTransactions').textContent = data.overdue_transactions;
+          document.getElementById('completedTransactions').textContent = data.completed_transactions;
+          document.getElementById('totalBorrowers').textContent      = data.total_borrowers;
+          document.getElementById('totalTransactions').textContent   = data.total_transactions;
+          document.getElementById('pendingTransactions').textContent = data.pending_transactions;
+          document.getElementById('availableEquipment').textContent  = data.available_equipment;
+          updateDashboardAlerts(data);
+        } else if (res.status === 403) {
+          // Token expired
+          logout();
+        }
+      } catch (err) {
+        console.error('Error loading stats:', err);
+      }
+    }
+
+    function updateDashboardAlerts(data) {
+      const alerts = [];
+      const overdue = Number(data.overdue_transactions || 0);
+      const pending = Number(data.pending_transactions || 0);
+
+      if (overdue > 0) {
+        alerts.push({
+          type: 'alert-overdue',
+          icon: 'bi-exclamation-triangle',
+          title: overdue + ' overdue item' + (overdue === 1 ? '' : 's'),
+          text: 'Follow up borrowed equipment that passed the due date.'
+        });
+      }
+
+      if (pending > 0) {
+        alerts.push({
+          type: 'alert-pending',
+          icon: 'bi-hourglass-split',
+          title: pending + ' pending request' + (pending === 1 ? '' : 's'),
+          text: 'Review borrowing requests waiting for approval or release.'
+        });
+      }
+
+      if (alerts.length === 0) {
+        alerts.push({
+          type: 'alert-clear',
+          icon: 'bi-check-circle',
+          title: 'No urgent alerts',
+          text: 'There are no overdue items or pending requests right now.'
+        });
+      }
+
+      document.getElementById('dashboardAlerts').innerHTML = alerts.map(function(alert) {
+        return '<div class="col-md-6">' +
+          '<div class="dashboard-alert ' + alert.type + ' d-flex gap-3 align-items-center">' +
+            '<div class="alert-icon"><i class="bi ' + alert.icon + '"></i></div>' +
+            '<div><strong>' + alert.title + '</strong><span>' + alert.text + '</span></div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    // ─── LOAD RECENT TRANSACTIONS ─────────────────────────
+    async function loadRecentTransactions() {
+      try {
+        const res  = await fetch('/api/dashboard/recent', {
+          headers: { 'authorization': token }
+        });
+        const data = await res.json();
+        const tbody = document.getElementById('recentTransactions');
+
+        if (res.ok && data.length > 0) {
+          tbody.innerHTML = data.map(function(t) {
+            return '<tr>' +
+              '<td class="ps-3"><strong>#' + t.transaction_id + '</strong></td>' +
+              '<td>' + t.borrower_name + '</td>' +
+              '<td>' + t.equipment_name + '</td>' +
+              '<td>' + t.date_borrowed + '</td>' +
+              '<td>' + t.due_date + '</td>' +
+              '<td>' + getStatusBadge(t.status) + '</td>' +
+            '</tr>';
+          }).join('');
+        } else {
+          tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No transactions yet.</td></tr>';
+        }
+      } catch (err) {
+        console.error('Error loading transactions:', err);
+      }
+    }
+
+    // ─── LOGOUT ───────────────────────────────────────────
+    function logout() {
+      localStorage.clear();
+      window.location.href = '/pages/login.html';
+    }
+
+    // ─── LOAD EVERYTHING ON PAGE LOAD ────────────────────
+    loadStats();
+    loadRecentTransactions();
+
+  </script>
+</body>
+</html>

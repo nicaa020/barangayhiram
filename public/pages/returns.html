@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Returns - BarangayHiram</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; }
+    .sidebar { width: 250px; min-height: 100vh; background: linear-gradient(180deg, #6ba5fc 0%, #0a58ca 100%); position: fixed; top: 0; left: 0; z-index: 100; display: flex; flex-direction: column; }
+    .sidebar-brand { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+    .sidebar-nav { padding: 15px 0; flex: 1; }
+    .sidebar-nav .nav-link { color: rgba(255,255,255,0.8); padding: 12px 20px; display: flex; align-items: center; gap: 10px; transition: all 0.2s; font-size: 0.9rem; }
+    .sidebar-nav .nav-link:hover, .sidebar-nav .nav-link.active { color: #fff; background: rgba(255,255,255,0.15); border-left: 3px solid #ffc107; }
+    .sidebar-nav .nav-link i { font-size: 1.1rem; width: 20px; }
+    .sidebar-footer { padding: 15px 20px; border-top: 1px solid rgba(255,255,255,0.2); }
+    .sidebar-footer .nav-link { color: rgba(255,255,255,0.8); padding: 8px 0; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; cursor: pointer; }
+    .main-content { margin-left: 250px; min-height: 100vh; }
+    .topbar { background: #fff; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 99; }
+    .topbar h4 { margin: 0; font-weight: 700; color: #333; font-size: 1.1rem; }
+    .topbar-right { display: flex; align-items: center; gap: 15px; }
+    .user-info .name { font-weight: 600; color: #333; font-size: 0.9rem; text-align: right; }
+    .user-info .role { color: #6c757d; font-size: 0.75rem; text-align: right; }
+    .avatar { width: 38px; height: 38px; background: #0d6efd; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 1rem; }
+    .page-content { padding: 25px; }
+    .card { border: none; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .card-header { background: #fff; border-bottom: 1px solid #f0f0f0; padding: 15px 20px; font-weight: 600; color: #333; border-radius: 10px 10px 0 0 !important; }
+    .table th { font-size: 0.82rem; color: #6c757d; font-weight: 600; border-bottom: 2px solid #f0f0f0; }
+    .table td { font-size: 0.88rem; vertical-align: middle; }
+    .badge { font-size: 0.75rem; padding: 5px 10px; }
+    @media (max-width: 768px) { .sidebar { position: static; width: 100%; min-height: auto; } .main-content { margin-left: 0; } .topbar { position: static; } }
+  </style>
+  <link href="/css/app.css" rel="stylesheet">
+</head>
+<body>
+  <div class="sidebar">
+    <div class="sidebar-brand">
+      <svg viewBox="0 0 100 100" width="55" height="55"><circle cx="50" cy="50" r="48" fill="#ffffff22" /><circle cx="50" cy="50" r="44" fill="#ffffff11" /><circle cx="50" cy="50" r="38" fill="#ffffff" /><path d="M50 18 L72 28 L72 50 C72 65 62 75 50 82 C38 75 28 65 28 50 L28 28 Z" fill="#0d6efd" stroke="#0a58ca" stroke-width="1" /><polygon points="50,24 51.5,28 56,28 52.5,31 54,35 50,32 46,35 47.5,31 44,28 48.5,28" fill="#ffc107" /><path d="M50 48 L40 55 L40 68 L45 68 L45 60 L55 60 L55 68 L60 68 L60 55 Z" fill="#ffffff" /><rect x="47" y="62" width="6" height="6" fill="#0a58ca" /></svg>
+      <h5 class="text-white mb-0 mt-1" style="font-weight:700;">BarangayHiram</h5><small style="color:rgba(255,255,255,0.7);font-size:0.72rem;">Brgy. 628, Zone 63</small>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a><a href="equipment.html" class="nav-link"><i class="bi bi-box-seam"></i> Equipment</a><a href="borrowers.html" class="nav-link"><i class="bi bi-people"></i> Borrowers</a><a href="transactions.html" class="nav-link"><i class="bi bi-arrow-left-right"></i> Transactions</a><a href="returns.html" class="nav-link active"><i class="bi bi-arrow-return-left"></i> Returns</a><a href="reports.html" class="nav-link"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a><a href="staff.html" class="nav-link admin-only"><i class="bi bi-person-gear"></i> Staff Accounts</a>
+    </nav>
+    <div class="sidebar-footer"><a class="nav-link" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a></div>
+  </div>
+  <div class="main-content">
+    <div class="topbar"><h4><i class="bi bi-arrow-return-left me-2 text-primary"></i>Returns</h4><div class="topbar-right"><div class="user-info"><div class="name" id="userName">Loading...</div><div class="role" id="userRole"></div></div><div class="avatar" id="userAvatar">A</div></div></div>
+    <div class="page-content">
+      <div class="card mb-4">
+        <div class="card-header"><i class="bi bi-check2-square me-2 text-primary"></i>Process Return</div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-5"><label class="form-label">Active Transaction</label><select class="form-select" id="returnTransaction"></select></div>
+            <div class="col-md-3"><label class="form-label">Return Date</label><input type="date" class="form-control" id="returnDate"></div>
+            <div class="col-md-4"><label class="form-label">Condition</label><select class="form-select" id="returnCondition"><option value="Good">Good</option><option value="Damaged">Damaged</option><option value="Needs Repair">Needs Repair</option><option value="Missing Parts">Missing Parts</option></select></div>
+            <div class="col-12"><label class="form-label">Remarks</label><textarea class="form-control" id="returnRemarks" rows="2" placeholder="Optional notes after inspection"></textarea></div>
+          </div>
+          <div class="alert alert-danger d-none mt-3" id="returnError"></div>
+          <div class="text-end mt-3"><button class="btn btn-success" onclick="processReturn()"><i class="bi bi-check-circle me-2"></i>Process Return</button></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center"><span><i class="bi bi-clock-history me-2 text-primary"></i>Return History</span><span class="badge bg-primary" id="returnCount">0 returns</span></div>
+        <div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead class="table-light"><tr><th class="ps-3">ID</th><th>Borrower</th><th>Equipment</th><th>Qty</th><th>Borrowed</th><th>Returned</th><th>Condition</th><th>Remarks</th></tr></thead><tbody id="returnsTable"><tr><td colspan="8" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Loading...</td></tr></tbody></table></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index:9999"><div id="toast" class="toast align-items-center text-white border-0" role="alert"><div class="d-flex"><div class="toast-body" id="toastMessage"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div></div></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = '/pages/login.html';
+    const fullName = localStorage.getItem('full_name') || 'Admin';
+    const role = localStorage.getItem('role') || 'staff';
+    if (role !== 'admin') {
+      document.querySelectorAll('.admin-only').forEach(function(link) { link.classList.add('d-none'); });
+    }
+    document.getElementById('userName').textContent = fullName;
+    document.getElementById('userRole').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+    document.getElementById('userAvatar').textContent = fullName.charAt(0).toUpperCase();
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, function(char) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+      });
+    }
+    function showToast(message, type) {
+      const toast = document.getElementById('toast');
+      toast.className = 'toast align-items-center text-white border-0 bg-' + (type || 'success');
+      document.getElementById('toastMessage').textContent = message;
+      new bootstrap.Toast(toast).show();
+    }
+    async function api(path, options) {
+      const res = await fetch(path, Object.assign({ headers: { authorization: token } }, options || {}));
+      if (res.status === 403) logout();
+      return res;
+    }
+    async function loadActiveTransactions() {
+      const res = await api('/api/transactions');
+      const data = await res.json();
+      const active = data.filter(function(t) { return t.status !== 'Completed'; });
+      const select = document.getElementById('returnTransaction');
+      select.innerHTML = active.map(function(t) {
+        return '<option value="' + t.transaction_id + '">#' + t.transaction_id + ' - ' + escapeHtml(t.borrower_name) + ' / ' + escapeHtml(t.equipment_name) + ' (' + t.quantity_borrowed + ')</option>';
+      }).join('');
+      if (active.length === 0) select.innerHTML = '<option value="">No active transactions</option>';
+      const preselect = new URLSearchParams(window.location.search).get('transaction_id');
+      if (preselect) select.value = preselect;
+    }
+    async function loadReturns() {
+      try {
+        const res = await api('/api/returns');
+        const data = await res.json();
+        const tbody = document.getElementById('returnsTable');
+        document.getElementById('returnCount').textContent = data.length + ' returns';
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">No returns recorded yet.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.map(function(r) {
+          return '<tr><td class="ps-3"><strong>#' + r.return_id + '</strong></td><td>' + escapeHtml(r.borrower_name) + '</td><td>' + escapeHtml(r.equipment_name) + '</td><td>' + r.quantity_borrowed + '</td><td>' + escapeHtml(r.date_borrowed) + '</td><td>' + escapeHtml(r.actual_return_date) + '</td><td><span class="badge bg-light text-dark">' + escapeHtml(r.condition_on_return) + '</span></td><td>' + escapeHtml(r.remarks || '-') + '</td></tr>';
+        }).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    async function processReturn() {
+      const payload = {
+        transaction_id: document.getElementById('returnTransaction').value,
+        actual_return_date: document.getElementById('returnDate').value,
+        condition_on_return: document.getElementById('returnCondition').value,
+        remarks: document.getElementById('returnRemarks').value.trim()
+      };
+      const errorDiv = document.getElementById('returnError');
+      if (!payload.transaction_id || !payload.actual_return_date) {
+        errorDiv.textContent = 'Please choose a transaction and return date.';
+        errorDiv.classList.remove('d-none');
+        return;
+      }
+      try {
+        const res = await api('/api/returns', { method: 'POST', headers: { 'Content-Type': 'application/json', authorization: token }, body: JSON.stringify(payload) });
+        const data = await res.json();
+        if (res.ok) {
+          errorDiv.classList.add('d-none');
+          document.getElementById('returnRemarks').value = '';
+          showToast('Return processed successfully!', 'success');
+          await loadActiveTransactions();
+          loadReturns();
+        } else {
+          errorDiv.textContent = data.message || 'Unable to process return.';
+          errorDiv.classList.remove('d-none');
+        }
+      } catch (err) {
+        errorDiv.textContent = 'Error processing return.';
+        errorDiv.classList.remove('d-none');
+      }
+    }
+    function logout() { localStorage.clear(); window.location.href = '/pages/login.html'; }
+    document.getElementById('returnDate').value = new Date().toISOString().split('T')[0];
+    loadActiveTransactions();
+    loadReturns();
+  </script>
+</body>
+</html>
