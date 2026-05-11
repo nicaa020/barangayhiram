@@ -26,6 +26,10 @@ app.use('/api/returns',      returnsRoutes);
 app.use('/api/dashboard',    dashboardRoutes);
 app.use('/api/activity',     activityRoutes);
 
+app.get('/', function(req, res) {
+  res.redirect('/pages/login.html');
+});
+
 app.get('/api', function(req, res) {
   res.json({ 
     message: 'BarangayHiram Server is running!',
