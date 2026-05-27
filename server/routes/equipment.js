@@ -53,7 +53,9 @@ router.post('/', auth, function(req, res) {
       if (err) {
         return res.status(500).json({ message: err.message });
       }
-      logActivity(req.user.user_id, 'Added equipment', name + ' (quantity: ' + quantity + ')');
+      logActivity(req.user.user_id, 'Added equipment', name + ' (quantity: ' + quantity + ')', {
+        equipment_id: this.lastID
+      });
       return res.status(200).json({
         message: 'Equipment added successfully!',
         equipment_id: this.lastID
@@ -81,7 +83,9 @@ router.put('/:id', auth, function(req, res) {
       if (this.changes === 0) {
         return res.status(404).json({ message: 'Equipment not found.' });
       }
-      logActivity(req.user.user_id, 'Updated equipment', name + ' (ID #' + req.params.id + ')');
+      logActivity(req.user.user_id, 'Updated equipment', name + ' (ID #' + req.params.id + ')', {
+        equipment_id: req.params.id
+      });
       return res.status(200).json({ message: 'Equipment updated successfully!' });
     }
   );
@@ -108,7 +112,9 @@ router.delete('/:id', auth, function(req, res) {
           if (err) {
             return res.status(500).json({ message: err.message });
           }
-          logActivity(req.user.user_id, 'Deleted equipment', equipment.name + ' (ID #' + req.params.id + ')');
+          logActivity(req.user.user_id, 'Deleted equipment', equipment.name + ' (ID #' + req.params.id + ')', {
+            equipment_id: req.params.id
+          });
           return res.status(200).json({ message: 'Equipment deleted successfully!' });
         }
       );

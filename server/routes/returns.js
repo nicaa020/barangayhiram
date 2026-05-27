@@ -129,9 +129,15 @@ router.post('/', auth, function(req, res) {
                       logActivity(
                         req.user.user_id,
                         'Processed equipment return',
-                        'Return #' + return_id + ': transaction #' + transaction_id +
-                          ', quantity ' + transaction.quantity_borrowed +
-                          ', condition ' + condition_on_return
+                          'Return #' + return_id + ': transaction #' + transaction_id +
+                            ', quantity ' + transaction.quantity_borrowed +
+                            ', condition ' + condition_on_return,
+                            {
+                              borrower_id: transaction.borrower_id,
+                              equipment_id: transaction.equipment_id,
+                              transaction_id: transaction_id,
+                              return_id: return_id
+                            }
                       );
                       return res.status(200).json({
                         message: 'Equipment returned successfully!',

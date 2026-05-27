@@ -117,13 +117,34 @@ db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS activity_logs (
     log_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
+    borrower_id INTEGER,
+    equipment_id INTEGER,
+    transaction_id INTEGER,
+    return_id INTEGER,
     action TEXT NOT NULL,
     details TEXT,
     timestamp TEXT DEFAULT (datetime('now')),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (borrower_id) REFERENCES borrowers(borrower_id),
+    FOREIGN KEY (equipment_id) REFERENCES equipment(equipment_id),
+    FOREIGN KEY (transaction_id) REFERENCES transactions(transaction_id),
+    FOREIGN KEY (return_id) REFERENCES returns(return_id)
   )`, (err) => {
     if (err) console.error('Activity logs table error:', err.message);
     else console.log('✅ Activity logs table ready.');
+  });
+
+  [
+    ['borrower_id', 'INTEGER'],
+    ['equipment_id', 'INTEGER'],
+    ['transaction_id', 'INTEGER'],
+    ['return_id', 'INTEGER']
+  ].forEach(([column, type]) => {
+    db.run(`ALTER TABLE activity_logs ADD COLUMN ${column} ${type}`, (err) => {
+      if (err && !err.message.includes('duplicate column name')) {
+        console.error('Activity logs ' + column + ' column error:', err.message);
+      }
+    });
   });
 
 });

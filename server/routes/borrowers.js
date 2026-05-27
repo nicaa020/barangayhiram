@@ -71,7 +71,9 @@ router.post('/', auth, function(req, res) {
       if (err) {
         return res.status(500).json({ message: err.message });
       }
-      logActivity(req.user.user_id, 'Registered borrower', full_name);
+      logActivity(req.user.user_id, 'Registered borrower', full_name, {
+        borrower_id: this.lastID
+      });
       return res.status(200).json({
         message: 'Borrower registered successfully!',
         borrower_id: this.lastID
@@ -97,7 +99,9 @@ router.put('/:id', auth, function(req, res) {
       if (this.changes === 0) {
         return res.status(404).json({ message: 'Borrower not found.' });
       }
-      logActivity(req.user.user_id, 'Updated borrower', full_name + ' (ID #' + req.params.id + ')');
+      logActivity(req.user.user_id, 'Updated borrower', full_name + ' (ID #' + req.params.id + ')', {
+        borrower_id: req.params.id
+      });
       return res.status(200).json({ message: 'Borrower updated successfully!' });
     }
   );
@@ -124,7 +128,9 @@ router.delete('/:id', auth, function(req, res) {
           if (err) {
             return res.status(500).json({ message: err.message });
           }
-          logActivity(req.user.user_id, 'Deleted borrower', borrower.full_name + ' (ID #' + req.params.id + ')');
+          logActivity(req.user.user_id, 'Deleted borrower', borrower.full_name + ' (ID #' + req.params.id + ')', {
+            borrower_id: req.params.id
+          });
           return res.status(200).json({ message: 'Borrower deleted successfully!' });
         }
       );

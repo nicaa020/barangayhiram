@@ -131,7 +131,12 @@ router.post('/', auth, function(req, res) {
                     req.user.user_id,
                     'Created borrowing transaction',
                     'Transaction #' + transaction_id + ': ' + quantity_borrowed + ' ' + equipment.name +
-                      ' from ' + date_borrowed + ' to ' + due_date
+                      ' from ' + date_borrowed + ' to ' + due_date,
+                    {
+                      borrower_id: borrower_id,
+                      equipment_id: equipment_id,
+                      transaction_id: transaction_id
+                    }
                   );
                   return res.status(200).json({
                     message: 'Transaction created successfully!',
@@ -177,7 +182,10 @@ router.put('/:id', auth, function(req, res) {
           logActivity(
             req.user.user_id,
             'Updated transaction status',
-            'Transaction #' + req.params.id + ': ' + transaction.status + ' to ' + status
+            'Transaction #' + req.params.id + ': ' + transaction.status + ' to ' + status,
+            {
+              transaction_id: req.params.id
+            }
           );
           return res.status(200).json({ message: 'Transaction status updated to ' + status });
         }

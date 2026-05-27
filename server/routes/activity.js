@@ -9,13 +9,21 @@ router.get('/', auth, admin, function(req, res) {
   db.all(
     `SELECT l.log_id,
             l.user_id,
+            l.borrower_id,
+            l.equipment_id,
+            l.transaction_id,
+            l.return_id,
             l.action,
             l.details,
             l.timestamp,
             u.full_name,
-            u.username
+            u.username,
+            b.full_name as borrower_name,
+            e.name as equipment_name
      FROM activity_logs l
      LEFT JOIN users u ON l.user_id = u.user_id
+     LEFT JOIN borrowers b ON l.borrower_id = b.borrower_id
+     LEFT JOIN equipment e ON l.equipment_id = e.equipment_id
      ORDER BY l.timestamp DESC
      LIMIT 100`,
     [],
