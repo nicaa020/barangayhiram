@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../database/db');
 const auth = require('../middleware/auth');
+const logActivity = require('../utils/activity');
 
 // ─── GET ALL EQUIPMENT ────────────────────────────────────
 // Returns all equipment items
@@ -52,6 +53,7 @@ router.post('/', auth, function(req, res) {
       if (err) {
         return res.status(500).json({ message: err.message });
       }
+      logActivity(req.user.user_id, 'Added equipment', name + ' (quantity: ' + quantity + ')');
       return res.status(200).json({
         message: 'Equipment added successfully!',
         equipment_id: this.lastID
@@ -76,6 +78,10 @@ router.put('/:id', auth, function(req, res) {
       if (err) {
         return res.status(500).json({ message: err.message });
       }
+      if (this.changes === 0) {
+        return res.status(404).json({ message: 'Equipment not found.' });
+      }
+      logActivity(req.user.user_id, 'Updated equipment', name + ' (ID #' + req.params.id + ')');
       return res.status(200).json({ message: 'Equipment updated successfully!' });
     }
   );
@@ -84,14 +90,28 @@ router.put('/:id', auth, function(req, res) {
 // ─── DELETE EQUIPMENT ─────────────────────────────────────
 // Deletes an equipment item
 router.delete('/:id', auth, function(req, res) {
-  db.run(
-    'DELETE FROM equipment WHERE equipment_id = ?',
+  db.get(
+    'SELECT * FROM equipment WHERE equipment_id = ?',
     [req.params.id],
-    function(err) {
+    function(err, equipment) {
       if (err) {
         return res.status(500).json({ message: err.message });
       }
-      return res.status(200).json({ message: 'Equipment deleted successfully!' });
+      if (!equipment) {
+        return res.status(404).json({ message: 'Equipment not found.' });
+      }
+
+      db.run(
+        'DELETE FROM equipment WHERE equipment_id = ?',
+        [req.params.id],
+        function(err) {
+          if (err) {
+            return res.status(500).json({ message: err.message });
+          }
+          logActivity(req.user.user_id, 'Deleted equipment', equipment.name + ' (ID #' + req.params.id + ')');
+          return res.status(200).json({ message: 'Equipment deleted successfully!' });
+        }
+      );
     }
   );
 });

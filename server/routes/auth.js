@@ -6,16 +6,7 @@ const jwt = require('jsonwebtoken');
 const db = require('../database/db');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
-
-function logActivity(userId, action, details) {
-  db.run(
-    'INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
-    [userId || null, action, details || null],
-    function(err) {
-      if (err) console.error('Activity log error:', err.message);
-    }
-  );
-}
+const logActivity = require('../utils/activity');
 
 router.post('/register', auth, admin, function(req, res) {
   const username = req.body.username;

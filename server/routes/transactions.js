@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const db = require('../database/db');
 const auth = require('../middleware/auth');
+const logActivity = require('../utils/activity');
+const recomputeEquipmentAvailability = require('../utils/availability');
 
 // ─── GET ALL TRANSACTIONS ─────────────────────────────────
 // Returns all transactions with borrower and equipment details
@@ -60,7 +62,7 @@ router.get('/:id', auth, function(req, res) {
 router.post('/', auth, function(req, res) {
   const borrower_id       = req.body.borrower_id;
   const equipment_id      = req.body.equipment_id;
-  const quantity_borrowed = req.body.quantity_borrowed || 1;
+  const quantity_borrowed = parseInt(req.body.quantity_borrowed || 1, 10);
   const purpose           = req.body.purpose;
   const date_borrowed     = req.body.date_borrowed;
   const due_date          = req.body.due_date;
@@ -68,8 +70,14 @@ router.post('/', auth, function(req, res) {
   if (!borrower_id || !equipment_id || !date_borrowed || !due_date) {
     return res.status(400).json({ message: 'Please fill in all required fields.' });
   }
+  if (!Number.isInteger(quantity_borrowed) || quantity_borrowed < 1) {
+    return res.status(400).json({ message: 'Quantity must be at least 1.' });
+  }
+  if (due_date < date_borrowed) {
+    return res.status(400).json({ message: 'Due date cannot be earlier than borrowed date.' });
+  }
 
-  // Check if equipment exists and has enough available quantity
+  // Check if equipment exists and has enough quantity for the selected dates
   db.get(
     'SELECT * FROM equipment WHERE equipment_id = ?',
     [equipment_id],
@@ -80,40 +88,57 @@ router.post('/', auth, function(req, res) {
       if (!equipment) {
         return res.status(404).json({ message: 'Equipment not found.' });
       }
-      if (equipment.available_quantity < quantity_borrowed) {
-        return res.status(400).json({
-          message: 'Not enough equipment available. Available: ' + equipment.available_quantity
-        });
-      }
-
-      // Create the transaction
-      db.run(
-        `INSERT INTO transactions
-         (borrower_id, equipment_id, quantity_borrowed, purpose, date_borrowed, due_date, status)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [borrower_id, equipment_id, quantity_borrowed, purpose, date_borrowed, due_date, 'Pending'],
-        function(err) {
+      db.get(
+        `SELECT COALESCE(SUM(quantity_borrowed), 0) as reserved_quantity
+         FROM transactions
+         WHERE equipment_id = ?
+           AND status != 'Completed'
+           AND NOT (due_date < ? OR date_borrowed > ?)`,
+        [equipment_id, date_borrowed, due_date],
+        function(err, reservation) {
           if (err) {
             return res.status(500).json({ message: err.message });
           }
 
-          const transaction_id = this.lastID;
+          const reservedQuantity = reservation ? reservation.reserved_quantity : 0;
+          if (reservedQuantity + quantity_borrowed > equipment.quantity) {
+            return res.status(400).json({
+              message: 'Schedule conflict: only ' + Math.max(equipment.quantity - reservedQuantity, 0) +
+                ' available for the selected date range.'
+            });
+          }
 
-          // Update available quantity of equipment
-          const new_available = equipment.available_quantity - quantity_borrowed;
-          const new_status    = new_available === 0 ? 'Borrowed' : 'Available';
-
+          // Create the transaction
           db.run(
-            'UPDATE equipment SET available_quantity = ?, status = ? WHERE equipment_id = ?',
-            [new_available, new_status, equipment_id],
+            `INSERT INTO transactions
+             (borrower_id, equipment_id, quantity_borrowed, purpose, date_borrowed, due_date, status)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [borrower_id, equipment_id, quantity_borrowed, purpose, date_borrowed, due_date, 'Pending'],
             function(err) {
               if (err) {
                 return res.status(500).json({ message: err.message });
               }
-              return res.status(200).json({
-                message: 'Transaction created successfully!',
-                transaction_id: transaction_id
-              });
+
+              const transaction_id = this.lastID;
+
+              recomputeEquipmentAvailability(
+                equipment_id,
+                function(err) {
+                  if (err) {
+                    return res.status(500).json({ message: err.message });
+                  }
+                  logActivity(
+                    req.user.user_id,
+                    'Created borrowing transaction',
+                    'Transaction #' + transaction_id + ': ' + quantity_borrowed + ' ' + equipment.name +
+                      ' from ' + date_borrowed + ' to ' + due_date
+                  );
+                  return res.status(200).json({
+                    message: 'Transaction created successfully!',
+                    transaction_id: transaction_id
+                  });
+                }
+              );
             }
           );
         }
@@ -131,14 +156,32 @@ router.put('/:id', auth, function(req, res) {
     return res.status(400).json({ message: 'Status is required.' });
   }
 
-  db.run(
-    'UPDATE transactions SET status = ? WHERE transaction_id = ?',
-    [status, req.params.id],
-    function(err) {
+  db.get(
+    'SELECT status FROM transactions WHERE transaction_id = ?',
+    [req.params.id],
+    function(err, transaction) {
       if (err) {
         return res.status(500).json({ message: err.message });
       }
-      return res.status(200).json({ message: 'Transaction status updated to ' + status });
+      if (!transaction) {
+        return res.status(404).json({ message: 'Transaction not found.' });
+      }
+
+      db.run(
+        'UPDATE transactions SET status = ? WHERE transaction_id = ?',
+        [status, req.params.id],
+        function(err) {
+          if (err) {
+            return res.status(500).json({ message: err.message });
+          }
+          logActivity(
+            req.user.user_id,
+            'Updated transaction status',
+            'Transaction #' + req.params.id + ': ' + transaction.status + ' to ' + status
+          );
+          return res.status(200).json({ message: 'Transaction status updated to ' + status });
+        }
+      );
     }
   );
 });

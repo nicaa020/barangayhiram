@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const db = require('../database/db');
 const auth = require('../middleware/auth');
+const logActivity = require('../utils/activity');
+const recomputeEquipmentAvailability = require('../utils/availability');
 
 // ─── GET ALL RETURNS ──────────────────────────────────────
 // Returns all return records
@@ -118,17 +120,19 @@ router.post('/', auth, function(req, res) {
                     return res.status(500).json({ message: err.message });
                   }
 
-                  // Add back the returned quantity
-                  const new_available = equipment.available_quantity + transaction.quantity_borrowed;
-                  const new_status    = new_available > 0 ? 'Available' : 'Borrowed';
-
-                  db.run(
-                    'UPDATE equipment SET available_quantity = ?, status = ? WHERE equipment_id = ?',
-                    [new_available, new_status, transaction.equipment_id],
+                  recomputeEquipmentAvailability(
+                    transaction.equipment_id,
                     function(err) {
                       if (err) {
                         return res.status(500).json({ message: err.message });
                       }
+                      logActivity(
+                        req.user.user_id,
+                        'Processed equipment return',
+                        'Return #' + return_id + ': transaction #' + transaction_id +
+                          ', quantity ' + transaction.quantity_borrowed +
+                          ', condition ' + condition_on_return
+                      );
                       return res.status(200).json({
                         message: 'Equipment returned successfully!',
                         return_id: return_id
