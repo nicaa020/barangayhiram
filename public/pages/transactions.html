@@ -70,7 +70,7 @@
         <div class="card-body">
           <div class="row g-2 align-items-center">
             <div class="col-md-5"><div class="input-group"><span class="input-group-text"><i class="bi bi-search"></i></span><input type="text" class="form-control" id="searchInput" placeholder="Search borrower, equipment, purpose..."></div></div>
-            <div class="col-md-3"><select class="form-select" id="statusFilter"><option value="">All Status</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Released">Released</option><option value="Completed">Completed</option></select></div>
+            <div class="col-md-3"><select class="form-select" id="statusFilter"><option value="">All Status</option><option value="Active">Active</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Released">Released</option><option value="Completed">Completed</option><option value="Overdue">Overdue</option></select></div>
             <div class="col-md-4 text-end"><button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-plus-circle me-2"></i>New Transaction</button></div>
           </div>
         </div>
@@ -127,6 +127,7 @@
     let allTransactions = [];
     let borrowers = [];
     let equipment = [];
+    const queryParams = new URLSearchParams(window.location.search);
 
     function escapeHtml(value) {
       return String(value || '').replace(/[&<>"']/g, function(char) {
@@ -206,9 +207,16 @@
     function filterTable() {
       const search = document.getElementById('searchInput').value.toLowerCase();
       const status = document.getElementById('statusFilter').value;
+      const today = new Date().toISOString().split('T')[0];
       const filtered = allTransactions.filter(function(t) {
         const text = [t.borrower_name, t.equipment_name, t.purpose, t.borrower_contact].join(' ').toLowerCase();
-        return text.includes(search) && (status === '' || t.status === status);
+        const isOverdue = t.due_date < today && t.status !== 'Completed';
+        const matchStatus =
+          status === '' ||
+          t.status === status ||
+          (status === 'Active' && (t.status === 'Approved' || t.status === 'Released')) ||
+          (status === 'Overdue' && isOverdue);
+        return text.includes(search) && matchStatus;
       });
       renderTable(filtered);
     }
@@ -277,6 +285,11 @@
 
     document.getElementById('searchInput').addEventListener('input', filterTable);
     document.getElementById('statusFilter').addEventListener('change', filterTable);
+    if (queryParams.get('status')) {
+      document.getElementById('statusFilter').value = queryParams.get('status');
+    } else if (queryParams.get('overdue') === 'true') {
+      document.getElementById('statusFilter').value = 'Overdue';
+    }
     loadLookups().then(loadTransactions);
   </script>
 </body>

@@ -147,4 +147,56 @@ router.put('/users/:id', auth, admin, function(req, res) {
   }
 });
 
+function deleteUserAccount(req, res) {
+  const userId = parseInt(req.params.id, 10);
+
+  if (!Number.isInteger(userId)) {
+    return res.status(400).json({ message: 'Invalid account selected.' });
+  }
+  if (userId === req.user.user_id) {
+    return res.status(400).json({ message: 'You cannot delete your own account while logged in.' });
+  }
+
+  db.get(
+    'SELECT user_id, username, full_name, role FROM users WHERE user_id = ?',
+    [userId],
+    function(err, user) {
+      if (err) {
+        return res.status(500).json({ message: 'Database error.' });
+      }
+      if (!user) {
+        return res.status(404).json({ message: 'Account not found.' });
+      }
+
+      db.get(
+        'SELECT COUNT(*) as total FROM users WHERE role = ? AND status = ? AND user_id != ?',
+        ['admin', 'Active', userId],
+        function(err, row) {
+          if (err) {
+            return res.status(500).json({ message: 'Database error.' });
+          }
+          if (user.role === 'admin' && row.total === 0) {
+            return res.status(400).json({ message: 'At least one active admin account must remain.' });
+          }
+
+          db.run('DELETE FROM users WHERE user_id = ?', [userId], function(err) {
+            if (err) {
+              return res.status(500).json({ message: 'Unable to delete account.' });
+            }
+            logActivity(
+              req.user.user_id,
+              'Deleted staff account',
+              user.full_name + ' (' + user.username + ')'
+            );
+            return res.status(200).json({ message: 'Account deleted successfully!' });
+          });
+        }
+      );
+    }
+  );
+}
+
+router.delete('/users/:id', auth, admin, deleteUserAccount);
+router.post('/users/:id/delete', auth, admin, deleteUserAccount);
+
 module.exports = router;

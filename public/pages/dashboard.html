@@ -116,8 +116,11 @@
       gap: 15px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
       transition: transform 0.2s;
+      color: inherit;
+      text-decoration: none;
     }
     .stat-card:hover { transform: translateY(-2px); }
+    a.stat-card { cursor: pointer; }
     .stat-icon {
       width: 55px; height: 55px;
       border-radius: 10px;
@@ -224,7 +227,7 @@
       <!-- STAT CARDS -->
       <div class="row g-3 mb-4">
         <div class="col-md-3">
-          <div class="stat-card">
+          <a class="stat-card" href="equipment.html" aria-label="View all equipment">
             <div class="stat-icon" style="background:#0d6efd;">
               <i class="bi bi-box-seam"></i>
             </div>
@@ -232,10 +235,10 @@
               <div class="number" id="totalEquipment">--</div>
               <div class="label">Total Equipment</div>
             </div>
-          </div>
+          </a>
         </div>
         <div class="col-md-3">
-          <div class="stat-card">
+          <a class="stat-card" href="transactions.html?status=Active" aria-label="View active borrowings">
             <div class="stat-icon" style="background:#fd7e14;">
               <i class="bi bi-arrow-left-right"></i>
             </div>
@@ -243,10 +246,10 @@
               <div class="number" id="activeTransactions">--</div>
               <div class="label">Active Borrowings</div>
             </div>
-          </div>
+          </a>
         </div>
         <div class="col-md-3">
-          <div class="stat-card">
+          <a class="stat-card" href="transactions.html?overdue=true" aria-label="View overdue items">
             <div class="stat-icon" style="background:#dc3545;">
               <i class="bi bi-clock-history"></i>
             </div>
@@ -254,10 +257,10 @@
               <div class="number" id="overdueTransactions">--</div>
               <div class="label">Overdue Items</div>
             </div>
-          </div>
+          </a>
         </div>
         <div class="col-md-3">
-          <div class="stat-card">
+          <a class="stat-card" href="transactions.html?status=Completed" aria-label="View completed transactions">
             <div class="stat-icon" style="background:#198754;">
               <i class="bi bi-check-circle"></i>
             </div>
@@ -265,14 +268,14 @@
               <div class="number" id="completedTransactions">--</div>
               <div class="label">Completed</div>
             </div>
-          </div>
+          </a>
         </div>
       </div>
 
       <!-- SECOND ROW STATS -->
       <div class="row g-3 mb-4">
         <div class="col-md-3">
-          <div class="stat-card">
+          <a class="stat-card" href="borrowers.html" aria-label="View all borrowers">
             <div class="stat-icon" style="background:#20c997;">
               <i class="bi bi-people"></i>
             </div>
@@ -280,10 +283,10 @@
               <div class="number" id="totalBorrowers">--</div>
               <div class="label">Total Borrowers</div>
             </div>
-          </div>
+          </a>
         </div>
         <div class="col-md-3">
-          <div class="stat-card">
+          <a class="stat-card" href="transactions.html" aria-label="View all transactions">
             <div class="stat-icon" style="background:#6f42c1;">
               <i class="bi bi-list-check"></i>
             </div>
@@ -291,10 +294,10 @@
               <div class="number" id="totalTransactions">--</div>
               <div class="label">Total Transactions</div>
             </div>
-          </div>
+          </a>
         </div>
         <div class="col-md-3">
-          <div class="stat-card">
+          <a class="stat-card" href="transactions.html?status=Pending" aria-label="View pending transactions">
             <div class="stat-icon" style="background:#ffc107;">
               <i class="bi bi-hourglass-split"></i>
             </div>
@@ -302,10 +305,10 @@
               <div class="number" id="pendingTransactions">--</div>
               <div class="label">Pending</div>
             </div>
-          </div>
+          </a>
         </div>
         <div class="col-md-3">
-          <div class="stat-card">
+          <a class="stat-card" href="equipment.html?status=Available" aria-label="View available equipment">
             <div class="stat-icon" style="background:#0dcaf0;">
               <i class="bi bi-box-seam-fill"></i>
             </div>
@@ -313,7 +316,7 @@
               <div class="number" id="availableEquipment">--</div>
               <div class="label">Available Equipment</div>
             </div>
-          </div>
+          </a>
         </div>
       </div>
 

@@ -437,6 +437,11 @@
     document.getElementById('searchInput').addEventListener('input', filterTable);
     document.getElementById('statusFilter').addEventListener('change', filterTable);
 
+    const queryParams = new URLSearchParams(window.location.search);
+    if (queryParams.get('status')) {
+      document.getElementById('statusFilter').value = queryParams.get('status');
+    }
+
     function filterTable() {
       const search = document.getElementById('searchInput').value.toLowerCase();
       const status = document.getElementById('statusFilter').value;
