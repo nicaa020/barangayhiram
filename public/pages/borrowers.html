@@ -384,9 +384,18 @@
         'Pending':   'warning text-dark',
         'Approved':  'primary',
         'Released':  'info text-dark',
+        'Overdue':   'danger',
         'Completed': 'success'
       };
       return '<span class="badge bg-' + (colors[status] || 'secondary') + '">' + status + '</span>';
+    }
+
+    function displayStatus(transaction) {
+      const today = new Date().toISOString().split('T')[0];
+      if (transaction.status !== 'Completed' && transaction.due_date < today) {
+        return 'Overdue';
+      }
+      return transaction.status;
     }
 
     // ── Toast ──
@@ -570,7 +579,7 @@
               '<td>' + (t.purpose || '-') + '</td>' +
               '<td>' + t.date_borrowed + '</td>' +
               '<td>' + t.due_date + '</td>' +
-              '<td>' + getStatusBadge(t.status) + '</td>' +
+              '<td>' + getStatusBadge(displayStatus(t)) + '</td>' +
             '</tr>';
           }).join('');
         } else {
