@@ -113,10 +113,12 @@ If the database has no users yet, the system creates a default admin account:
 
 ```text
 Username: admin
-Password: admin123
+Password: Barangay2026!
 ```
 
 Change this password or create another admin account before using the system for real barangay records.
+
+Usernames must be 4-30 characters and may use letters, numbers, dots, underscores, or hyphens. Passwords must be at least 8 characters and include uppercase, lowercase, number, and special character.
 
 ## Test Data For Barangay Survey
 

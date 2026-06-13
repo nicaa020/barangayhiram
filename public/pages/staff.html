@@ -110,8 +110,8 @@
       <div class="modal-header"><h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Add Staff Account</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
         <div class="mb-3"><label class="form-label">Full Name <span class="text-danger">*</span></label><input type="text" class="form-control" id="addFullName"></div>
-        <div class="mb-3"><label class="form-label">Username <span class="text-danger">*</span></label><input type="text" class="form-control" id="addUsername"></div>
-        <div class="mb-3"><label class="form-label">Password <span class="text-danger">*</span></label><input type="password" class="form-control" id="addPassword"></div>
+        <div class="mb-3"><label class="form-label">Username <span class="text-danger">*</span></label><input type="text" class="form-control" id="addUsername" minlength="4" maxlength="30" pattern="[A-Za-z0-9._-]{4,30}" autocomplete="username"><div class="form-text">4-30 characters. Use letters, numbers, dots, underscores, or hyphens.</div></div>
+        <div class="mb-3"><label class="form-label">Password <span class="text-danger">*</span></label><input type="password" class="form-control" id="addPassword" minlength="8" autocomplete="new-password"><div class="form-text">At least 8 characters with uppercase, lowercase, number, and special character.</div></div>
         <div class="mb-3"><label class="form-label">Role</label><select class="form-select" id="addRole"><option value="staff">Staff</option><option value="admin">Admin</option></select></div>
         <div class="alert alert-danger d-none" id="addError"></div>
       </div>
@@ -125,8 +125,8 @@
       <div class="modal-body">
         <input type="hidden" id="editId">
         <div class="mb-3"><label class="form-label">Full Name <span class="text-danger">*</span></label><input type="text" class="form-control" id="editFullName"></div>
-        <div class="mb-3"><label class="form-label">Username <span class="text-danger">*</span></label><input type="text" class="form-control" id="editUsername"></div>
-        <div class="mb-3"><label class="form-label">New Password</label><input type="password" class="form-control" id="editPassword" placeholder="Leave blank to keep current password"></div>
+        <div class="mb-3"><label class="form-label">Username <span class="text-danger">*</span></label><input type="text" class="form-control" id="editUsername" minlength="4" maxlength="30" pattern="[A-Za-z0-9._-]{4,30}" autocomplete="username"><div class="form-text">4-30 characters. Use letters, numbers, dots, underscores, or hyphens.</div></div>
+        <div class="mb-3"><label class="form-label">New Password</label><input type="password" class="form-control" id="editPassword" minlength="8" autocomplete="new-password" placeholder="Leave blank to keep current password"><div class="form-text">If changed, use at least 8 characters with uppercase, lowercase, number, and special character.</div></div>
         <div class="row g-3">
           <div class="col-md-6"><label class="form-label">Role</label><select class="form-select" id="editRole"><option value="staff">Staff</option><option value="admin">Admin</option></select></div>
           <div class="col-md-6"><label class="form-label">Status</label><select class="form-select" id="editStatus"><option value="Active">Active</option><option value="Inactive">Inactive</option></select></div>
@@ -166,6 +166,9 @@
     document.getElementById('userAvatar').textContent = fullName.charAt(0).toUpperCase();
 
     let allStaff = [];
+    const USERNAME_REQUIREMENTS = 'Username must be 4-30 characters and use only letters, numbers, dots, underscores, or hyphens.';
+    const PASSWORD_REQUIREMENTS = 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character.';
+    const USERNAME_PATTERN = /^[A-Za-z0-9._-]{4,30}$/;
 
     function escapeHtml(value) {
       return String(value || '').replace(/[&<>"']/g, function(char) {
@@ -182,6 +185,26 @@
       toast.className = 'toast align-items-center text-white border-0 bg-' + (type || 'success');
       document.getElementById('toastMessage').textContent = message;
       new bootstrap.Toast(toast).show();
+    }
+
+    function getPasswordError(password) {
+      if (!password || password.length < 8 || !/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+        return PASSWORD_REQUIREMENTS;
+      }
+      return '';
+    }
+
+    function validateAccountFields(payload, passwordRequired) {
+      if (!payload.full_name || !payload.username || (passwordRequired && !payload.password)) {
+        return 'Please complete all required fields.';
+      }
+      if (!USERNAME_PATTERN.test(payload.username)) {
+        return USERNAME_REQUIREMENTS;
+      }
+      if ((passwordRequired || payload.password) && getPasswordError(payload.password)) {
+        return getPasswordError(payload.password);
+      }
+      return '';
     }
 
     async function api(path, options) {
@@ -276,8 +299,9 @@
         role: document.getElementById('addRole').value
       };
       const errorDiv = document.getElementById('addError');
-      if (!payload.full_name || !payload.username || !payload.password) {
-        errorDiv.textContent = 'Please complete all required fields.';
+      const validationError = validateAccountFields(payload, true);
+      if (validationError) {
+        errorDiv.textContent = validationError;
         errorDiv.classList.remove('d-none');
         return;
       }
@@ -317,8 +341,9 @@
         status: document.getElementById('editStatus').value
       };
       const errorDiv = document.getElementById('editError');
-      if (!payload.full_name || !payload.username) {
-        errorDiv.textContent = 'Please complete all required fields.';
+      const validationError = validateAccountFields(payload, false);
+      if (validationError) {
+        errorDiv.textContent = validationError;
         errorDiv.classList.remove('d-none');
         return;
       }

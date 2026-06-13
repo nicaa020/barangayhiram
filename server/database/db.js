@@ -42,7 +42,7 @@ db.serialize(() => {
     if (row.total > 0) return;
 
     const username = process.env.ADMIN_USERNAME || 'admin';
-    const password = process.env.ADMIN_PASSWORD || 'admin123';
+    const password = process.env.ADMIN_PASSWORD || 'Barangay2026!';
     const fullName = process.env.ADMIN_FULL_NAME || 'Barangay Admin';
     const hashed = bcrypt.hashSync(password, 10);
 

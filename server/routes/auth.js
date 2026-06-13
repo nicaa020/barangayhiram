@@ -8,14 +8,51 @@ const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const logActivity = require('../utils/activity');
 
+const USERNAME_REQUIREMENTS = 'Username must be 4-30 characters and use only letters, numbers, dots, underscores, or hyphens.';
+const PASSWORD_REQUIREMENTS = 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character.';
+const USERNAME_PATTERN = /^[A-Za-z0-9._-]{4,30}$/;
+
+function cleanText(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function validateUsername(username) {
+  if (!USERNAME_PATTERN.test(username)) {
+    return USERNAME_REQUIREMENTS;
+  }
+  return null;
+}
+
+function validatePassword(password) {
+  if (
+    typeof password !== 'string' ||
+    password.length < 8 ||
+    !/[A-Z]/.test(password) ||
+    !/[a-z]/.test(password) ||
+    !/[0-9]/.test(password) ||
+    !/[^A-Za-z0-9]/.test(password)
+  ) {
+    return PASSWORD_REQUIREMENTS;
+  }
+  return null;
+}
+
 router.post('/register', auth, admin, function(req, res) {
-  const username = req.body.username;
+  const username = cleanText(req.body.username);
   const password = req.body.password;
-  const full_name = req.body.full_name;
+  const full_name = cleanText(req.body.full_name);
   const role = req.body.role || 'staff';
 
   if (!username || !password || !full_name) {
     return res.status(400).json({ message: 'Please fill in all fields.' });
+  }
+  const usernameError = validateUsername(username);
+  if (usernameError) {
+    return res.status(400).json({ message: usernameError });
+  }
+  const passwordError = validatePassword(password);
+  if (passwordError) {
+    return res.status(400).json({ message: passwordError });
   }
   if (role !== 'admin' && role !== 'staff') {
     return res.status(400).json({ message: 'Invalid role selected.' });
@@ -104,14 +141,24 @@ router.get('/users', auth, admin, function(req, res) {
 });
 
 router.put('/users/:id', auth, admin, function(req, res) {
-  const full_name = req.body.full_name;
-  const username = req.body.username;
+  const full_name = cleanText(req.body.full_name);
+  const username = cleanText(req.body.username);
   const role = req.body.role;
   const status = req.body.status;
   const password = req.body.password;
 
   if (!username || !full_name || !role || !status) {
     return res.status(400).json({ message: 'Please fill in all required fields.' });
+  }
+  const usernameError = validateUsername(username);
+  if (usernameError) {
+    return res.status(400).json({ message: usernameError });
+  }
+  if (password) {
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      return res.status(400).json({ message: passwordError });
+    }
   }
   if (role !== 'admin' && role !== 'staff') {
     return res.status(400).json({ message: 'Invalid role selected.' });
