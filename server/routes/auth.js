@@ -217,7 +217,11 @@ async function sendBorrowerReadyEmailIfEligible(userId) {
 
   if (!user) return { sent: false, skipped: true, reason: 'missing_user' };
   if (user.borrow_ready_email_sent_at) return { sent: false, skipped: true, reason: 'already_sent' };
-  if (!user.email_verified_at) return { sent: false, skipped: true, reason: 'email_not_verified' };
+  if (!user.email_verified_at) {
+    const emailStatus = await ensureBorrowerEmailConfirmed(Object.assign({}, user, { role: 'borrower' }));
+    if (!emailStatus.confirmed) return { sent: false, skipped: true, reason: 'email_not_verified' };
+    user.email_verified_at = emailStatus.email_verified_at;
+  }
   if (!['Approved', 'Active'].includes(user.status) || user.verification_status !== 'Approved') {
     return { sent: false, skipped: true, reason: 'account_not_approved' };
   }
