@@ -202,7 +202,8 @@ function createNotification(userId, title, message, type, callback) {
 async function sendBorrowerReadyEmailIfEligible(userId) {
   const user = await new Promise(function(resolve, reject) {
     db.get(
-      `SELECT u.user_id, u.username, u.email, u.full_name, u.status, u.email_verified_at, u.borrow_ready_email_sent_at,
+      `SELECT u.user_id, u.username, u.email, u.full_name, u.status, u.email_verified_at,
+              u.supabase_auth_user_id, u.borrow_ready_email_sent_at,
               b.verification_status
        FROM users u
        LEFT JOIN borrowers b ON u.user_id = b.user_id
@@ -218,7 +219,26 @@ async function sendBorrowerReadyEmailIfEligible(userId) {
   if (!user) return { sent: false, skipped: true, reason: 'missing_user' };
   if (user.borrow_ready_email_sent_at) return { sent: false, skipped: true, reason: 'already_sent' };
   if (!user.email_verified_at) {
-    const emailStatus = await ensureBorrowerEmailConfirmed(Object.assign({}, user, { role: 'borrower' }));
+    let emailStatus = await ensureBorrowerEmailConfirmed(Object.assign({}, user, { role: 'borrower' }));
+    if (!emailStatus.confirmed) {
+      const authUser = await supabaseProfiles.findAuthUserByEmail(user.email || user.username);
+      const confirmedAt = authUser && (authUser.email_confirmed_at || authUser.confirmed_at || null);
+      if (confirmedAt) {
+        await new Promise(function(resolve, reject) {
+          db.run(
+            'UPDATE users SET supabase_auth_user_id = ?, email_verified_at = ?, updated_at = datetime("now") WHERE user_id = ?',
+            [authUser.id, confirmedAt, user.user_id],
+            function(err) {
+              if (err) reject(err);
+              else resolve();
+            }
+          );
+        });
+        user.supabase_auth_user_id = authUser.id;
+        user.email_verified_at = confirmedAt;
+        emailStatus = { confirmed: true, email_verified_at: confirmedAt };
+      }
+    }
     if (!emailStatus.confirmed) return { sent: false, skipped: true, reason: 'email_not_verified' };
     user.email_verified_at = emailStatus.email_verified_at;
   }

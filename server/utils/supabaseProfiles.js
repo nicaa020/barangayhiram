@@ -56,6 +56,16 @@ async function getAuthUser(userId) {
   });
 }
 
+async function findAuthUserByEmail(email) {
+  const data = await supabaseRequest('/auth/v1/admin/users?per_page=100', {
+    method: 'GET'
+  });
+  const users = Array.isArray(data && data.users) ? data.users : [];
+  return users.find(function(user) {
+    return String(user.email || '').toLowerCase() === String(email || '').toLowerCase();
+  }) || null;
+}
+
 async function deleteAuthUser(userId) {
   if (!userId) return;
   try {
@@ -96,5 +106,6 @@ module.exports = {
   isConfigured,
   createBorrowerProfileAccount,
   getAuthUser,
+  findAuthUserByEmail,
   deleteAuthUser
 };
