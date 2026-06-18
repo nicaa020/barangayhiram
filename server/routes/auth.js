@@ -68,6 +68,19 @@ function validateContactNumber(contactNumber) {
   return CONTACT_NUMBER_PATTERN.test(contactNumber) ? null : CONTACT_NUMBER_REQUIREMENTS;
 }
 
+function findUserByUsernameOrEmail(username) {
+  return new Promise(function(resolve, reject) {
+    db.get(
+      'SELECT user_id FROM users WHERE username = ? OR email = ?',
+      [username, username],
+      function(err, row) {
+        if (err) return reject(err);
+        return resolve(row);
+      }
+    );
+  });
+}
+
 function saveVerificationDocument(dataUrl, originalName) {
   if (!dataUrl) return null;
   const match = String(dataUrl).match(/^data:([^;]+);base64,(.+)$/);
@@ -293,6 +306,17 @@ router.post('/register-borrower', async function(req, res) {
   }
   if (!supabaseProfiles.isConfigured()) {
     return res.status(503).json({ message: 'Supabase email verification is not configured. Please contact the administrator.' });
+  }
+
+  try {
+    const existingUser = await findUserByUsernameOrEmail(username);
+    if (existingUser) {
+      return res.status(400).json({
+        message: 'This email is already registered in BarangayHiram. Please log in, use another email, or ask staff to delete the local account record.'
+      });
+    }
+  } catch (err) {
+    return res.status(500).json({ message: 'Unable to check existing account records.' });
   }
 
   try {
