@@ -694,8 +694,9 @@ router.put('/users/:id/verification', auth, admin, function(req, res) {
                     });
                   })
                   .catch(function(emailErr) {
+                    console.error('Borrower approval email error:', emailErr.message);
                     return res.status(200).json({
-                      message: 'Borrower verification updated, but approval email could not be sent.',
+                      message: 'Borrower verification updated, but approval email could not be sent: ' + emailErr.message,
                       email_sent: false,
                       email_error: emailErr.message
                     });
@@ -724,8 +725,9 @@ router.post('/users/:id/resend-approval-email', auth, admin, function(req, res) 
         });
       })
       .catch(function(emailErr) {
+        console.error('Approval email resend error:', emailErr.message);
         return res.status(500).json({
-          message: 'Approval email could not be sent.',
+          message: 'Approval email could not be sent: ' + emailErr.message,
           email_sent: false,
           email_error: emailErr.message
         });
