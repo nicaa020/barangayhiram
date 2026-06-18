@@ -3,8 +3,6 @@
 const db = require('../database/db');
 
 function recomputeEquipmentAvailability(equipmentId, callback) {
-  const today = new Date().toISOString().split('T')[0];
-
   db.get('SELECT quantity, status FROM equipment WHERE equipment_id = ?', [equipmentId], function(err, equipment) {
     if (err) return callback(err);
     if (!equipment) return callback(new Error('Equipment not found.'));
@@ -13,10 +11,8 @@ function recomputeEquipmentAvailability(equipmentId, callback) {
       `SELECT COALESCE(SUM(quantity_borrowed), 0) as borrowed_quantity
        FROM transactions
        WHERE equipment_id = ?
-         AND status != 'Completed'
-         AND date_borrowed <= ?
-         AND due_date >= ?`,
-      [equipmentId, today, today],
+         AND status = 'Released'`,
+      [equipmentId],
       function(err, row) {
         if (err) return callback(err);
 

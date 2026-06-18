@@ -149,7 +149,7 @@
   </style>
   <link href="/css/app.css" rel="stylesheet">
 </head>
-<body>
+<body class="bh-ui">
 
   <!-- ── SIDEBAR ── -->
     <div class="sidebar">
@@ -183,6 +183,7 @@
       <a href="transactions.html" class="nav-link"><i class="bi bi-arrow-left-right"></i> Transactions</a>
       <a href="returns.html" class="nav-link"><i class="bi bi-arrow-return-left"></i> Returns</a>
       <a href="reports.html" class="nav-link"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+      <a href="new-users.html" class="nav-link admin-only"><i class="bi bi-person-check"></i> New Users</a>
       <a href="staff.html" class="nav-link admin-only"><i class="bi bi-person-gear"></i> Staff Accounts</a>
     </nav>
     <div class="sidebar-footer">
@@ -195,7 +196,17 @@
 
     <!-- TOPBAR -->
     <div class="topbar">
-      <h4><i class="bi bi-speedometer2 me-2 text-primary"></i>Dashboard</h4>
+      <h4>Dashboard</h4>
+      <div class="bh-topbar-actions">
+        <div class="bh-search-wrap">
+          <i class="bi bi-search"></i>
+          <input type="search" id="dashboardSearch" placeholder="Search borrower request..." aria-label="Search borrower request">
+        </div>
+        <button class="bh-icon-btn" id="dashboardAlertButton" type="button" aria-label="View dashboard alerts">
+          <i class="bi bi-bell"></i>
+          <span class="bh-notification-dot d-none" id="dashboardAlertDot"></span>
+        </button>
+      </div>
       <div class="topbar-right">
         <div class="user-info">
           <div class="name" id="userName">Loading...</div>
@@ -208,8 +219,85 @@
     <!-- PAGE CONTENT -->
     <div class="page-content">
 
-      <!-- Date -->
-      <p class="text-muted mb-4" id="currentDate"></p>
+      <p class="bh-page-kicker" id="currentDate"></p>
+
+      <div class="bh-stats-grid">
+        <div>
+          <a class="stat-card" href="equipment.html" aria-label="View all equipment">
+            <div class="stat-info">
+              <div class="label"><i class="bi bi-box-seam"></i> Total Equipment</div>
+              <div class="number bh-value-teal" id="totalEquipment">--</div>
+              <div class="bh-stat-sub">Inventory count</div>
+            </div>
+          </a>
+        </div>
+        <div>
+          <a class="stat-card" href="equipment.html?status=Available" aria-label="View available equipment">
+            <div class="stat-info">
+              <div class="label"><i class="bi bi-check-circle"></i> Available</div>
+              <div class="number bh-value-teal" id="availableEquipment">--</div>
+              <div class="bh-stat-sub">Ready to release</div>
+            </div>
+          </a>
+        </div>
+        <div>
+          <a class="stat-card" href="reports.html?report=borrowed" aria-label="View borrowed equipment">
+            <div class="stat-info">
+              <div class="label"><i class="bi bi-arrow-up-circle"></i> Borrowed</div>
+              <div class="number bh-value-blue" id="borrowedEquipment">--</div>
+              <div class="bh-stat-sub">Released items</div>
+            </div>
+          </a>
+        </div>
+        <div>
+          <a class="stat-card" href="transactions.html?overdue=true" aria-label="View overdue items">
+            <div class="stat-info">
+              <div class="label"><i class="bi bi-exclamation-triangle"></i> Overdue</div>
+              <div class="number bh-value-red" id="overdueTransactions">--</div>
+              <div class="bh-stat-sub">Needs attention</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="bh-stats-grid">
+        <div>
+          <a class="stat-card" href="transactions.html?status=Pending" aria-label="View pending borrowing requests">
+            <div class="stat-info">
+              <div class="label"><i class="bi bi-clock"></i> Pending Requests</div>
+              <div class="number bh-value-amber" id="pendingTransactions">--</div>
+              <div class="bh-stat-sub">Awaiting review</div>
+            </div>
+          </a>
+        </div>
+        <div>
+          <a class="stat-card" href="new-users.html?status=Pending" aria-label="View pending borrower verifications">
+            <div class="stat-info">
+              <div class="label"><i class="bi bi-person-check"></i> Pending Verifications</div>
+              <div class="number bh-value-amber" id="pendingVerifications">--</div>
+              <div class="bh-stat-sub">New accounts</div>
+            </div>
+          </a>
+        </div>
+        <div>
+          <a class="stat-card" href="transactions.html?status=Active" aria-label="View active borrowings">
+            <div class="stat-info">
+              <div class="label"><i class="bi bi-arrow-left-right"></i> Active Borrowings</div>
+              <div class="number bh-value-blue" id="activeTransactions">--</div>
+              <div class="bh-stat-sub">Approved or released</div>
+            </div>
+          </a>
+        </div>
+        <div>
+          <a class="stat-card" href="borrowers.html" aria-label="View verified borrowers">
+            <div class="stat-info">
+              <div class="label"><i class="bi bi-people"></i> Verified Borrowers</div>
+              <div class="number bh-value-teal" id="verifiedBorrowers">--</div>
+              <div class="bh-stat-sub">Approved accounts</div>
+            </div>
+          </a>
+        </div>
+      </div>
 
       <!-- Alerts -->
       <div class="row g-3 mb-4" id="dashboardAlerts">
@@ -224,106 +312,10 @@
         </div>
       </div>
 
-      <!-- STAT CARDS -->
-      <div class="row g-3 mb-4">
-        <div class="col-md-3">
-          <a class="stat-card" href="equipment.html" aria-label="View all equipment">
-            <div class="stat-icon" style="background:#0d6efd;">
-              <i class="bi bi-box-seam"></i>
-            </div>
-            <div class="stat-info">
-              <div class="number" id="totalEquipment">--</div>
-              <div class="label">Total Equipment</div>
-            </div>
-          </a>
-        </div>
-        <div class="col-md-3">
-          <a class="stat-card" href="transactions.html?status=Active" aria-label="View active borrowings">
-            <div class="stat-icon" style="background:#fd7e14;">
-              <i class="bi bi-arrow-left-right"></i>
-            </div>
-            <div class="stat-info">
-              <div class="number" id="activeTransactions">--</div>
-              <div class="label">Active Borrowings</div>
-            </div>
-          </a>
-        </div>
-        <div class="col-md-3">
-          <a class="stat-card" href="transactions.html?overdue=true" aria-label="View overdue items">
-            <div class="stat-icon" style="background:#dc3545;">
-              <i class="bi bi-clock-history"></i>
-            </div>
-            <div class="stat-info">
-              <div class="number" id="overdueTransactions">--</div>
-              <div class="label">Overdue Items</div>
-            </div>
-          </a>
-        </div>
-        <div class="col-md-3">
-          <a class="stat-card" href="transactions.html?status=Completed" aria-label="View completed transactions">
-            <div class="stat-icon" style="background:#198754;">
-              <i class="bi bi-check-circle"></i>
-            </div>
-            <div class="stat-info">
-              <div class="number" id="completedTransactions">--</div>
-              <div class="label">Completed</div>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      <!-- SECOND ROW STATS -->
-      <div class="row g-3 mb-4">
-        <div class="col-md-3">
-          <a class="stat-card" href="borrowers.html" aria-label="View all borrowers">
-            <div class="stat-icon" style="background:#20c997;">
-              <i class="bi bi-people"></i>
-            </div>
-            <div class="stat-info">
-              <div class="number" id="totalBorrowers">--</div>
-              <div class="label">Total Borrowers</div>
-            </div>
-          </a>
-        </div>
-        <div class="col-md-3">
-          <a class="stat-card" href="transactions.html" aria-label="View all transactions">
-            <div class="stat-icon" style="background:#6f42c1;">
-              <i class="bi bi-list-check"></i>
-            </div>
-            <div class="stat-info">
-              <div class="number" id="totalTransactions">--</div>
-              <div class="label">Total Transactions</div>
-            </div>
-          </a>
-        </div>
-        <div class="col-md-3">
-          <a class="stat-card" href="transactions.html?status=Pending" aria-label="View pending transactions">
-            <div class="stat-icon" style="background:#ffc107;">
-              <i class="bi bi-hourglass-split"></i>
-            </div>
-            <div class="stat-info">
-              <div class="number" id="pendingTransactions">--</div>
-              <div class="label">Pending</div>
-            </div>
-          </a>
-        </div>
-        <div class="col-md-3">
-          <a class="stat-card" href="equipment.html?status=Available" aria-label="View available equipment">
-            <div class="stat-icon" style="background:#0dcaf0;">
-              <i class="bi bi-box-seam-fill"></i>
-            </div>
-            <div class="stat-info">
-              <div class="number" id="availableEquipment">--</div>
-              <div class="label">Available Equipment</div>
-            </div>
-          </a>
-        </div>
-      </div>
-
       <!-- RECENT TRANSACTIONS TABLE -->
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <span><i class="bi bi-clock-history me-2 text-primary"></i>Recent Transactions</span>
+          <span>Borrower request</span>
           <a href="transactions.html" class="btn btn-sm btn-outline-primary">View All</a>
         </div>
         <div class="card-body p-0">
@@ -367,7 +359,7 @@
     // ─── SHOW USER INFO ───────────────────────────────────
     const fullName = localStorage.getItem('full_name') || 'Admin';
     const role     = localStorage.getItem('role') || 'staff';
-    if (role !== 'admin') {
+    if (role !== 'admin' && role !== 'super_admin' && role !== 'staff') {
       document.querySelectorAll('.admin-only').forEach(function(link) { link.classList.add('d-none'); });
     }
     document.getElementById('userName').textContent   = fullName;
@@ -387,6 +379,7 @@
         'Approved':  'primary',
         'Released':  'warning text-dark',
         'Overdue':   'danger',
+        'Returned': 'success',
         'Completed': 'success',
       };
       return '<span class="badge bg-' + (colors[status] || 'secondary') + '">' + status + '</span>';
@@ -394,7 +387,7 @@
 
     function displayStatus(transaction) {
       const today = new Date().toISOString().split('T')[0];
-      if (transaction.status !== 'Completed' && transaction.due_date < today) {
+      if (transaction.status === 'Released' && transaction.due_date < today) {
         return 'Overdue';
       }
       return transaction.status;
@@ -410,13 +403,13 @@
 
         if (res.ok) {
           document.getElementById('totalEquipment').textContent      = data.total_equipment;
+          document.getElementById('availableEquipment').textContent  = data.available_equipment;
+          document.getElementById('borrowedEquipment').textContent   = data.borrowed_equipment;
+          document.getElementById('pendingTransactions').textContent = data.pending_transactions;
+          document.getElementById('pendingVerifications').textContent = data.pending_borrower_verifications;
           document.getElementById('activeTransactions').textContent  = data.active_transactions;
           document.getElementById('overdueTransactions').textContent = data.overdue_transactions;
-          document.getElementById('completedTransactions').textContent = data.completed_transactions;
-          document.getElementById('totalBorrowers').textContent      = data.total_borrowers;
-          document.getElementById('totalTransactions').textContent   = data.total_transactions;
-          document.getElementById('pendingTransactions').textContent = data.pending_transactions;
-          document.getElementById('availableEquipment').textContent  = data.available_equipment;
+          document.getElementById('verifiedBorrowers').textContent   = data.verified_borrowers;
           updateDashboardAlerts(data);
         } else if (res.status === 403) {
           // Token expired
@@ -431,6 +424,7 @@
       const alerts = [];
       const overdue = Number(data.overdue_transactions || 0);
       const pending = Number(data.pending_transactions || 0);
+      const alertDot = document.getElementById('dashboardAlertDot');
 
       if (overdue > 0) {
         alerts.push({
@@ -459,6 +453,10 @@
         });
       }
 
+      if (alertDot) {
+        alertDot.classList.toggle('d-none', overdue + pending === 0);
+      }
+
       document.getElementById('dashboardAlerts').innerHTML = alerts.map(function(alert) {
         return '<div class="col-md-6">' +
           '<div class="dashboard-alert ' + alert.type + ' d-flex gap-3 align-items-center">' +
@@ -468,6 +466,39 @@
         '</div>';
       }).join('');
     }
+
+    function filterRecentTransactions() {
+      const searchInput = document.getElementById('dashboardSearch');
+      const tbody = document.getElementById('recentTransactions');
+      const query = (searchInput.value || '').trim().toLowerCase();
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      let visibleCount = 0;
+
+      rows.forEach(function(row) {
+        if (row.dataset.empty === 'true') {
+          row.remove();
+          return;
+        }
+
+        const matches = !query || row.textContent.toLowerCase().includes(query);
+        row.classList.toggle('d-none', !matches);
+        if (matches) visibleCount++;
+      });
+
+      if (query && visibleCount === 0) {
+        tbody.insertAdjacentHTML('beforeend', '<tr data-empty="true"><td colspan="6" class="text-center py-4 text-muted">No recent requests match your search.</td></tr>');
+      }
+    }
+
+    document.getElementById('dashboardSearch').addEventListener('input', filterRecentTransactions);
+    document.getElementById('dashboardAlertButton').addEventListener('click', function() {
+      const alerts = document.getElementById('dashboardAlerts');
+      alerts.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      alerts.classList.add('bh-alert-focus');
+      window.setTimeout(function() {
+        alerts.classList.remove('bh-alert-focus');
+      }, 1200);
+    });
 
     // ─── LOAD RECENT TRANSACTIONS ─────────────────────────
     async function loadRecentTransactions() {
@@ -489,6 +520,7 @@
               '<td>' + getStatusBadge(displayStatus(t)) + '</td>' +
             '</tr>';
           }).join('');
+          filterRecentTransactions();
         } else {
           tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No transactions yet.</td></tr>';
         }

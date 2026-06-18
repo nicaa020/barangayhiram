@@ -35,17 +35,30 @@
   </style>
   <link href="/css/app.css" rel="stylesheet">
 </head>
-<body>
+<body class="bh-ui">
   <div class="sidebar">
     <div class="sidebar-brand">
       <svg viewBox="0 0 100 100" width="55" height="55">
-        <circle cx="50" cy="50" r="48" fill="#ffffff22" /><circle cx="50" cy="50" r="44" fill="#ffffff11" /><circle cx="50" cy="50" r="38" fill="#ffffff" />
+        <circle cx="50" cy="50" r="48" fill="#ffffff22" />
+        <circle cx="50" cy="50" r="44" fill="#ffffff11" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(0 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(45 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(90 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(135 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(180 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(225 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(270 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(315 50 50)" />
+        <circle cx="50" cy="50" r="38" fill="#ffffff" />
         <path d="M50 18 L72 28 L72 50 C72 65 62 75 50 82 C38 75 28 65 28 50 L28 28 Z" fill="#0d6efd" stroke="#0a58ca" stroke-width="1" />
         <polygon points="50,24 51.5,28 56,28 52.5,31 54,35 50,32 46,35 47.5,31 44,28 48.5,28" fill="#ffc107" />
-        <path d="M50 48 L40 55 L40 68 L45 68 L45 60 L55 60 L55 68 L60 68 L60 55 Z" fill="#ffffff" /><rect x="47" y="62" width="6" height="6" fill="#0a58ca" />
+        <polygon points="36,36 37.2,39 41,39 38,41.5 39,45 36,43 33,45 34,41.5 31,39 34.8,39" fill="#ffc107" />
+        <polygon points="64,36 65.2,39 69,39 66,41.5 67,45 64,43 61,45 62,41.5 59,39 62.8,39" fill="#ffc107" />
+        <path d="M50 48 L40 55 L40 68 L45 68 L45 60 L55 60 L55 68 L60 68 L60 55 Z" fill="#ffffff" />
+        <rect x="47" y="62" width="6" height="6" fill="#0a58ca" />
       </svg>
-      <h5 class="text-white mb-0 mt-1" style="font-weight:700;">BarangayHiram</h5>
-      <small style="color:rgba(255,255,255,0.7);font-size:0.72rem;">Brgy. 628, Zone 63</small>
+      <h5 class="mb-0 mt-1" style="font-weight:700;">BarangayHiram</h5>
+      <small>Brgy. 628, Zone 63</small>
     </div>
     <nav class="sidebar-nav">
       <a href="dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
@@ -54,6 +67,7 @@
       <a href="transactions.html" class="nav-link"><i class="bi bi-arrow-left-right"></i> Transactions</a>
       <a href="returns.html" class="nav-link"><i class="bi bi-arrow-return-left"></i> Returns</a>
       <a href="reports.html" class="nav-link"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+      <a href="new-users.html" class="nav-link admin-only"><i class="bi bi-person-check"></i> New Users</a>
       <a href="staff.html" class="nav-link active admin-only"><i class="bi bi-person-gear"></i> Staff Accounts</a>
     </nav>
     <div class="sidebar-footer"><a class="nav-link" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a></div>
@@ -61,26 +75,26 @@
 
   <div class="main-content">
     <div class="topbar">
-      <h4><i class="bi bi-person-gear me-2 text-primary"></i>Staff Accounts</h4>
+      <h4>Staff accounts</h4>
       <div class="topbar-right"><div class="user-info"><div class="name" id="userName">Loading...</div><div class="role" id="userRole"></div></div><div class="avatar" id="userAvatar">A</div></div>
     </div>
 
     <div class="page-content">
-      <div class="card mb-4">
+      <div class="card mb-4 bh-filter-card">
         <div class="card-body">
           <div class="row g-2 align-items-center">
             <div class="col-md-8">
-              <div class="input-group"><span class="input-group-text"><i class="bi bi-search"></i></span><input type="text" class="form-control" id="searchInput" placeholder="Search name, username, role, or status..."></div>
+              <div class="input-group"><span class="input-group-text"><i class="bi bi-search"></i></span><input type="text" class="form-control" id="searchInput" placeholder="Search staff accounts..."></div>
             </div>
             <div class="col-md-4 text-end">
-              <button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-person-plus me-2"></i>Add Staff Account</button>
+              <button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-person-plus me-2"></i>Add staff account</button>
             </div>
           </div>
         </div>
       </div>
 
       <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center"><span><i class="bi bi-people me-2 text-primary"></i>System Users</span><span class="badge bg-primary" id="staffCount">0 accounts</span></div>
+        <div class="card-header d-flex justify-content-between align-items-center"><span>Staff/admin accounts</span><span class="badge bg-primary" id="staffCount">0 accounts</span></div>
         <div class="card-body p-0">
           <div class="table-responsive">
             <table class="table table-hover mb-0">
@@ -92,7 +106,7 @@
       </div>
 
       <div class="card">
-        <div class="card-header"><i class="bi bi-activity me-2 text-primary"></i>Recent Account Activity</div>
+        <div class="card-header">Recent account activity</div>
         <div class="card-body p-0">
           <div class="table-responsive">
             <table class="table table-hover mb-0">
@@ -112,7 +126,7 @@
         <div class="mb-3"><label class="form-label">Full Name <span class="text-danger">*</span></label><input type="text" class="form-control" id="addFullName"></div>
         <div class="mb-3"><label class="form-label">Username <span class="text-danger">*</span></label><input type="text" class="form-control" id="addUsername" minlength="4" maxlength="30" pattern="[A-Za-z0-9._-]{4,30}" autocomplete="username"><div class="form-text">4-30 characters. Use letters, numbers, dots, underscores, or hyphens.</div></div>
         <div class="mb-3"><label class="form-label">Password <span class="text-danger">*</span></label><input type="password" class="form-control" id="addPassword" minlength="8" autocomplete="new-password"><div class="form-text">At least 8 characters with uppercase, lowercase, number, and special character.</div></div>
-        <div class="mb-3"><label class="form-label">Role</label><select class="form-select" id="addRole"><option value="staff">Staff</option><option value="admin">Admin</option></select></div>
+        <div class="mb-3"><label class="form-label">Role</label><select class="form-select" id="addRole"><option value="staff">Staff</option><option value="admin">Admin</option><option value="super_admin">Super Admin</option></select></div>
         <div class="alert alert-danger d-none" id="addError"></div>
       </div>
       <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" onclick="addStaff()"><i class="bi bi-check-circle me-2"></i>Create Account</button></div>
@@ -128,7 +142,7 @@
         <div class="mb-3"><label class="form-label">Username <span class="text-danger">*</span></label><input type="text" class="form-control" id="editUsername" minlength="4" maxlength="30" pattern="[A-Za-z0-9._-]{4,30}" autocomplete="username"><div class="form-text">4-30 characters. Use letters, numbers, dots, underscores, or hyphens.</div></div>
         <div class="mb-3"><label class="form-label">New Password</label><input type="password" class="form-control" id="editPassword" minlength="8" autocomplete="new-password" placeholder="Leave blank to keep current password"><div class="form-text">If changed, use at least 8 characters with uppercase, lowercase, number, and special character.</div></div>
         <div class="row g-3">
-          <div class="col-md-6"><label class="form-label">Role</label><select class="form-select" id="editRole"><option value="staff">Staff</option><option value="admin">Admin</option></select></div>
+          <div class="col-md-6"><label class="form-label">Role</label><select class="form-select" id="editRole"><option value="staff">Staff</option><option value="admin">Admin</option><option value="super_admin">Super Admin</option></select></div>
           <div class="col-md-6"><label class="form-label">Status</label><select class="form-select" id="editStatus"><option value="Active">Active</option><option value="Inactive">Inactive</option></select></div>
         </div>
         <div class="alert alert-danger d-none mt-3" id="editError"></div>
@@ -160,7 +174,7 @@
     if (!token) window.location.href = '/pages/login.html';
     const fullName = localStorage.getItem('full_name') || 'Admin';
     const role = localStorage.getItem('role') || 'staff';
-    if (role !== 'admin') window.location.href = '/pages/dashboard.html';
+    if (role !== 'admin' && role !== 'super_admin' && role !== 'staff') window.location.href = '/pages/dashboard.html';
     document.getElementById('userName').textContent = fullName;
     document.getElementById('userRole').textContent = role.charAt(0).toUpperCase() + role.slice(1);
     document.getElementById('userAvatar').textContent = fullName.charAt(0).toUpperCase();
@@ -215,7 +229,8 @@
     }
 
     function statusBadge(status) {
-      return '<span class="badge bg-' + (status === 'Active' ? 'success' : 'secondary') + '">' + escapeHtml(status) + '</span>';
+      const colors = { Active: 'success', Approved: 'success', Pending: 'warning text-dark', Rejected: 'danger', Inactive: 'secondary' };
+      return '<span class="badge bg-' + (colors[status] || 'secondary') + '">' + escapeHtml(status) + '</span>';
     }
 
     function renderStaff(data) {
@@ -229,14 +244,15 @@
         const initial = (user.full_name || user.username).charAt(0).toUpperCase();
         const created = user.created_at ? user.created_at.split(' ')[0] : '-';
         return '<tr>' +
-          '<td class="ps-3"><div class="d-flex align-items-center gap-2"><div class="staff-avatar">' + initial + '</div><span>' + escapeHtml(user.full_name) + '</span></div></td>' +
+          '<td class="ps-3"><div class="d-flex align-items-center gap-2"><div class="staff-avatar">' + initial + '</div><div><span>' + escapeHtml(user.full_name) + '</span></div></div></td>' +
           '<td>' + escapeHtml(user.username) + '</td>' +
           '<td><span class="badge bg-light text-dark">' + escapeHtml(user.role) + '</span></td>' +
           '<td>' + statusBadge(user.status || 'Active') + '</td>' +
           '<td>' + created + '</td>' +
-          '<td>' +
-            '<button type="button" class="btn btn-sm btn-outline-primary btn-action me-1" onclick="openEditModal(' + user.user_id + ')" title="Edit"><i class="bi bi-pencil"></i> Edit</button>' +
-            '<button type="button" class="btn btn-sm btn-danger btn-action" onclick="confirmDeleteById(' + user.user_id + ')" title="Delete"><i class="bi bi-trash"></i> Delete</button>' +
+          '<td><div class="bh-action-group">' +
+            '<button type="button" class="btn btn-outline-primary btn-icon" onclick="openEditModal(' + user.user_id + ')" title="Edit"><i class="bi bi-pencil"></i></button>' +
+            '<button type="button" class="btn btn-outline-danger btn-icon" onclick="confirmDeleteById(' + user.user_id + ')" title="Delete"><i class="bi bi-trash"></i></button>' +
+            '</div>' +
           '</td>' +
         '</tr>';
       }).join('');
@@ -258,7 +274,7 @@
           showToast(data.message || 'Unable to load staff accounts.', 'danger');
           return;
         }
-        allStaff = data;
+        allStaff = data.filter(function(user) { return user.role !== 'borrower'; });
         filterStaff();
       } catch (err) {
         console.error(err);

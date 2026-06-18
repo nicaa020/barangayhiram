@@ -7,104 +7,35 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <style>
-    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; }
-
-    /* ── SIDEBAR ── */
-    .sidebar {
-      width: 250px;
-      min-height: 100vh;
-      background: linear-gradient(180deg, #6ba5fc 0%, #0a58ca 100%);
-      position: fixed;
-      top: 0; left: 0;
-      z-index: 100;
-      display: flex;
-      flex-direction: column;
-    }
-    .sidebar-brand {
-      padding: 20px;
-      border-bottom: 1px solid rgba(255,255,255,0.2);
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-    }
-    .sidebar-nav { padding: 15px 0; flex: 1; }
-    .sidebar-nav .nav-link {
-      color: rgba(255,255,255,0.8);
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.2s;
-      font-size: 0.9rem;
-    }
-    .sidebar-nav .nav-link:hover,
-    .sidebar-nav .nav-link.active {
-      color: #fff;
-      background: rgba(255,255,255,0.15);
-      border-left: 3px solid #ffc107;
-    }
-    .sidebar-nav .nav-link i { font-size: 1.1rem; width: 20px; }
-    .sidebar-footer {
-      padding: 15px 20px;
-      border-top: 1px solid rgba(255,255,255,0.2);
-    }
-    .sidebar-footer .nav-link {
-      color: rgba(255,255,255,0.8);
-      padding: 8px 0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.9rem;
-      cursor: pointer;
-    }
-    .sidebar-footer .nav-link:hover { color: #fff; }
-
-    /* ── MAIN ── */
-    .main-content { margin-left: 250px; min-height: 100vh; }
-    .topbar {
-      background: #fff;
-      padding: 15px 25px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-      position: sticky;
-      top: 0;
-      z-index: 99;
-    }
-    .topbar h4 { margin: 0; font-weight: 700; color: #333; font-size: 1.1rem; }
-    .topbar-right { display: flex; align-items: center; gap: 15px; }
-    .user-info .name { font-weight: 600; color: #333; font-size: 0.9rem; text-align: right; }
-    .user-info .role { color: #6c757d; font-size: 0.75rem; text-align: right; }
-    .avatar {
-      width: 38px; height: 38px;
-      background: #0d6efd;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-weight: 700; font-size: 1rem;
-    }
-    .page-content { padding: 25px; }
-    .card { border: none; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-    .card-header {
-      background: #fff;
-      border-bottom: 1px solid #f0f0f0;
-      padding: 15px 20px;
-      font-weight: 600;
-      color: #333;
-      border-radius: 10px 10px 0 0 !important;
-    }
-    .table th { font-size: 0.82rem; color: #6c757d; font-weight: 600; border-bottom: 2px solid #f0f0f0; }
-    .table td { font-size: 0.88rem; vertical-align: middle; }
-    .badge { font-size: 0.75rem; padding: 5px 10px; }
-    .btn-action { padding: 4px 10px; font-size: 0.8rem; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f0f2f5; }
+    .sidebar { width:250px; min-height:100vh; background:linear-gradient(180deg,#6ba5fc 0%,#0a58ca 100%); position:fixed; top:0; left:0; z-index:100; display:flex; flex-direction:column; }
+    .sidebar-brand { padding:20px; border-bottom:1px solid rgba(255,255,255,.2); text-align:center; }
+    .sidebar-nav { padding:15px 0; flex:1; }
+    .sidebar-nav .nav-link, .sidebar-footer .nav-link { color:rgba(255,255,255,.82); padding:12px 20px; display:flex; align-items:center; gap:10px; font-size:.9rem; cursor:pointer; }
+    .sidebar-nav .nav-link:hover, .sidebar-nav .nav-link.active { color:#fff; background:rgba(255,255,255,.15); border-left:3px solid #ffc107; }
+    .sidebar-footer { padding:15px 20px; border-top:1px solid rgba(255,255,255,.2); }
+    .main-content { margin-left:250px; min-height:100vh; }
+    .topbar { background:#fff; padding:15px 25px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 4px rgba(0,0,0,.08); position:sticky; top:0; z-index:99; }
+    .topbar h4 { margin:0; font-weight:700; color:#333; font-size:1.1rem; }
+    .topbar-right { display:flex; align-items:center; gap:15px; }
+    .user-info .name { font-weight:600; color:#333; font-size:.9rem; text-align:right; }
+    .user-info .role { color:#6c757d; font-size:.75rem; text-align:right; }
+    .avatar { width:38px; height:38px; background:#0d6efd; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; }
+    .page-content { padding:25px; }
+    .card { border:none; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+    .stat-card { background:#fff; border-radius:8px; padding:18px; box-shadow:0 2px 8px rgba(0,0,0,.06); display:flex; gap:14px; align-items:center; min-height:92px; }
+    .stat-icon { width:46px; height:46px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.3rem; flex:0 0 auto; }
+    .stat-number { font-size:1.45rem; font-weight:750; color:#212529; line-height:1.1; }
+    .stat-label { color:#6c757d; font-size:.82rem; }
+    .table th { font-size:.82rem; color:#6c757d; font-weight:650; border-bottom:2px solid #f0f0f0; }
+    .table td { font-size:.88rem; vertical-align:middle; }
+    .badge { font-size:.75rem; padding:5px 10px; }
+    .btn-icon { width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center; padding:0; }
+    @media (max-width: 768px) { .main-content { margin-left:0; } }
   </style>
   <link href="/css/app.css" rel="stylesheet">
 </head>
-<body>
-
-  <!-- ── SIDEBAR ── -->
+<body class="bh-ui">
   <div class="sidebar">
     <div class="sidebar-brand">
       <svg viewBox="0 0 100 100" width="55" height="55">
@@ -126,8 +57,8 @@
         <path d="M50 48 L40 55 L40 68 L45 68 L45 60 L55 60 L55 68 L60 68 L60 55 Z" fill="#ffffff" />
         <rect x="47" y="62" width="6" height="6" fill="#0a58ca" />
       </svg>
-      <h5 class="text-white mb-0 mt-1" style="font-weight:700;">BarangayHiram</h5>
-      <small style="color:rgba(255,255,255,0.7);font-size:0.72rem;">Brgy. 628, Zone 63</small>
+      <h5 class="mb-0 mt-1" style="font-weight:700;">BarangayHiram</h5>
+      <small>Brgy. 628, Zone 63</small>
     </div>
     <nav class="sidebar-nav">
       <a href="dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
@@ -136,6 +67,7 @@
       <a href="transactions.html" class="nav-link"><i class="bi bi-arrow-left-right"></i> Transactions</a>
       <a href="returns.html" class="nav-link"><i class="bi bi-arrow-return-left"></i> Returns</a>
       <a href="reports.html" class="nav-link"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+      <a href="new-users.html" class="nav-link admin-only"><i class="bi bi-person-check"></i> New Users</a>
       <a href="staff.html" class="nav-link admin-only"><i class="bi bi-person-gear"></i> Staff Accounts</a>
     </nav>
     <div class="sidebar-footer">
@@ -143,12 +75,9 @@
     </div>
   </div>
 
-  <!-- ── MAIN CONTENT ── -->
   <div class="main-content">
-
-    <!-- TOPBAR -->
     <div class="topbar">
-      <h4><i class="bi bi-box-seam me-2 text-primary"></i>Equipment Management</h4>
+      <h4>Equipment management</h4>
       <div class="topbar-right">
         <div class="user-info">
           <div class="name" id="userName">Loading...</div>
@@ -158,40 +87,71 @@
       </div>
     </div>
 
-    <!-- PAGE CONTENT -->
     <div class="page-content">
-
-      <!-- Search and Add Button -->
-      <div class="card mb-4">
-        <div class="card-body">
-          <div class="row g-2 align-items-center">
-            <div class="col-md-6">
-              <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-search"></i></span>
-                <input type="text" class="form-control" id="searchInput" placeholder="Search equipment...">
-              </div>
+      <div class="bh-stats-grid">
+        <div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="label"><i class="bi bi-boxes"></i> Total items</div>
+              <div class="number bh-value-teal" id="summaryTotal">0</div>
+              <div class="bh-stat-sub">Inventory count</div>
             </div>
-            <div class="col-md-3">
-              <select class="form-select" id="statusFilter">
-                <option value="">All Status</option>
-                <option value="Available">Available</option>
-                <option value="Borrowed">Borrowed</option>
-                <option value="Under Maintenance">Under Maintenance</option>
-              </select>
+          </div>
+        </div>
+        <div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="label"><i class="bi bi-check-circle"></i> Available</div>
+              <div class="number bh-value-teal" id="summaryAvailable">0</div>
+              <div class="bh-stat-sub">Ready to release</div>
             </div>
-            <div class="col-md-3 text-end">
-              <button class="btn btn-primary" onclick="openAddModal()">
-                <i class="bi bi-plus-circle me-2"></i>Add Equipment
-              </button>
+          </div>
+        </div>
+        <div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="label"><i class="bi bi-arrow-left-right"></i> Borrowed</div>
+              <div class="number bh-value-blue" id="summaryBorrowed">0</div>
+              <div class="bh-stat-sub">Released items</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="label"><i class="bi bi-tools"></i> Damaged / maintenance</div>
+              <div class="number bh-value-amber" id="summaryDamaged">0</div>
+              <div class="bh-stat-sub">Unavailable</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Equipment Table -->
+      <div class="card mb-4 bh-filter-card">
+        <div class="card-body">
+          <div class="row g-2 align-items-center">
+            <div class="col-lg-4">
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" id="searchInput" placeholder="Search item name, category, or location">
+              </div>
+            </div>
+            <div class="col-lg-3">
+              <select class="form-select" id="categoryFilter"></select>
+            </div>
+            <div class="col-lg-3">
+              <select class="form-select" id="statusFilter"></select>
+            </div>
+            <div class="col-lg-2 text-lg-end">
+              <button class="btn btn-primary w-100" onclick="openAddModal()"><i class="bi bi-plus-circle me-2"></i>Add equipment</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <span><i class="bi bi-box-seam me-2 text-primary"></i>Equipment List</span>
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <span>Equipment list</span>
           <span class="badge bg-primary" id="equipmentCount">0 items</span>
         </div>
         <div class="card-body p-0">
@@ -199,391 +159,408 @@
             <table class="table table-hover mb-0">
               <thead class="table-light">
                 <tr>
-                  <th class="ps-3">ID</th>
-                  <th>Name</th>
+                  <th class="ps-3">Item ID</th>
+                  <th>Specific Item Name</th>
                   <th>Category</th>
-                  <th>Total Qty</th>
+                  <th>Total</th>
                   <th>Available</th>
+                  <th>Borrowed</th>
+                  <th>Condition</th>
+                  <th>Location</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="equipmentTable">
-                <tr>
-                  <td colspan="7" class="text-center py-4 text-muted">
-                    <div class="spinner-border spinner-border-sm me-2"></div>Loading...
-                  </td>
-                </tr>
+                <tr><td colspan="10" class="text-center py-4 text-muted">Loading...</td></tr>
               </tbody>
             </table>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
-  <!-- ── ADD EQUIPMENT MODAL ── -->
   <div class="modal fade" id="addModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Add Equipment</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal-dialog modal-lg"><div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Add Equipment</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Item Type / Name</label>
+            <input class="form-control" id="addName" placeholder="Monoblock Chair">
+          </div>
+          <div class="col-md-6"><label class="form-label">Category</label><select class="form-select" id="addCategory"></select></div>
+          <div class="col-md-4"><label class="form-label">Brand / Model</label><input class="form-control" id="addBrandModel" placeholder="Example: Epson X05"></div>
+          <div class="col-md-4"><label class="form-label">Color</label><input class="form-control" id="addColor" placeholder="Example: White"></div>
+          <div class="col-md-4"><label class="form-label">Size / Capacity</label><input class="form-control" id="addSize" placeholder="Example: 10x20 or 1000W"></div>
+          <div class="col-md-4"><label class="form-label">Quantity Total</label><input class="form-control" type="number" min="1" value="1" id="addQuantity"></div>
+          <div class="col-md-4"><label class="form-label">Condition</label><select class="form-select" id="addCondition"></select></div>
+          <div class="col-md-4"><label class="form-label">Location</label><select class="form-select" id="addLocation"></select></div>
+          <div class="col-md-6"><label class="form-label">Status</label><select class="form-select" id="addStatus"></select></div>
+          <div class="col-md-6"><label class="form-label">Description</label><input class="form-control" id="addDescription" placeholder="Optional details"></div>
         </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">Equipment Name <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="addName" placeholder="e.g. Monobloc Chair">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Category</label>
-            <select class="form-select" id="addCategory">
-              <option value="Furniture">Furniture</option>
-              <option value="Outdoor">Outdoor</option>
-              <option value="Electronics">Electronics</option>
-              <option value="Others">Others</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Description</label>
-            <textarea class="form-control" id="addDescription" rows="2" placeholder="Optional description"></textarea>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Quantity <span class="text-danger">*</span></label>
-            <input type="number" class="form-control" id="addQuantity" min="1" value="1">
-          </div>
-          <div class="alert alert-danger d-none" id="addError"></div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="addEquipment()">
-            <i class="bi bi-plus-circle me-2"></i>Add Equipment
-          </button>
-        </div>
+        <div class="alert alert-danger d-none mt-3" id="addError"></div>
       </div>
-    </div>
+      <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" onclick="addEquipment()"><i class="bi bi-check-circle me-2"></i>Save</button></div>
+    </div></div>
   </div>
 
-  <!-- ── EDIT EQUIPMENT MODAL ── -->
   <div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Edit Equipment</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal-dialog modal-lg"><div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Edit Equipment</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <input type="hidden" id="editId">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Item Type / Name</label>
+            <input class="form-control" id="editName">
+          </div>
+          <div class="col-md-6"><label class="form-label">Category</label><select class="form-select" id="editCategory"></select></div>
+          <div class="col-md-4"><label class="form-label">Brand / Model</label><input class="form-control" id="editBrandModel" placeholder="Example: Epson X05"></div>
+          <div class="col-md-4"><label class="form-label">Color</label><input class="form-control" id="editColor" placeholder="Example: White"></div>
+          <div class="col-md-4"><label class="form-label">Size / Capacity</label><input class="form-control" id="editSize" placeholder="Example: 10x20 or 1000W"></div>
+          <div class="col-md-4"><label class="form-label">Quantity Total</label><input class="form-control" type="number" min="1" id="editQuantity"></div>
+          <div class="col-md-4"><label class="form-label">Condition</label><select class="form-select" id="editCondition"></select></div>
+          <div class="col-md-4"><label class="form-label">Location</label><select class="form-select" id="editLocation"></select></div>
+          <div class="col-md-6"><label class="form-label">Status</label><select class="form-select" id="editStatus"></select></div>
+          <div class="col-md-6"><label class="form-label">Description</label><input class="form-control" id="editDescription"></div>
         </div>
-        <div class="modal-body">
-          <input type="hidden" id="editId">
-          <div class="mb-3">
-            <label class="form-label">Equipment Name <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" id="editName">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Category</label>
-            <select class="form-select" id="editCategory">
-              <option value="Furniture">Furniture</option>
-              <option value="Outdoor">Outdoor</option>
-              <option value="Electronics">Electronics</option>
-              <option value="Others">Others</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Description</label>
-            <textarea class="form-control" id="editDescription" rows="2"></textarea>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Quantity</label>
-            <input type="number" class="form-control" id="editQuantity" min="1">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Status</label>
-            <select class="form-select" id="editStatus">
-              <option value="Available">Available</option>
-              <option value="Borrowed">Borrowed</option>
-              <option value="Under Maintenance">Under Maintenance</option>
-            </select>
-          </div>
-          <div class="alert alert-danger d-none" id="editError"></div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" onclick="updateEquipment()">
-            <i class="bi bi-check-circle me-2"></i>Save Changes
-          </button>
-        </div>
+        <div class="alert alert-danger d-none mt-3" id="editError"></div>
       </div>
-    </div>
+      <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary" onclick="updateEquipment()"><i class="bi bi-check-circle me-2"></i>Save Changes</button></div>
+    </div></div>
   </div>
 
-  <!-- ── DELETE MODAL ── -->
   <div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog modal-sm">
-      <div class="modal-content">
-        <div class="modal-header bg-danger text-white">
-          <h5 class="modal-title"><i class="bi bi-trash me-2"></i>Delete Equipment</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body text-center">
-          <i class="bi bi-exclamation-triangle text-danger" style="font-size:2.5rem;"></i>
-          <p class="mt-2 mb-0">Are you sure you want to delete <strong id="deleteName"></strong>?</p>
-          <small class="text-muted">This action cannot be undone.</small>
-          <input type="hidden" id="deleteId">
-        </div>
-        <div class="modal-footer justify-content-center">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-danger" onclick="deleteEquipment()">
-            <i class="bi bi-trash me-2"></i>Delete
-          </button>
-        </div>
+    <div class="modal-dialog modal-sm"><div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title"><i class="bi bi-trash me-2"></i>Delete Equipment</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <input type="hidden" id="deleteId">
+        <p class="mb-2">Delete <strong id="deleteName"></strong>?</p>
+        <p class="text-muted small mb-0">Equipment linked to any borrowing transaction cannot be deleted.</p>
+        <div class="alert alert-danger d-none mt-3" id="deleteError"></div>
       </div>
-    </div>
+      <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-danger" onclick="deleteEquipment()"><i class="bi bi-trash me-2"></i>Delete</button></div>
+    </div></div>
   </div>
 
-  <!-- Toast Notification -->
   <div class="position-fixed bottom-0 end-0 p-3" style="z-index:9999">
     <div id="toast" class="toast align-items-center text-white border-0" role="alert">
-      <div class="d-flex">
-        <div class="toast-body" id="toastMessage"></div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-      </div>
+      <div class="d-flex"><div class="toast-body" id="toastMessage"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/app.js"></script>
   <script>
-
-    // ── Auth check ──
     const token = localStorage.getItem('token');
     if (!token) window.location.href = '/pages/login.html';
 
-    // ── User info ──
     const fullName = localStorage.getItem('full_name') || 'Admin';
-    const role     = localStorage.getItem('role') || 'staff';
-    if (role !== 'admin') {
+    const role = localStorage.getItem('role') || 'staff';
+    if (role === 'borrower') window.location.href = '/pages/borrower.html';
+    if (role !== 'admin' && role !== 'super_admin' && role !== 'staff') {
       document.querySelectorAll('.admin-only').forEach(function(link) { link.classList.add('d-none'); });
     }
-    document.getElementById('userName').textContent   = fullName;
-    document.getElementById('userRole').textContent   = role.charAt(0).toUpperCase() + role.slice(1);
+    document.getElementById('userName').textContent = fullName;
+    document.getElementById('userRole').textContent = role.charAt(0).toUpperCase() + role.slice(1);
     document.getElementById('userAvatar').textContent = fullName.charAt(0).toUpperCase();
 
-    // ── All equipment data ──
     let allEquipment = [];
+    const specificNameExamples = {
+      Chairs: { name: 'Monoblock Chair', brandModel: '', color: 'White', size: 'Standard Size' },
+      Tables: { name: 'Folding Table', brandModel: '', color: 'White Top', size: '6ft' },
+      Tents: { name: 'Canopy Tent', brandModel: '', color: 'Blue', size: '10x20' },
+      'Sound Systems': { name: 'Portable Sound System', brandModel: 'Konzert', color: '', size: '1000W' },
+      Projectors: { name: 'LCD Projector', brandModel: 'Epson X05', color: '', size: '' },
+      Generators: { name: 'Generator Set', brandModel: 'Honda', color: '', size: '3.5kW' },
+      'Sports Equipment': { name: 'Basketball Ball', brandModel: 'Molten', color: 'Orange', size: 'Size 7' },
+      Others: { name: 'Extension Cord', brandModel: '', color: '', size: 'Heavy Duty 20m' }
+    };
+    let options = {
+      categories: ['Chairs', 'Tables', 'Tents', 'Sound Systems', 'Projectors', 'Generators', 'Sports Equipment', 'Others'],
+      conditions: ['Good', 'Damaged', 'Under Maintenance'],
+      locations: ['Barangay Hall', 'Storage Room', 'Covered Court', 'Office', 'Equipment Room', 'Others'],
+      statuses: ['Available', 'Borrowed', 'Under Maintenance']
+    };
 
-    // ── Status badge ──
-    function getStatusBadge(status) {
-      const colors = {
-        'Available':        'success',
-        'Borrowed':         'danger',
-        'Under Maintenance':'warning text-dark'
-      };
-      return '<span class="badge bg-' + (colors[status] || 'secondary') + '">' + status + '</span>';
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, function(ch) {
+        return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[ch];
+      });
     }
 
-    // ── Show toast ──
+    function optionHtml(values, selected, includeAllLabel) {
+      const prefix = includeAllLabel ? '<option value="">' + includeAllLabel + '</option>' : '';
+      return prefix + values.map(function(value) {
+        return '<option value="' + escapeHtml(value) + '"' + (value === selected ? ' selected' : '') + '>' + escapeHtml(value) + '</option>';
+      }).join('');
+    }
+
+    function statusBadge(status) {
+      const colors = { Available:'success', Borrowed:'info text-dark', 'Under Maintenance':'warning text-dark' };
+      return '<span class="badge bg-' + (colors[status] || 'secondary') + '">' + escapeHtml(status) + '</span>';
+    }
+
+    function conditionBadge(condition) {
+      const colors = { Good:'success', Damaged:'danger', 'Under Maintenance':'warning text-dark' };
+      return '<span class="badge bg-' + (colors[condition] || 'secondary') + '">' + escapeHtml(condition || 'Good') + '</span>';
+    }
+
     function showToast(message, type) {
-      const toast    = document.getElementById('toast');
-      const toastMsg = document.getElementById('toastMessage');
+      const toast = document.getElementById('toast');
       toast.className = 'toast align-items-center text-white border-0 bg-' + (type || 'success');
-      toastMsg.textContent = message;
+      document.getElementById('toastMessage').textContent = message;
       new bootstrap.Toast(toast).show();
     }
 
-    // ── Load equipment ──
-    async function loadEquipment() {
-      try {
-        const res  = await fetch('/api/equipment', { headers: { 'authorization': token } });
-        const data = await res.json();
-        if (res.status === 403) { logout(); return; }
-        allEquipment = data;
-        renderTable(data);
-      } catch (err) {
-        console.error(err);
-      }
+    async function api(path, fetchOptions) {
+      const headers = Object.assign({ authorization: token }, fetchOptions && fetchOptions.headers ? fetchOptions.headers : {});
+      const res = await fetch(path, Object.assign({}, fetchOptions || {}, { headers: headers }));
+      if (res.status === 401 || res.status === 403) logout();
+      return res;
     }
 
-    // ── Render table ──
-    function renderTable(data) {
-      const tbody = document.getElementById('equipmentTable');
-      document.getElementById('equipmentCount').textContent = data.length + ' items';
+    async function loadOptions() {
+      const res = await api('/api/equipment/options');
+      if (res.ok) options = await res.json();
+      document.getElementById('categoryFilter').innerHTML = optionHtml(options.categories, '', 'All Categories');
+      document.getElementById('statusFilter').innerHTML = optionHtml(options.statuses, '', 'All Status');
+      ['addCategory', 'editCategory'].forEach(function(id) { document.getElementById(id).innerHTML = optionHtml(options.categories, 'Chairs'); });
+      ['addCondition', 'editCondition'].forEach(function(id) { document.getElementById(id).innerHTML = optionHtml(options.conditions, 'Good'); });
+      ['addLocation', 'editLocation'].forEach(function(id) { document.getElementById(id).innerHTML = optionHtml(options.locations, 'Storage Room'); });
+      ['addStatus', 'editStatus'].forEach(function(id) { document.getElementById(id).innerHTML = optionHtml(options.statuses, 'Available'); });
+    }
 
-      if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">No equipment found.</td></tr>';
+    async function loadSummary() {
+      const res = await api('/api/equipment/summary');
+      if (!res.ok) return;
+      const summary = await res.json();
+      document.getElementById('summaryTotal').textContent = summary.total || 0;
+      document.getElementById('summaryAvailable').textContent = summary.available || 0;
+      document.getElementById('summaryBorrowed').textContent = summary.borrowed || 0;
+      document.getElementById('summaryDamaged').textContent = summary.damaged_maintenance || 0;
+    }
+
+    async function loadEquipment() {
+      const res = await api('/api/equipment');
+      if (!res.ok) return;
+      allEquipment = await res.json();
+      filterTable();
+      loadSummary();
+    }
+
+    function renderTable(rows) {
+      const tbody = document.getElementById('equipmentTable');
+      document.getElementById('equipmentCount').textContent = rows.length + ' items';
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4 text-muted">No equipment found.</td></tr>';
         return;
       }
-
-      tbody.innerHTML = data.map(function(e) {
+      tbody.innerHTML = rows.map(function(item) {
+        const json = encodeURIComponent(JSON.stringify(item));
         return '<tr>' +
-          '<td class="ps-3"><strong>#' + e.equipment_id + '</strong></td>' +
-          '<td>' + e.name + '<br><small class="text-muted">' + (e.description || '') + '</small></td>' +
-          '<td><span class="badge bg-light text-dark">' + (e.category || '-') + '</span></td>' +
-          '<td>' + e.quantity + '</td>' +
-          '<td>' + e.available_quantity + '</td>' +
-          '<td>' + getStatusBadge(e.status) + '</td>' +
-          '<td>' +
-            '<button class="btn btn-sm btn-outline-primary btn-action me-1" onclick="openEditModal(' + JSON.stringify(e).replace(/"/g, '&quot;') + ')">' +
-              '<i class="bi bi-pencil"></i>' +
-            '</button>' +
-            '<button class="btn btn-sm btn-outline-danger btn-action" onclick="openDeleteModal(' + e.equipment_id + ', \'' + e.name + '\')">' +
-              '<i class="bi bi-trash"></i>' +
-            '</button>' +
-          '</td>' +
+          '<td class="ps-3"><strong>#' + item.item_id + '</strong></td>' +
+          '<td><strong>' + escapeHtml(item.specific_item_name) + '</strong><br><small class="text-muted">' + escapeHtml(item.description || '') + '</small></td>' +
+          '<td><span class="badge bg-light text-dark">' + escapeHtml(item.category) + '</span></td>' +
+          '<td>' + item.quantity_total + '</td>' +
+          '<td>' + item.quantity_available + '</td>' +
+          '<td>' + item.quantity_borrowed + '</td>' +
+          '<td>' + conditionBadge(item.condition) + '</td>' +
+          '<td>' + escapeHtml(item.location || '-') + '</td>' +
+          '<td>' + statusBadge(item.status) + '</td>' +
+          '<td><div class="bh-action-group">' +
+            '<button class="btn btn-outline-primary btn-icon" onclick="openEditModal(\'' + json + '\')" title="Edit"><i class="bi bi-pencil"></i></button>' +
+            '<button class="btn btn-outline-danger btn-icon" onclick="openDeleteModal(' + item.item_id + ', \'' + encodeURIComponent(item.specific_item_name || '') + '\')" title="Delete"><i class="bi bi-trash"></i></button>' +
+          '</div></td>' +
         '</tr>';
       }).join('');
     }
 
-    // ── Search and filter ──
-    document.getElementById('searchInput').addEventListener('input', filterTable);
-    document.getElementById('statusFilter').addEventListener('change', filterTable);
-
-    const queryParams = new URLSearchParams(window.location.search);
-    if (queryParams.get('status')) {
-      document.getElementById('statusFilter').value = queryParams.get('status');
-    }
-
     function filterTable() {
       const search = document.getElementById('searchInput').value.toLowerCase();
+      const category = document.getElementById('categoryFilter').value;
       const status = document.getElementById('statusFilter').value;
-      const filtered = allEquipment.filter(function(e) {
-        const matchSearch = e.name.toLowerCase().includes(search) ||
-                           (e.category || '').toLowerCase().includes(search);
-        const matchStatus = status === '' || e.status === status;
-        return matchSearch && matchStatus;
+      const filtered = allEquipment.filter(function(item) {
+        const searchable = [item.specific_item_name, item.category, item.condition, item.location, item.status].join(' ').toLowerCase();
+        return (!search || searchable.includes(search)) &&
+          (!category || item.category === category) &&
+          (!status || item.status === status);
       });
       renderTable(filtered);
     }
 
-    // ── Open Add Modal ──
     function openAddModal() {
-      document.getElementById('addName').value        = '';
-      document.getElementById('addCategory').value   = 'Furniture';
+      document.getElementById('addName').value = '';
+      document.getElementById('addBrandModel').value = '';
+      document.getElementById('addColor').value = '';
+      document.getElementById('addSize').value = '';
       document.getElementById('addDescription').value = '';
-      document.getElementById('addQuantity').value   = '1';
+      document.getElementById('addQuantity').value = '1';
+      document.getElementById('addCategory').value = 'Chairs';
+      document.getElementById('addCondition').value = 'Good';
+      document.getElementById('addLocation').value = 'Storage Room';
+      document.getElementById('addStatus').value = 'Available';
       document.getElementById('addError').classList.add('d-none');
+      updateNameHint('add');
       new bootstrap.Modal(document.getElementById('addModal')).show();
     }
 
-    // ── Add Equipment ──
-    async function addEquipment() {
-      const name        = document.getElementById('addName').value.trim();
-      const category    = document.getElementById('addCategory').value;
-      const description = document.getElementById('addDescription').value.trim();
-      const quantity    = parseInt(document.getElementById('addQuantity').value);
-      const errorDiv    = document.getElementById('addError');
+    function payloadFrom(prefix) {
+      const baseName = document.getElementById(prefix + 'Name').value.trim();
+      const brandModel = document.getElementById(prefix + 'BrandModel').value.trim();
+      const color = document.getElementById(prefix + 'Color').value.trim();
+      const size = document.getElementById(prefix + 'Size').value.trim();
+      const details = [brandModel, color, size].filter(Boolean);
+      const specificName = baseName + (details.length ? ' - ' + details.join(', ') : '');
 
-      if (!name) {
-        errorDiv.textContent = 'Equipment name is required.';
+      return {
+        specific_item_name: specificName.trim(),
+        category: document.getElementById(prefix + 'Category').value,
+        quantity_total: parseInt(document.getElementById(prefix + 'Quantity').value, 10),
+        condition: document.getElementById(prefix + 'Condition').value,
+        location: document.getElementById(prefix + 'Location').value,
+        status: document.getElementById(prefix + 'Status').value,
+        description: document.getElementById(prefix + 'Description').value.trim()
+      };
+    }
+
+    function validatePayload(payload) {
+      if (!payload.specific_item_name) return 'Specific item name is required.';
+      const lowerName = payload.specific_item_name.toLowerCase();
+      const genericNames = [
+        payload.category,
+        payload.category.replace(/s$/, ''),
+        'chair',
+        'table',
+        'tent',
+        'sound system',
+        'projector',
+        'generator',
+        'equipment'
+      ].map(function(value) { return String(value || '').toLowerCase(); });
+      if (genericNames.includes(lowerName) || payload.specific_item_name.trim().split(/\s+/).length < 2) {
+        return 'Please enter the item type/name and at least one detail such as brand/model, color, or size/capacity.';
+      }
+      if (!Number.isInteger(payload.quantity_total) || payload.quantity_total < 1) return 'Quantity total must be at least 1.';
+      return '';
+    }
+
+    function updateNameHint(prefix) {
+      const category = document.getElementById(prefix + 'Category').value || 'Others';
+      const example = specificNameExamples[category] || specificNameExamples.Others;
+      document.getElementById(prefix + 'Name').placeholder = 'Example: ' + example.name;
+      document.getElementById(prefix + 'BrandModel').placeholder = example.brandModel ? 'Example: ' + example.brandModel : 'Optional';
+      document.getElementById(prefix + 'Color').placeholder = example.color ? 'Example: ' + example.color : 'Optional';
+      document.getElementById(prefix + 'Size').placeholder = example.size ? 'Example: ' + example.size : 'Optional';
+    }
+
+    async function addEquipment() {
+      const payload = payloadFrom('add');
+      const error = validatePayload(payload);
+      const errorDiv = document.getElementById('addError');
+      if (error) {
+        errorDiv.textContent = error;
         errorDiv.classList.remove('d-none');
         return;
       }
-
-      try {
-        const res  = await fetch('/api/equipment', {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json', 'authorization': token },
-          body:    JSON.stringify({ name, category, description, quantity })
-        });
-        const data = await res.json();
-
-        if (res.ok) {
-          bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
-          showToast('Equipment added successfully!', 'success');
-          loadEquipment();
-        } else {
-          errorDiv.textContent = data.message;
-          errorDiv.classList.remove('d-none');
-        }
-      } catch (err) {
-        errorDiv.textContent = 'Error adding equipment.';
+      const res = await api('/api/equipment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
+        showToast('Equipment added successfully.', 'success');
+        loadEquipment();
+      } else {
+        errorDiv.textContent = data.message || 'Unable to add equipment.';
         errorDiv.classList.remove('d-none');
       }
     }
 
-    // ── Open Edit Modal ──
-    function openEditModal(equipment) {
-      document.getElementById('editId').value          = equipment.equipment_id;
-      document.getElementById('editName').value        = equipment.name;
-      document.getElementById('editCategory').value   = equipment.category || 'Furniture';
-      document.getElementById('editDescription').value = equipment.description || '';
-      document.getElementById('editQuantity').value   = equipment.quantity;
-      document.getElementById('editStatus').value     = equipment.status;
+    function openEditModal(encodedItem) {
+      const item = JSON.parse(decodeURIComponent(encodedItem));
+      document.getElementById('editId').value = item.item_id;
+      document.getElementById('editName').value = item.specific_item_name || '';
+      document.getElementById('editBrandModel').value = '';
+      document.getElementById('editColor').value = '';
+      document.getElementById('editSize').value = '';
+      document.getElementById('editCategory').value = item.category || 'Others';
+      document.getElementById('editQuantity').value = item.quantity_total || 1;
+      document.getElementById('editCondition').value = item.condition || 'Good';
+      document.getElementById('editLocation').value = item.location || 'Storage Room';
+      document.getElementById('editStatus').value = item.status || 'Available';
+      document.getElementById('editDescription').value = item.description || '';
       document.getElementById('editError').classList.add('d-none');
+      updateNameHint('edit');
       new bootstrap.Modal(document.getElementById('editModal')).show();
     }
 
-    // ── Update Equipment ──
     async function updateEquipment() {
-      const id          = document.getElementById('editId').value;
-      const name        = document.getElementById('editName').value.trim();
-      const category    = document.getElementById('editCategory').value;
-      const description = document.getElementById('editDescription').value.trim();
-      const quantity    = parseInt(document.getElementById('editQuantity').value);
-      const status      = document.getElementById('editStatus').value;
-      const errorDiv    = document.getElementById('editError');
-
-      if (!name) {
-        errorDiv.textContent = 'Equipment name is required.';
+      const id = document.getElementById('editId').value;
+      const payload = payloadFrom('edit');
+      const error = validatePayload(payload);
+      const errorDiv = document.getElementById('editError');
+      if (error) {
+        errorDiv.textContent = error;
         errorDiv.classList.remove('d-none');
         return;
       }
-
-      try {
-        const res  = await fetch('/api/equipment/' + id, {
-          method:  'PUT',
-          headers: { 'Content-Type': 'application/json', 'authorization': token },
-          body:    JSON.stringify({ name, category, description, quantity, status })
-        });
-        const data = await res.json();
-
-        if (res.ok) {
-          bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
-          showToast('Equipment updated successfully!', 'success');
-          loadEquipment();
-        } else {
-          errorDiv.textContent = data.message;
-          errorDiv.classList.remove('d-none');
-        }
-      } catch (err) {
-        errorDiv.textContent = 'Error updating equipment.';
+      const res = await api('/api/equipment/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+        showToast('Equipment updated successfully.', 'success');
+        loadEquipment();
+      } else {
+        errorDiv.textContent = data.message || 'Unable to update equipment.';
         errorDiv.classList.remove('d-none');
       }
     }
 
-    // ── Open Delete Modal ──
-    function openDeleteModal(id, name) {
-      document.getElementById('deleteId').value       = id;
-      document.getElementById('deleteName').textContent = name;
+    function openDeleteModal(id, encodedName) {
+      document.getElementById('deleteId').value = id;
+      document.getElementById('deleteName').textContent = decodeURIComponent(encodedName || '');
+      document.getElementById('deleteError').classList.add('d-none');
       new bootstrap.Modal(document.getElementById('deleteModal')).show();
     }
 
-    // ── Delete Equipment ──
     async function deleteEquipment() {
       const id = document.getElementById('deleteId').value;
-      try {
-        const res = await fetch('/api/equipment/' + id, {
-          method:  'DELETE',
-          headers: { 'authorization': token }
-        });
-        if (res.ok) {
-          bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
-          showToast('Equipment deleted successfully!', 'danger');
-          loadEquipment();
-        }
-      } catch (err) {
-        console.error(err);
+      const errorDiv = document.getElementById('deleteError');
+      errorDiv.classList.add('d-none');
+
+      const res = await api('/api/equipment/' + id, { method: 'DELETE' });
+      const data = await res.json();
+      if (res.ok) {
+        bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+        showToast('Equipment deleted successfully.', 'danger');
+        loadEquipment();
+      } else {
+        errorDiv.textContent = data.message || 'This equipment cannot be deleted right now.';
+        errorDiv.classList.remove('d-none');
       }
     }
 
-    // ── Logout ──
     function logout() {
       localStorage.clear();
       window.location.href = '/pages/login.html';
     }
 
-    // ── Load on start ──
-    loadEquipment();
+    document.getElementById('searchInput').addEventListener('input', filterTable);
+    document.getElementById('categoryFilter').addEventListener('change', filterTable);
+    document.getElementById('statusFilter').addEventListener('change', filterTable);
+    document.getElementById('addCategory').addEventListener('change', function() { updateNameHint('add'); });
+    document.getElementById('editCategory').addEventListener('change', function() { updateNameHint('edit'); });
 
+    loadOptions().then(loadEquipment);
   </script>
 </body>
 </html>

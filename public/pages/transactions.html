@@ -35,7 +35,7 @@
   </style>
   <link href="/css/app.css" rel="stylesheet">
 </head>
-<body>
+<body class="bh-ui">
   <div class="sidebar">
     <div class="sidebar-brand">
       <svg viewBox="0 0 100 100" width="55" height="55">
@@ -45,8 +45,8 @@
         <polygon points="50,24 51.5,28 56,28 52.5,31 54,35 50,32 46,35 47.5,31 44,28 48.5,28" fill="#ffc107" /><polygon points="36,36 37.2,39 41,39 38,41.5 39,45 36,43 33,45 34,41.5 31,39 34.8,39" fill="#ffc107" /><polygon points="64,36 65.2,39 69,39 66,41.5 67,45 64,43 61,45 62,41.5 59,39 62.8,39" fill="#ffc107" />
         <path d="M50 48 L40 55 L40 68 L45 68 L45 60 L55 60 L55 68 L60 68 L60 55 Z" fill="#ffffff" /><rect x="47" y="62" width="6" height="6" fill="#0a58ca" />
       </svg>
-      <h5 class="text-white mb-0 mt-1" style="font-weight:700;">BarangayHiram</h5>
-      <small style="color:rgba(255,255,255,0.7);font-size:0.72rem;">Brgy. 628, Zone 63</small>
+      <h5 class="mb-0 mt-1" style="font-weight:700;">BarangayHiram</h5>
+      <small>Brgy. 628, Zone 63</small>
     </div>
     <nav class="sidebar-nav">
       <a href="dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
@@ -55,6 +55,7 @@
       <a href="transactions.html" class="nav-link active"><i class="bi bi-arrow-left-right"></i> Transactions</a>
       <a href="returns.html" class="nav-link"><i class="bi bi-arrow-return-left"></i> Returns</a>
       <a href="reports.html" class="nav-link"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+      <a href="new-users.html" class="nav-link admin-only"><i class="bi bi-person-check"></i> New Users</a>
       <a href="staff.html" class="nav-link admin-only"><i class="bi bi-person-gear"></i> Staff Accounts</a>
     </nav>
     <div class="sidebar-footer"><a class="nav-link" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a></div>
@@ -62,22 +63,22 @@
 
   <div class="main-content">
     <div class="topbar">
-      <h4><i class="bi bi-arrow-left-right me-2 text-primary"></i>Transactions</h4>
+      <h4>Transactions</h4>
       <div class="topbar-right"><div class="user-info"><div class="name" id="userName">Loading...</div><div class="role" id="userRole"></div></div><div class="avatar" id="userAvatar">A</div></div>
     </div>
     <div class="page-content">
-      <div class="card mb-4">
+      <div class="card mb-4 bh-filter-card">
         <div class="card-body">
           <div class="row g-2 align-items-center">
             <div class="col-md-5"><div class="input-group"><span class="input-group-text"><i class="bi bi-search"></i></span><input type="text" class="form-control" id="searchInput" placeholder="Search borrower, equipment, purpose..."></div></div>
-            <div class="col-md-3"><select class="form-select" id="statusFilter"><option value="">All Status</option><option value="Active">Active</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Released">Released</option><option value="Completed">Completed</option></select></div>
-            <div class="col-md-4 text-end"><button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-plus-circle me-2"></i>New Transaction</button></div>
+            <div class="col-md-3"><select class="form-select" id="statusFilter"><option value="">All Status</option><option value="Active">Active</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Released">Released</option><option value="Returned">Returned</option><option value="Rejected">Rejected</option><option value="Overdue">Overdue</option><option value="Cancelled">Cancelled</option></select></div>
+            <div class="col-md-4 text-end"><button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-plus-circle me-2"></i>New transaction</button></div>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center"><span><i class="bi bi-list-check me-2 text-primary"></i>Borrowing Records</span><span class="badge bg-primary" id="transactionCount">0 records</span></div>
+        <div class="card-header d-flex justify-content-between align-items-center"><span>Borrowing records</span><span class="badge bg-primary" id="transactionCount">0 records</span></div>
         <div class="card-body p-0">
           <div class="table-responsive">
             <table class="table table-hover mb-0">
@@ -95,16 +96,66 @@
       <div class="modal-header"><h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>New Borrowing Transaction</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
       <div class="modal-body">
         <div class="row g-3">
-          <div class="col-md-6"><label class="form-label">Borrower <span class="text-danger">*</span></label><select class="form-select" id="addBorrower"></select></div>
-          <div class="col-md-6"><label class="form-label">Equipment <span class="text-danger">*</span></label><select class="form-select" id="addEquipment"></select></div>
+          <div class="col-md-6">
+            <label class="form-label">Borrower <span class="text-danger">*</span></label>
+            <div class="input-group mb-2">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control" id="addBorrowerSearch" placeholder="Search borrower..." oninput="renderAddBorrowerOptions()">
+            </div>
+            <select class="form-select" id="addBorrower"></select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Equipment <span class="text-danger">*</span></label>
+            <div class="input-group mb-2">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control" id="addEquipmentSearch" placeholder="Search equipment..." oninput="renderAddEquipmentOptions()">
+            </div>
+            <select class="form-select" id="addEquipment"></select>
+          </div>
           <div class="col-md-4"><label class="form-label">Quantity</label><input type="number" class="form-control" id="addQuantity" min="1" value="1"></div>
           <div class="col-md-4"><label class="form-label">Date Borrowed <span class="text-danger">*</span></label><input type="date" class="form-control" id="addBorrowedDate"></div>
           <div class="col-md-4"><label class="form-label">Due Date <span class="text-danger">*</span></label><input type="date" class="form-control" id="addDueDate"></div>
-          <div class="col-12"><label class="form-label">Purpose</label><textarea class="form-control" id="addPurpose" rows="2" placeholder="Event, activity, or barangay request details"></textarea></div>
+          <div class="col-md-6"><label class="form-label">Purpose <span class="text-danger">*</span></label><textarea class="form-control" id="addPurpose" rows="2" placeholder="Event, activity, or barangay request details"></textarea></div>
+          <div class="col-md-6"><label class="form-label">Event / Use Location <span class="text-danger">*</span></label><textarea class="form-control" id="addEventLocation" rows="2" placeholder="Where the equipment will be used"></textarea></div>
         </div>
         <div class="alert alert-danger d-none mt-3" id="addError"></div>
       </div>
       <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" onclick="addTransaction()"><i class="bi bi-check-circle me-2"></i>Create Transaction</button></div>
+    </div></div>
+  </div>
+
+  <div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title"><i class="bi bi-x-circle me-2"></i>Reject Request</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <input type="hidden" id="rejectTransactionId">
+        <label class="form-label" for="rejectReason">Reason</label>
+        <textarea class="form-control" id="rejectReason" rows="3" placeholder="Reason for rejecting this request"></textarea>
+        <div class="alert alert-danger d-none mt-3" id="rejectError"></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-danger" onclick="submitReject()"><i class="bi bi-x-circle me-2"></i>Reject</button></div>
+    </div></div>
+  </div>
+
+  <div class="modal fade" id="releaseModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title"><i class="bi bi-box-arrow-up-right me-2"></i>Confirm Release</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <input type="hidden" id="releaseTransactionId">
+        <div class="mb-3">
+          <label class="form-label">Request</label>
+          <div class="form-control bg-light" id="releaseSummary"></div>
+        </div>
+        <div class="row g-3">
+          <div class="col-md-6"><label class="form-label" for="releaseQuantity">Released Quantity</label><input type="number" class="form-control" id="releaseQuantity" min="1"></div>
+          <div class="col-md-6"><label class="form-label" for="releaseDate">Release Date</label><input type="date" class="form-control" id="releaseDate"></div>
+          <div class="col-12"><label class="form-label" for="releaseCondition">Release Condition</label><select class="form-select" id="releaseCondition"><option>Good</option><option>Fair</option><option>Needs Monitoring</option></select></div>
+          <div class="col-12"><div class="form-check"><input class="form-check-input" type="checkbox" id="identityVerified"><label class="form-check-label" for="identityVerified">Borrower identity manually verified using submitted ID</label></div></div>
+          <div class="col-12"><label class="form-label" for="releaseRemarks">Remarks</label><textarea class="form-control" id="releaseRemarks" rows="2"></textarea></div>
+        </div>
+        <div class="alert alert-danger d-none mt-3" id="releaseError"></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" onclick="submitRelease()"><i class="bi bi-check-circle me-2"></i>Release</button></div>
     </div></div>
   </div>
 
@@ -117,7 +168,7 @@
     if (!token) window.location.href = '/pages/login.html';
     const fullName = localStorage.getItem('full_name') || 'Admin';
     const role = localStorage.getItem('role') || 'staff';
-    if (role !== 'admin') {
+    if (role !== 'admin' && role !== 'super_admin' && role !== 'staff') {
       document.querySelectorAll('.admin-only').forEach(function(link) { link.classList.add('d-none'); });
     }
     document.getElementById('userName').textContent = fullName;
@@ -137,13 +188,13 @@
     }
 
     function getStatusBadge(status) {
-      const colors = { Pending: 'warning text-dark', Approved: 'primary', Released: 'info text-dark', Overdue: 'danger', Completed: 'success' };
+      const colors = { Pending: 'warning text-dark', Approved: 'primary', Released: 'info text-dark', Returned: 'success', Rejected: 'danger', Overdue: 'danger', Cancelled: 'secondary' };
       return '<span class="badge bg-' + (colors[status] || 'secondary') + '">' + escapeHtml(status) + '</span>';
     }
 
     function displayStatus(transaction) {
       const today = new Date().toISOString().split('T')[0];
-      if (transaction.status !== 'Completed' && transaction.due_date < today) {
+      if (transaction.status === 'Released' && transaction.due_date < today) {
         return 'Overdue';
       }
       return transaction.status;
@@ -187,7 +238,6 @@
         return;
       }
       tbody.innerHTML = data.map(function(t) {
-        const canReturn = t.status !== 'Completed';
         return '<tr>' +
           '<td class="ps-3"><strong>#' + t.transaction_id + '</strong></td>' +
           '<td>' + escapeHtml(t.borrower_name) + '<br><small class="text-muted">' + escapeHtml(t.borrower_contact || '') + '</small></td>' +
@@ -196,21 +246,25 @@
           '<td>' + escapeHtml(t.date_borrowed) + '</td>' +
           '<td>' + escapeHtml(t.due_date) + '</td>' +
           '<td>' + getStatusBadge(displayStatus(t)) + '</td>' +
-          '<td>' +
-            '<select class="form-select form-select-sm d-inline-block me-1" style="width:125px" onchange="updateStatus(' + t.transaction_id + ', this.value)" ' + (t.status === 'Completed' ? 'disabled' : '') + '>' +
-              statusOptions(t.status) +
-            '</select>' +
-            '<a class="btn btn-sm btn-outline-success btn-action ' + (canReturn ? '' : 'disabled') + '" href="returns.html?transaction_id=' + t.transaction_id + '" title="Process Return"><i class="bi bi-arrow-return-left"></i></a>' +
-          '</td>' +
+          '<td>' + actionButtons(t) + '</td>' +
         '</tr>';
       }).join('');
     }
 
-    function statusOptions(current) {
-      const statuses = current === 'Completed' ? ['Completed'] : ['Pending', 'Approved', 'Released'];
-      return statuses.map(function(status) {
-        return '<option value="' + status + '"' + (status === current ? ' selected' : '') + '>' + status + '</option>';
-      }).join('');
+    function actionButtons(t) {
+      if (t.status === 'Pending') {
+        return '<div class="bh-action-group">' +
+          '<button class="btn btn-outline-primary btn-icon" onclick="approveRequest(' + t.transaction_id + ')" title="Approve"><i class="bi bi-check2"></i></button>' +
+          '<button class="btn btn-outline-danger btn-icon" onclick="openRejectModal(' + t.transaction_id + ')" title="Reject"><i class="bi bi-x-lg"></i></button>' +
+        '</div>';
+      }
+      if (t.status === 'Approved') {
+        return '<div class="bh-action-group"><button class="btn btn-outline-primary bh-action-text" onclick="openReleaseModal(' + t.transaction_id + ')" title="Confirm release"><i class="bi bi-box-arrow-up-right"></i> Release</button></div>';
+      }
+      if (t.status === 'Released') {
+        return '<div class="bh-action-group"><button class="btn btn-outline-success bh-action-text" onclick="goToReturnPage(' + t.transaction_id + ')" title="Record return"><i class="bi bi-arrow-return-left"></i> Return</button></div>';
+      }
+      return '<span class="text-muted small">No action</span>';
     }
 
     function filterTable() {
@@ -219,7 +273,7 @@
       const today = new Date().toISOString().split('T')[0];
       const filtered = allTransactions.filter(function(t) {
         const text = [t.borrower_name, t.equipment_name, t.purpose, t.borrower_contact].join(' ').toLowerCase();
-        const isOverdue = t.due_date < today && t.status !== 'Completed';
+        const isOverdue = t.due_date < today && t.status === 'Released';
         const matchStatus =
           (showOverdueOnly && isOverdue) ||
           (!showOverdueOnly && status === '') ||
@@ -231,14 +285,50 @@
       renderTable(filtered);
     }
 
+    function renderAddEquipmentOptions() {
+      const search = document.getElementById('addEquipmentSearch').value.toLowerCase().trim();
+      const availableEquipment = equipment.filter(function(e) {
+        const text = [e.name, e.category, e.location, e.condition].join(' ').toLowerCase();
+        return e.available_quantity > 0 && text.includes(search);
+      });
+      const select = document.getElementById('addEquipment');
+      if (availableEquipment.length === 0) {
+        select.innerHTML = '<option value="">No available equipment found</option>';
+        return;
+      }
+      select.innerHTML = availableEquipment.map(function(e) {
+        return '<option value="' + e.equipment_id + '">' + escapeHtml(e.name) + ' (' + e.available_quantity + ' available)</option>';
+      }).join('');
+    }
+
+    function renderAddBorrowerOptions() {
+      const search = document.getElementById('addBorrowerSearch').value.toLowerCase().trim();
+      const matchedBorrowers = borrowers.filter(function(b) {
+        const text = [b.full_name, b.contact_number, b.borrower_type, b.email].join(' ').toLowerCase();
+        return text.includes(search);
+      });
+      const select = document.getElementById('addBorrower');
+      if (matchedBorrowers.length === 0) {
+        select.innerHTML = '<option value="">No borrower found</option>';
+        return;
+      }
+      select.innerHTML = matchedBorrowers.map(function(b) {
+        const detail = [b.borrower_type, b.contact_number].filter(Boolean).join(' - ');
+        return '<option value="' + b.borrower_id + '">' + escapeHtml(b.full_name) + (detail ? ' (' + escapeHtml(detail) + ')' : '') + '</option>';
+      }).join('');
+    }
+
     function openAddModal() {
-      document.getElementById('addBorrower').innerHTML = borrowers.map(function(b) { return '<option value="' + b.borrower_id + '">' + escapeHtml(b.full_name) + '</option>'; }).join('');
-      document.getElementById('addEquipment').innerHTML = equipment.filter(function(e) { return e.available_quantity > 0; }).map(function(e) { return '<option value="' + e.equipment_id + '">' + escapeHtml(e.name) + ' (' + e.available_quantity + ' available)</option>'; }).join('');
+      document.getElementById('addBorrowerSearch').value = '';
+      renderAddBorrowerOptions();
+      document.getElementById('addEquipmentSearch').value = '';
+      renderAddEquipmentOptions();
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('addQuantity').value = '1';
       document.getElementById('addBorrowedDate').value = today;
       document.getElementById('addDueDate').value = today;
       document.getElementById('addPurpose').value = '';
+      document.getElementById('addEventLocation').value = '';
       document.getElementById('addError').classList.add('d-none');
       new bootstrap.Modal(document.getElementById('addModal')).show();
     }
@@ -249,11 +339,12 @@
         equipment_id: document.getElementById('addEquipment').value,
         quantity_borrowed: parseInt(document.getElementById('addQuantity').value, 10),
         purpose: document.getElementById('addPurpose').value.trim(),
+        event_location: document.getElementById('addEventLocation').value.trim(),
         date_borrowed: document.getElementById('addBorrowedDate').value,
         due_date: document.getElementById('addDueDate').value
       };
       const errorDiv = document.getElementById('addError');
-      if (!payload.borrower_id || !payload.equipment_id || !payload.date_borrowed || !payload.due_date || payload.quantity_borrowed < 1) {
+      if (!payload.borrower_id || !payload.equipment_id || !payload.purpose || !payload.event_location || !payload.date_borrowed || !payload.due_date || payload.quantity_borrowed < 1) {
         errorDiv.textContent = 'Please complete all required fields.';
         errorDiv.classList.remove('d-none');
         return;
@@ -263,7 +354,7 @@
         const data = await res.json();
         if (res.ok) {
           bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
-          showToast('Transaction created successfully!', 'success');
+          showToast('Borrowing request created successfully!', 'success');
           await loadLookups();
           loadTransactions();
         } else {
@@ -276,16 +367,87 @@
       }
     }
 
-    async function updateStatus(id, status) {
+    async function setStatus(id, payload, successMessage, errorId) {
       try {
-        const res = await api('/api/transactions/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json', authorization: token }, body: JSON.stringify({ status: status }) });
+        const res = await api('/api/transactions/' + id, { method: 'PUT', headers: { 'Content-Type': 'application/json', authorization: token }, body: JSON.stringify(payload) });
+        const data = await res.json();
         if (res.ok) {
-          showToast('Transaction status updated.', 'primary');
-          loadTransactions();
+          showToast(successMessage || data.message || 'Borrowing status updated.', 'primary');
+          await loadLookups();
+          await loadTransactions();
+          return true;
+        }
+        if (errorId) {
+          const box = document.getElementById(errorId);
+          box.textContent = data.message || 'Unable to update borrowing status.';
+          box.classList.remove('d-none');
+        } else {
+          showToast(data.message || 'Unable to update borrowing status.', 'danger');
         }
       } catch (err) {
-        console.error(err);
+        if (errorId) {
+          const box = document.getElementById(errorId);
+          box.textContent = 'Cannot connect to server.';
+          box.classList.remove('d-none');
+        } else {
+          showToast('Cannot connect to server.', 'danger');
+        }
       }
+      return false;
+    }
+
+    function findTransaction(id) {
+      return allTransactions.find(function(t) { return Number(t.transaction_id) === Number(id); });
+    }
+
+    async function approveRequest(id) {
+      await setStatus(id, { status: 'Approved' }, 'Borrowing request approved.', null);
+    }
+
+    function openRejectModal(id) {
+      document.getElementById('rejectTransactionId').value = id;
+      document.getElementById('rejectReason').value = '';
+      document.getElementById('rejectError').classList.add('d-none');
+      new bootstrap.Modal(document.getElementById('rejectModal')).show();
+    }
+
+    async function submitReject() {
+      const id = document.getElementById('rejectTransactionId').value;
+      const ok = await setStatus(id, { status: 'Rejected', reason: document.getElementById('rejectReason').value.trim() }, 'Borrowing request rejected.', 'rejectError');
+      if (ok) bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
+    }
+
+    function openReleaseModal(id) {
+      const t = findTransaction(id);
+      if (!t) return;
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('releaseTransactionId').value = id;
+      document.getElementById('releaseSummary').textContent = t.borrower_name + ' - ' + t.equipment_name + ' x ' + t.quantity_borrowed;
+      document.getElementById('releaseQuantity').value = t.quantity_borrowed;
+      document.getElementById('releaseDate').value = today;
+      document.getElementById('releaseCondition').value = 'Good';
+      document.getElementById('identityVerified').checked = false;
+      document.getElementById('releaseRemarks').value = '';
+      document.getElementById('releaseError').classList.add('d-none');
+      new bootstrap.Modal(document.getElementById('releaseModal')).show();
+    }
+
+    async function submitRelease() {
+      const id = document.getElementById('releaseTransactionId').value;
+      const payload = {
+        status: 'Released',
+        release_quantity: parseInt(document.getElementById('releaseQuantity').value, 10),
+        release_date: document.getElementById('releaseDate').value,
+        release_condition: document.getElementById('releaseCondition').value,
+        identity_verified: document.getElementById('identityVerified').checked,
+        release_remarks: document.getElementById('releaseRemarks').value.trim()
+      };
+      const ok = await setStatus(id, payload, 'Equipment released successfully.', 'releaseError');
+      if (ok) bootstrap.Modal.getInstance(document.getElementById('releaseModal')).hide();
+    }
+
+    function goToReturnPage(id) {
+      window.location.href = 'returns.html?transaction_id=' + encodeURIComponent(id);
     }
 
     function logout() {

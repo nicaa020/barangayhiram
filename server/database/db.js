@@ -12,6 +12,13 @@ const db = new sqlite3.Database(dbPath, (err) => {
 });
 
 db.serialize(() => {
+  function addColumn(table, column, definition) {
+    db.run('ALTER TABLE ' + table + ' ADD COLUMN ' + column + ' ' + definition, (err) => {
+      if (err && !err.message.includes('duplicate column name')) {
+        console.error(table + ' ' + column + ' column error:', err.message);
+      }
+    });
+  }
 
   db.run(`CREATE TABLE IF NOT EXISTS users (
     user_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,6 +38,14 @@ db.serialize(() => {
       console.error('Users status column error:', err.message);
     }
   });
+  addColumn('users', 'email', 'TEXT');
+  addColumn('users', 'contact_number', 'TEXT');
+  addColumn('users', 'first_name', 'TEXT');
+  addColumn('users', 'last_name', 'TEXT');
+  addColumn('users', 'supabase_auth_user_id', 'TEXT');
+  addColumn('users', 'email_verified_at', 'TEXT');
+  addColumn('users', 'borrow_ready_email_sent_at', 'TEXT');
+  addColumn('users', 'updated_at', 'TEXT');
 
   db.run('UPDATE users SET status = "Active" WHERE status IS NULL OR status = ""');
 
@@ -72,16 +87,56 @@ db.serialize(() => {
     if (err) console.error('Equipment table error:', err.message);
     else console.log('✅ Equipment table ready.');
   });
+  addColumn('equipment', 'condition', 'TEXT DEFAULT "Good"');
+  addColumn('equipment', 'location', 'TEXT');
+  addColumn('equipment', 'is_high_value', 'INTEGER DEFAULT 0');
 
   db.run(`CREATE TABLE IF NOT EXISTS borrowers (
     borrower_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
     full_name TEXT NOT NULL,
+    borrower_type TEXT DEFAULT 'Resident',
     address TEXT,
     contact_number TEXT,
+    valid_id_reference TEXT,
+    verification_document TEXT,
+    verification_status TEXT DEFAULT 'Approved',
+    verification_notes TEXT,
+    is_flagged INTEGER DEFAULT 0,
+    flag_reason TEXT,
     created_at TEXT DEFAULT (datetime('now'))
   )`, (err) => {
     if (err) console.error('Borrowers table error:', err.message);
     else console.log('✅ Borrowers table ready.');
+  });
+  addColumn('borrowers', 'user_id', 'INTEGER');
+  addColumn('borrowers', 'first_name', 'TEXT');
+  addColumn('borrowers', 'last_name', 'TEXT');
+  addColumn('borrowers', 'borrower_type', 'TEXT DEFAULT "Resident"');
+  addColumn('borrowers', 'valid_id_reference', 'TEXT');
+  addColumn('borrowers', 'verification_document', 'TEXT');
+  addColumn('borrowers', 'verification_status', 'TEXT DEFAULT "Approved"');
+  addColumn('borrowers', 'verification_notes', 'TEXT');
+  addColumn('borrowers', 'is_flagged', 'INTEGER DEFAULT 0');
+  addColumn('borrowers', 'flag_reason', 'TEXT');
+
+  db.run(`CREATE TABLE IF NOT EXISTS borrower_verifications (
+    verification_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    borrower_type TEXT NOT NULL DEFAULT 'Resident',
+    address TEXT NOT NULL,
+    valid_id_reference TEXT,
+    document_reference TEXT,
+    notes TEXT,
+    status TEXT NOT NULL DEFAULT 'Pending',
+    reviewed_by INTEGER,
+    reviewed_at TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (reviewed_by) REFERENCES users(user_id)
+  )`, (err) => {
+    if (err) console.error('Borrower verifications table error:', err.message);
+    else console.log('Borrower verifications table ready.');
   });
 
   db.run(`CREATE TABLE IF NOT EXISTS transactions (
@@ -90,9 +145,19 @@ db.serialize(() => {
     equipment_id INTEGER NOT NULL,
     quantity_borrowed INTEGER DEFAULT 1,
     purpose TEXT,
+    event_location TEXT,
     date_borrowed TEXT,
     due_date TEXT,
     status TEXT DEFAULT 'Pending',
+    release_date TEXT,
+    release_quantity INTEGER,
+    release_condition TEXT,
+    identity_verified INTEGER DEFAULT 0,
+    released_by INTEGER,
+    returned_at TEXT,
+    return_status TEXT,
+    processed_by INTEGER,
+    rejection_reason TEXT,
     created_at TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (borrower_id) REFERENCES borrowers(borrower_id),
     FOREIGN KEY (equipment_id) REFERENCES equipment(equipment_id)
@@ -114,6 +179,35 @@ db.serialize(() => {
     else console.log('✅ Returns table ready.');
   });
 
+  addColumn('returns', 'returned_quantity', 'INTEGER');
+  addColumn('returns', 'return_condition', 'TEXT');
+  addColumn('returns', 'penalty_notes', 'TEXT');
+  addColumn('returns', 'received_by', 'INTEGER');
+
+  db.run(`CREATE TABLE IF NOT EXISTS releases (
+    release_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    transaction_id INTEGER NOT NULL,
+    staff_user_id INTEGER NOT NULL,
+    release_date TEXT NOT NULL DEFAULT (date('now')),
+    quantity_released INTEGER NOT NULL,
+    condition_before_release TEXT,
+    identity_verified INTEGER NOT NULL DEFAULT 0,
+    remarks TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (transaction_id) REFERENCES transactions(transaction_id),
+    FOREIGN KEY (staff_user_id) REFERENCES users(user_id)
+  )`, (err) => {
+    if (err) console.error('Releases table error:', err.message);
+    else console.log('Releases table ready.');
+  });
+  addColumn('releases', 'transaction_id', 'INTEGER');
+  addColumn('releases', 'staff_user_id', 'INTEGER');
+  addColumn('releases', 'release_date', 'TEXT');
+  addColumn('releases', 'quantity_released', 'INTEGER');
+  addColumn('releases', 'condition_before_release', 'TEXT');
+  addColumn('releases', 'identity_verified', 'INTEGER DEFAULT 0');
+  addColumn('releases', 'remarks', 'TEXT');
+
   db.run(`CREATE TABLE IF NOT EXISTS activity_logs (
     log_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
@@ -133,6 +227,30 @@ db.serialize(() => {
     if (err) console.error('Activity logs table error:', err.message);
     else console.log('✅ Activity logs table ready.');
   });
+  db.run(`CREATE TABLE IF NOT EXISTS notifications (
+    notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    message TEXT NOT NULL,
+    type TEXT,
+    is_read INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+  )`, (err) => {
+    if (err) console.error('Notifications table error:', err.message);
+    else console.log('Notifications table ready.');
+  });
+
+  addColumn('transactions', 'release_date', 'TEXT');
+  addColumn('transactions', 'event_location', 'TEXT');
+  addColumn('transactions', 'release_quantity', 'INTEGER');
+  addColumn('transactions', 'release_condition', 'TEXT');
+  addColumn('transactions', 'identity_verified', 'INTEGER DEFAULT 0');
+  addColumn('transactions', 'released_by', 'INTEGER');
+  addColumn('transactions', 'returned_at', 'TEXT');
+  addColumn('transactions', 'return_status', 'TEXT');
+  addColumn('transactions', 'processed_by', 'INTEGER');
+  addColumn('transactions', 'rejection_reason', 'TEXT');
 
   [
     ['borrower_id', 'INTEGER'],

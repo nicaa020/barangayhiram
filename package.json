@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server/server.js",
     "dev": "nodemon server/server.js",
+    "db:setup": "node server/database/setup-db.js",
     "seed:test": "node server/seed-test-data.js"
   },
   "dependencies": {

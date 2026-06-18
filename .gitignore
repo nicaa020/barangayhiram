@@ -1,10 +1,16 @@
 node_modules/
 .env
+.env.local
+dist/
+build/
+.vite/
 *.db
 *.sqlite
 *.sqlite3
 npm-debug.log*
+*.log
 server-start.out
 server-start.err
+public/uploads/
 .DS_Store
 Thumbs.db

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Details - BarangayHiram</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/app.css" rel="stylesheet">
+  <style>
+    .request-detail-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .request-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .request-heading h3 {
+      margin: 0 0 4px;
+      color: var(--bh-text);
+      font-size: 22px;
+      font-weight: 650;
+      line-height: 1.2;
+    }
+
+    .request-heading p {
+      margin: 0;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-sm);
+      line-height: 1.35;
+    }
+
+    .request-detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .request-detail-item {
+      padding: 12px;
+      border: 0.5px solid var(--bh-border-soft);
+      border-radius: var(--bh-radius);
+      background: var(--bh-surface);
+    }
+
+    .request-detail-item span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-xs);
+      line-height: 1.2;
+    }
+
+    .request-detail-item strong {
+      display: block;
+      color: var(--bh-text);
+      font-size: var(--bh-font-base);
+      font-weight: 600;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+    }
+
+    .request-copy-block {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 0.5px solid var(--bh-border-soft);
+    }
+
+    .request-copy-block h5,
+    .instruction-card h5 {
+      margin: 0 0 8px;
+      color: var(--bh-text);
+      font-size: var(--bh-font-title);
+      font-weight: 600;
+    }
+
+    .request-copy-block p,
+    .instruction-card p {
+      margin: 0;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-base);
+      line-height: 1.55;
+    }
+
+    .instruction-stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .instruction-card {
+      padding: 16px;
+      border: 0.5px solid var(--bh-border-soft);
+      border-radius: var(--bh-radius-lg);
+      background: var(--bh-surface);
+    }
+
+    .status-message {
+      padding: 14px;
+      border-radius: var(--bh-radius);
+      border: 0.5px solid rgba(24, 95, 165, 0.22);
+      background: var(--bh-accent-soft);
+      color: var(--bh-accent-dark);
+      font-size: var(--bh-font-sm);
+      line-height: 1.45;
+    }
+
+    .status-message strong {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--bh-accent-dark);
+      font-size: var(--bh-font-base);
+    }
+
+    .not-found-panel {
+      display: none;
+      padding: 28px 16px;
+      text-align: center;
+      color: var(--bh-text-muted);
+    }
+
+    @media (max-width: 980px) {
+      .request-detail-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .request-heading {
+        flex-direction: column;
+      }
+
+      .request-detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="bh-ui borrower-ui" data-page-title="Request Details" data-page-active="requests">
+  <main id="borrowerPageContent">
+    <div class="bh-page-kicker">Borrowing request details and instructions</div>
+
+    <div class="not-found-panel card" id="notFoundPanel">
+      <div class="card-body">
+        <i class="bi bi-search d-block mb-2 fs-3"></i>
+        Request record was not found.
+        <div class="mt-3">
+          <a href="/borrower/requests" class="btn btn-outline-primary">Back to my requests</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="request-detail-layout" id="detailPanel">
+      <section class="card">
+        <div class="card-body">
+          <div class="request-heading">
+            <div>
+              <h3 id="requestNumber">Request #</h3>
+              <p id="equipmentName">Equipment name</p>
+            </div>
+            <div id="statusBadge"></div>
+          </div>
+
+          <div class="request-detail-grid">
+            <div class="request-detail-item">
+              <span>Quantity</span>
+              <strong id="requestQuantity">0</strong>
+            </div>
+            <div class="request-detail-item">
+              <span>Status</span>
+              <strong id="requestStatus">Pending</strong>
+            </div>
+            <div class="request-detail-item">
+              <span>Borrow date</span>
+              <strong id="borrowDate">-</strong>
+            </div>
+            <div class="request-detail-item">
+              <span>Expected return date</span>
+              <strong id="returnDate">-</strong>
+            </div>
+            <div class="request-detail-item">
+              <span>Event/location</span>
+              <strong id="eventLocation">-</strong>
+            </div>
+            <div class="request-detail-item">
+              <span>Submitted on</span>
+              <strong id="submittedDate">-</strong>
+            </div>
+          </div>
+
+          <div class="request-copy-block">
+            <h5>Purpose</h5>
+            <p id="purposeText">-</p>
+          </div>
+
+          <div class="request-copy-block">
+            <h5>Admin remarks</h5>
+            <p id="adminRemarks">-</p>
+          </div>
+        </div>
+      </section>
+
+      <aside class="instruction-stack">
+        <div class="status-message" id="statusMessage">
+          <strong>Status update</strong>
+          Waiting for borrower request information.
+        </div>
+
+        <div class="instruction-card">
+          <h5>Release instructions</h5>
+          <p id="releaseInstructions">Release instructions will appear here.</p>
+        </div>
+
+        <div class="instruction-card">
+          <h5>Return instructions</h5>
+          <p id="returnInstructions">Return instructions will appear here.</p>
+        </div>
+
+        <div class="instruction-card">
+          <div class="d-grid gap-2">
+            <button class="btn btn-outline-danger" id="cancelRequestBtn" type="button">
+              <i class="bi bi-x-circle me-1"></i>Cancel request
+            </button>
+            <a href="/borrower/requests" class="btn btn-outline-primary">
+              <i class="bi bi-arrow-left me-1"></i>Back to my requests
+            </a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="/js/borrower-layout.js"></script>
+  <script>
+    let currentRequest = null;
+
+    const statusContent = {
+      Pending: {
+        badge: 'bg-warning text-dark',
+        title: 'Pending approval',
+        message: 'Your request is waiting for barangay staff approval.',
+        release: 'Please wait for barangay staff to review and approve your request before claiming equipment.',
+        return: 'Return instructions will apply once the equipment is released.'
+      },
+      Approved: {
+        badge: 'bg-primary',
+        title: 'Approved request',
+        message: 'Your request is approved but not yet released.',
+        release: 'Wait for staff confirmation, then proceed to the barangay office for release processing.',
+        return: 'Return the equipment on or before the expected return date after release.'
+      },
+      'Ready for Release': {
+        badge: 'bg-info text-dark',
+        title: 'Ready for release',
+        message: 'Bring a valid ID when claiming the approved equipment.',
+        release: 'Proceed to the barangay office during office hours and present your valid ID for manual verification.',
+        return: 'Keep all released items complete and return them by the expected return date.'
+      },
+      Released: {
+        badge: 'bg-info text-dark',
+        title: 'Currently borrowed',
+        message: 'This item is currently borrowed under your account.',
+        release: 'Equipment has already been released. Keep the release record available if staff asks for it.',
+        return: 'Return the equipment in the same condition and quantity on or before the expected return date.'
+      },
+      Overdue: {
+        badge: 'bg-danger',
+        title: 'Overdue item',
+        message: 'Return this item immediately to avoid borrowing restrictions.',
+        release: 'No new release can be processed while this request is overdue.',
+        return: 'Coordinate with barangay staff and return the equipment immediately for checking.'
+      },
+      Returned: {
+        badge: 'bg-success',
+        title: 'Transaction completed',
+        message: 'This borrowing transaction has been completed.',
+        release: 'No release action is needed because the item was already returned.',
+        return: 'Returned items have been checked by staff. Keep note of any remarks for your records.'
+      },
+      Rejected: {
+        badge: 'bg-danger',
+        title: 'Request rejected',
+        message: 'Your request was rejected. Please review the admin reason below.',
+        release: 'Rejected requests cannot be released.',
+        return: 'No return is needed because no equipment was released.'
+      },
+      Cancelled: {
+        badge: 'bg-secondary',
+        title: 'Request cancelled',
+        message: 'This request has been cancelled.',
+        release: 'Cancelled requests cannot be released.',
+        return: 'No return is needed because no equipment was released.'
+      }
+    };
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, function(ch) {
+        return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[ch];
+      });
+    }
+
+    function getRequestId() {
+      const match = window.location.pathname.match(/\/borrower\/requests\/(\d+)/);
+      return match ? match[1] : '';
+    }
+
+    function formatValue(value) {
+      return value || '-';
+    }
+
+    function canCancel(status) {
+      return ['Pending', 'Approved', 'Ready for Release'].includes(status);
+    }
+
+    function normalizeRequest(row) {
+      let purpose = row.purpose || '';
+      let eventLocation = row.event_location || '';
+      const legacyLocationMarker = ' | Event/location: ';
+      if (!eventLocation && purpose.includes(legacyLocationMarker)) {
+        const parts = purpose.split(legacyLocationMarker);
+        purpose = parts[0] || purpose;
+        eventLocation = parts.slice(1).join(legacyLocationMarker);
+      }
+      return {
+        id: row.request_id || row.transaction_id,
+        equipment: row.equipment_name || 'Equipment',
+        quantity: Number(row.quantity || row.quantity_borrowed || 0),
+        borrow_date: row.borrow_date || row.date_borrowed || '',
+        return_date: row.return_date || row.due_date || '',
+        submitted_at: row.created_at || '',
+        status: row.display_status || row.status || 'Pending',
+        purpose: purpose,
+        event_location: eventLocation,
+        admin_remarks: row.admin_remarks || row.rejection_reason || ''
+      };
+    }
+
+    function renderRequest(request) {
+      if (!request) {
+        document.getElementById('detailPanel').style.display = 'none';
+        document.getElementById('notFoundPanel').style.display = 'block';
+        return;
+      }
+
+      currentRequest = request;
+      const content = statusContent[request.status] || statusContent.Pending;
+      document.getElementById('requestNumber').textContent = 'Request #' + request.id;
+      document.getElementById('equipmentName').textContent = request.equipment;
+      document.getElementById('requestQuantity').textContent = request.quantity;
+      document.getElementById('borrowDate').textContent = formatValue(request.borrow_date);
+      document.getElementById('returnDate').textContent = formatValue(request.return_date);
+      document.getElementById('eventLocation').textContent = formatValue(request.event_location);
+      document.getElementById('submittedDate').textContent = formatValue(request.submitted_at);
+      document.getElementById('requestStatus').textContent = request.status;
+      document.getElementById('purposeText').textContent = formatValue(request.purpose);
+      document.getElementById('adminRemarks').textContent = request.admin_remarks || 'No remarks yet.';
+      document.getElementById('statusBadge').innerHTML = '<span class="badge ' + content.badge + '">' + escapeHtml(request.status) + '</span>';
+      document.getElementById('statusMessage').innerHTML = '<strong>' + escapeHtml(content.title) + '</strong>' + escapeHtml(content.message);
+      document.getElementById('releaseInstructions').textContent = content.release;
+      document.getElementById('returnInstructions').textContent = content.return;
+      document.getElementById('cancelRequestBtn').style.display = canCancel(request.status) ? 'block' : 'none';
+    }
+
+    function showLoadError(message) {
+      document.getElementById('detailPanel').style.display = 'none';
+      document.getElementById('notFoundPanel').style.display = 'block';
+      document.getElementById('notFoundPanel').querySelector('.card-body').innerHTML =
+        '<i class="bi bi-exclamation-triangle d-block mb-2 fs-3"></i>' +
+        escapeHtml(message) +
+        '<div class="mt-3"><a href="/borrower/requests" class="btn btn-outline-primary">Back to my requests</a></div>';
+    }
+
+    async function loadRequestDetails() {
+      const requestId = getRequestId();
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/pages/login.html';
+        return;
+      }
+      if (!requestId) {
+        renderRequest(null);
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/transactions/' + encodeURIComponent(requestId), {
+          headers: { authorization: token }
+        });
+        if (response.status === 401 || response.status === 403) {
+          localStorage.clear();
+          window.location.href = '/pages/login.html';
+          return;
+        }
+        const data = await response.json().catch(function() { return {}; });
+        if (!response.ok) throw new Error(data.message || 'Unable to load request details.');
+        renderRequest(normalizeRequest(data));
+      } catch (err) {
+        showLoadError(err.message || 'Unable to load request details.');
+      }
+    }
+
+    async function cancelCurrentRequest() {
+      if (!currentRequest || !canCancel(currentRequest.status)) return;
+      if (!confirm('Cancel this borrowing request? This can only be done before equipment is released.')) return;
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/pages/login.html';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/transactions/cancel/' + encodeURIComponent(currentRequest.id), {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: token
+          },
+          body: JSON.stringify({ reason: 'Cancelled by borrower' })
+        });
+        const data = await response.json().catch(function() { return {}; });
+        if (response.status === 401 || response.status === 403) {
+          localStorage.clear();
+          window.location.href = '/pages/login.html';
+          return;
+        }
+        if (!response.ok) throw new Error(data.message || 'Unable to cancel request.');
+        alert(data.message || 'Borrowing request cancelled successfully.');
+        loadRequestDetails();
+      } catch (err) {
+        alert(err.message || 'Unable to cancel request.');
+      }
+    }
+
+    document.getElementById('cancelRequestBtn').addEventListener('click', cancelCurrentRequest);
+    loadRequestDetails();
+  </script>
+</body>
+</html>

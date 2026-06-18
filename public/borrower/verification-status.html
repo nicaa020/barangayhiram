@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verification Status - BarangayHiram</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/app.css" rel="stylesheet">
+  <style>
+    .verification-shell {
+      display: grid;
+      gap: 16px;
+      max-width: 920px;
+    }
+    .verification-hero {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 14px;
+      align-items: center;
+      padding: 18px;
+      border: 0.5px solid var(--bh-border-soft);
+      border-radius: var(--bh-radius-lg);
+      background: var(--bh-surface);
+    }
+    .verification-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: var(--bh-radius-lg);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 22px;
+    }
+    .verification-title {
+      margin: 0;
+      color: var(--bh-text);
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+    .verification-message {
+      margin: 4px 0 0;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-base);
+      line-height: 1.45;
+    }
+    .verification-details {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .verification-detail {
+      padding: 12px;
+      border: 0.5px solid var(--bh-border-soft);
+      border-radius: var(--bh-radius-lg);
+      background: var(--bh-bg);
+    }
+    .verification-detail span {
+      display: block;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-xs);
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+    .verification-detail strong {
+      color: var(--bh-text);
+      font-size: var(--bh-font-base);
+      font-weight: 500;
+      line-height: 1.3;
+    }
+    .remarks-box {
+      display: none;
+      padding: 14px;
+      border: 0.5px solid var(--bh-border-soft);
+      border-radius: var(--bh-radius-lg);
+      background: var(--bh-surface);
+    }
+    .remarks-box strong {
+      display: block;
+      color: var(--bh-text);
+      font-size: var(--bh-font-base);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .remarks-box p {
+      margin: 0;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-base);
+      line-height: 1.45;
+    }
+    .verification-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .status-pending { background: var(--bh-amber); }
+    .status-approved { background: var(--bh-accent); }
+    .status-rejected,
+    .status-inactive { background: var(--bh-red); }
+    @media (max-width: 720px) {
+      .verification-hero,
+      .verification-details {
+        grid-template-columns: 1fr;
+      }
+      .verification-icon {
+        width: 42px;
+        height: 42px;
+      }
+    }
+  </style>
+</head>
+<body class="bh-ui borrower-ui" data-page-title="Verification Status" data-page-active="verification">
+  <main id="borrowerPageContent">
+    <div class="bh-page-kicker">Account verification progress</div>
+    <div class="verification-shell">
+      <section class="verification-hero">
+        <div class="verification-icon status-pending" id="statusIcon"><i class="bi bi-hourglass-split"></i></div>
+        <div>
+          <div id="statusBadge"><span class="badge bg-warning text-dark">Pending</span></div>
+          <h1 class="verification-title" id="statusTitle">Your account is awaiting verification</h1>
+          <p class="verification-message" id="statusMessage">Your account is still pending. Please wait while barangay staff reviews and verifies your submitted information.</p>
+        </div>
+      </section>
+
+      <section class="verification-details">
+        <div class="verification-detail"><span>Borrower</span><strong id="borrowerName">Sample Borrower</strong></div>
+        <div class="verification-detail"><span>Borrower Type</span><strong id="borrowerType">Resident</strong></div>
+        <div class="verification-detail"><span>Account Status</span><strong id="accountStatus">Pending</strong></div>
+      </section>
+
+      <section class="remarks-box" id="remarksBox">
+        <strong>Admin remarks</strong>
+        <p id="remarksText">Please update your submitted information and try again.</p>
+      </section>
+
+      <div class="verification-actions" id="statusActions"></div>
+    </div>
+  </main>
+  <script src="/js/borrower-layout.js"></script>
+  <script>
+    const STATUS_CONTENT = {
+      Pending: {
+        badge: '<span class="badge bg-warning text-dark">Pending</span>',
+        iconClass: 'status-pending',
+        icon: 'bi-hourglass-split',
+        title: 'Your account is awaiting verification',
+        message: 'Your account is still pending. Please wait while barangay staff reviews and verifies your submitted information. You will be able to borrow equipment once your account is approved.',
+        actions: '<button class="btn btn-outline-primary" type="button" onclick="window.location.href=\'/pages/login.html\'"><i class="bi bi-box-arrow-in-right me-1"></i>Back to login</button>'
+      },
+      Approved: {
+        badge: '<span class="badge bg-success">Approved</span>',
+        iconClass: 'status-approved',
+        icon: 'bi-check-circle',
+        title: 'Your account is approved',
+        message: 'Your borrower account has been verified. You can now continue to the borrower dashboard and submit equipment requests.',
+        actions: '<button class="btn btn-primary" type="button" onclick="window.location.href=\'/borrower/dashboard\'"><i class="bi bi-speedometer2 me-1"></i>Go to borrower dashboard</button>'
+      },
+      Rejected: {
+        badge: '<span class="badge bg-danger">Rejected</span>',
+        iconClass: 'status-rejected',
+        icon: 'bi-x-circle',
+        title: 'Your verification was rejected',
+        message: 'Please review the admin remarks and update your details or supporting document before submitting again.',
+        actions: '<button class="btn btn-outline-danger" type="button" onclick="window.location.href=\'/pages/register.html\'"><i class="bi bi-pencil-square me-1"></i>Update details</button>'
+      },
+      Inactive: {
+        badge: '<span class="badge bg-secondary">Inactive</span>',
+        iconClass: 'status-inactive',
+        icon: 'bi-slash-circle',
+        title: 'Your account is disabled',
+        message: 'This account is currently inactive. Please contact the barangay office for assistance before using the borrowing system.',
+        actions: '<button class="btn btn-outline-danger" type="button" onclick="window.location.href=\'/pages/login.html\'"><i class="bi bi-box-arrow-left me-1"></i>Return to login</button>'
+      }
+    };
+
+    function normalizeStatus(value) {
+      const status = String(value || 'Pending').trim();
+      return STATUS_CONTENT[status] ? status : 'Pending';
+    }
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, function(ch) {
+        return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[ch];
+      });
+    }
+
+    async function loadVerificationStatus() {
+      const params = new URLSearchParams(window.location.search);
+      const sampleStatus = params.get('status');
+      const token = localStorage.getItem('token');
+      let data = {
+        full_name: localStorage.getItem('full_name') || 'Sample Borrower',
+        borrower_type: 'Resident',
+        status: sampleStatus || localStorage.getItem('verification_status') || 'Pending',
+        verification_status: sampleStatus || localStorage.getItem('verification_status') || 'Pending',
+        verification_notes: 'Please update your submitted information and upload a clearer supporting document.'
+      };
+
+      if (token && !sampleStatus) {
+        try {
+          const response = await fetch('/api/auth/me', { headers: { authorization: token } });
+          const payload = await response.json();
+          if (response.ok) data = Object.assign(data, payload);
+        } catch (err) {
+          data.verification_notes = 'Unable to refresh status from the server. Showing sample status data for now.';
+        }
+      }
+
+      const status = normalizeStatus(data.verification_status || data.status);
+      const content = STATUS_CONTENT[status];
+      const icon = document.getElementById('statusIcon');
+      icon.className = 'verification-icon ' + content.iconClass;
+      icon.innerHTML = '<i class="bi ' + content.icon + '"></i>';
+
+      document.getElementById('statusBadge').innerHTML = content.badge;
+      document.getElementById('statusTitle').textContent = content.title;
+      document.getElementById('statusMessage').textContent = content.message;
+      document.getElementById('borrowerName').textContent = data.full_name || 'Borrower';
+      document.getElementById('borrowerType').textContent = data.borrower_type || 'Resident';
+      document.getElementById('accountStatus').textContent = status;
+      document.getElementById('statusActions').innerHTML = content.actions;
+
+      const remarksBox = document.getElementById('remarksBox');
+      if (status === 'Rejected') {
+        remarksBox.style.display = 'block';
+        document.getElementById('remarksText').innerHTML = escapeHtml(data.verification_notes || 'No remarks were provided. Please contact barangay staff for clarification.');
+      } else {
+        remarksBox.style.display = 'none';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadVerificationStatus);
+  </script>
+</body>
+</html>

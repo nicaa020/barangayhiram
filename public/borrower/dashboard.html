@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Borrower Dashboard - BarangayHiram</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/app.css" rel="stylesheet">
+  <style>
+    .borrower-dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 16px;
+      align-items: start;
+    }
+    .account-status-panel {
+      display: grid;
+      gap: 12px;
+    }
+    .account-status-card {
+      padding: 16px;
+      border: 0.5px solid var(--bh-border-soft);
+      border-radius: var(--bh-radius-lg);
+      background: var(--bh-surface);
+    }
+    .account-status-card h5 {
+      margin: 0 0 6px;
+      color: var(--bh-text);
+      font-size: var(--bh-font-title);
+      font-weight: 600;
+    }
+    .account-status-card p {
+      margin: 0;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-sm);
+      line-height: 1.45;
+    }
+    .borrower-alert {
+      display: none;
+      border: 0.5px solid rgba(163, 45, 45, 0.22);
+      border-radius: var(--bh-radius-lg);
+      background: #fcebeb;
+      color: var(--bh-red);
+      padding: 12px 14px;
+      font-size: var(--bh-font-sm);
+      line-height: 1.4;
+    }
+    .borrower-alert strong {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--bh-red);
+      font-size: var(--bh-font-base);
+      font-weight: 600;
+    }
+    .request-purpose {
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-xs);
+      line-height: 1.35;
+    }
+    @media (max-width: 1040px) {
+      .borrower-dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="bh-ui borrower-ui" data-page-title="Borrower Dashboard" data-page-active="dashboard">
+  <main id="borrowerPageContent">
+    <div class="bh-page-kicker">Borrower portal overview</div>
+
+    <div class="bh-stats-grid">
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="label"><i class="bi bi-hourglass-split"></i> Pending Requests</div>
+          <div class="number bh-value-amber" id="pendingCount">0</div>
+          <div class="bh-stat-sub">Waiting for staff review</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="label"><i class="bi bi-check-circle"></i> Approved Requests</div>
+          <div class="number bh-value-blue" id="approvedCount">0</div>
+          <div class="bh-stat-sub">Ready for release</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="label"><i class="bi bi-box-seam"></i> Active Borrowed Items</div>
+          <div class="number bh-value-teal" id="activeBorrowedCount">0</div>
+          <div class="bh-stat-sub">Currently released</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-info">
+          <div class="label"><i class="bi bi-exclamation-triangle"></i> Overdue Items</div>
+          <div class="number bh-value-red" id="overdueCount">0</div>
+          <div class="bh-stat-sub">Needs immediate return</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="borrower-dashboard-grid">
+      <section class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>Recent requests</span>
+          <span class="badge bg-primary" id="requestTotal">0 records</span>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="ps-3">Request</th>
+                  <th>Equipment</th>
+                  <th>Qty</th>
+                  <th>Dates</th>
+                  <th>Status</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody id="recentRequestsTable">
+                <tr><td colspan="6" class="text-center py-4 text-muted">Loading your requests...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <aside class="account-status-panel">
+        <div class="account-status-card">
+          <h5>Account status</h5>
+          <p class="mb-3">Your borrower verification determines when you can submit new equipment requests.</p>
+          <div class="d-flex align-items-center justify-content-between gap-2">
+            <span class="text-muted">Current status</span>
+            <span class="badge bg-success" id="accountStatusBadge">Approved</span>
+          </div>
+        </div>
+        <div class="borrower-alert" id="overdueWarning">
+          <strong><i class="bi bi-exclamation-triangle me-1"></i>Overdue reminder</strong>
+          You have overdue borrowed item(s). Please coordinate with barangay staff before submitting another request.
+        </div>
+        <div class="account-status-card">
+          <h5>Quick actions</h5>
+          <div class="d-grid gap-2">
+            <a href="/borrower/equipment" class="btn btn-primary"><i class="bi bi-search me-1"></i>Browse equipment</a>
+            <a href="/borrower/request" class="btn btn-outline-primary"><i class="bi bi-calendar-plus me-1"></i>New request</a>
+            <a href="/verification-status" class="btn btn-outline-info"><i class="bi bi-person-check me-1"></i>Verification status</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="/js/borrower-layout.js"></script>
+  <script>
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, function(ch) {
+        return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[ch];
+      });
+    }
+
+    function badge(status) {
+      const classes = {
+        Pending: 'bg-warning text-dark',
+        Approved: 'bg-primary',
+        'Ready for Release': 'bg-info text-dark',
+        Released: 'bg-info text-dark',
+        Returned: 'bg-success',
+        Overdue: 'bg-danger',
+        Rejected: 'bg-danger',
+        Cancelled: 'bg-secondary'
+      };
+      return '<span class="badge ' + (classes[status] || 'bg-secondary') + '">' + escapeHtml(status) + '</span>';
+    }
+
+    function accountBadgeClass(status) {
+      if (status === 'Approved' || status === 'Active') return 'badge bg-success';
+      if (status === 'Rejected') return 'badge bg-danger';
+      if (status === 'Inactive') return 'badge bg-secondary';
+      return 'badge bg-warning text-dark';
+    }
+
+    function normalizeRequest(row) {
+      return {
+        id: row.request_id || row.transaction_id,
+        equipment: row.equipment_name || row.equipment || 'Equipment',
+        quantity: Number(row.quantity || row.quantity_borrowed || 0),
+        borrow_date: row.borrow_date || row.date_borrowed || '',
+        return_date: row.return_date || row.due_date || '',
+        status: row.display_status || row.status || 'Pending',
+        purpose: row.purpose || ''
+      };
+    }
+
+    function renderDashboard(data) {
+      const rows = data.requests || [];
+      const counts = rows.reduce(function(total, request) {
+        if (request.status === 'Pending') total.pending++;
+        if (request.status === 'Approved' || request.status === 'Ready for Release') total.approved++;
+        if (request.status === 'Released') total.active += request.quantity || 1;
+        if (request.status === 'Overdue') total.overdue += request.quantity || 1;
+        return total;
+      }, { pending: 0, approved: 0, active: 0, overdue: 0 });
+
+      document.getElementById('pendingCount').textContent = counts.pending;
+      document.getElementById('approvedCount').textContent = counts.approved;
+      document.getElementById('activeBorrowedCount').textContent = counts.active;
+      document.getElementById('overdueCount').textContent = counts.overdue;
+      document.getElementById('requestTotal').textContent = rows.length + ' record' + (rows.length === 1 ? '' : 's');
+      document.getElementById('accountStatusBadge').textContent = data.account_status || 'Pending';
+      document.getElementById('accountStatusBadge').className = accountBadgeClass(data.account_status);
+      document.getElementById('overdueWarning').style.display = counts.overdue > 0 ? 'block' : 'none';
+
+      const table = document.getElementById('recentRequestsTable');
+      table.innerHTML = rows.length ? rows.map(function(request) {
+        return '<tr>' +
+          '<td class="ps-3"><strong>#' + request.id + '</strong></td>' +
+          '<td>' + escapeHtml(request.equipment) + '</td>' +
+          '<td>' + request.quantity + '</td>' +
+          '<td>' + escapeHtml(request.borrow_date) + ' to ' + escapeHtml(request.return_date) + '</td>' +
+          '<td>' + badge(request.status) + '</td>' +
+          '<td><div class="request-purpose">' + escapeHtml(request.purpose) + '</div></td>' +
+        '</tr>';
+      }).join('') : '<tr><td colspan="6" class="text-center py-4 text-muted">No request history yet.</td></tr>';
+    }
+
+    function showDashboardError(message) {
+      document.getElementById('recentRequestsTable').innerHTML =
+        '<tr><td colspan="6" class="text-center py-4 text-danger">' + escapeHtml(message) + '</td></tr>';
+    }
+
+    async function api(path) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/pages/login.html';
+        return null;
+      }
+
+      const response = await fetch(path, {
+        headers: { authorization: token }
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        localStorage.clear();
+        window.location.href = '/pages/login.html';
+        return null;
+      }
+
+      const data = await response.json().catch(function() { return null; });
+      if (!response.ok) {
+        throw new Error((data && data.message) || 'Unable to load dashboard data.');
+      }
+      return data;
+    }
+
+    async function loadDashboard() {
+      try {
+        const profile = await api('/api/auth/me');
+        if (!profile) return;
+        const transactions = await api('/api/transactions');
+        if (!transactions) return;
+
+        const accountStatus = profile.status || profile.account_status || profile.verification_status || 'Pending';
+        localStorage.setItem('verification_status', accountStatus);
+        if (profile.full_name) localStorage.setItem('full_name', profile.full_name);
+
+        renderDashboard({
+          account_status: accountStatus,
+          requests: transactions.map(normalizeRequest)
+        });
+      } catch (err) {
+        showDashboardError(err.message || 'Unable to load dashboard data.');
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications - BarangayHiram</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/app.css" rel="stylesheet">
+  <style>
+    .notification-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .notification-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .notification-item {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 12px;
+      padding: 14px;
+      border: 0.5px solid var(--bh-border-soft);
+      border-radius: var(--bh-radius-lg);
+      background: var(--bh-surface);
+    }
+
+    .notification-item.unread {
+      border-color: rgba(24, 95, 165, 0.28);
+      background: var(--bh-accent-soft);
+    }
+
+    .notification-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bh-accent-soft);
+      color: var(--bh-accent);
+      font-size: 17px;
+      line-height: 1;
+    }
+
+    .notification-icon.warning {
+      background: #fff4d7;
+      color: #9d690f;
+    }
+
+    .notification-icon.danger {
+      background: #fcebeb;
+      color: var(--bh-red);
+    }
+
+    .notification-icon.success {
+      background: #e3f4ed;
+      color: #137457;
+    }
+
+    .notification-content h5 {
+      margin: 0 0 4px;
+      color: var(--bh-text);
+      font-size: var(--bh-font-title);
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .notification-content p {
+      margin: 0;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-base);
+      line-height: 1.5;
+    }
+
+    .notification-time {
+      margin-top: 8px;
+      color: var(--bh-text-light);
+      font-size: var(--bh-font-xs);
+      line-height: 1.2;
+    }
+
+    .notification-empty {
+      padding: 32px 14px;
+      text-align: center;
+      color: var(--bh-text-muted);
+    }
+
+    .notification-empty i {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--bh-accent);
+      font-size: 28px;
+    }
+
+    .notification-side-card {
+      padding: 16px;
+      border: 0.5px solid var(--bh-border-soft);
+      border-radius: var(--bh-radius-lg);
+      background: var(--bh-surface);
+    }
+
+    .notification-side-card h5 {
+      margin: 0 0 8px;
+      color: var(--bh-text);
+      font-size: var(--bh-font-title);
+      font-weight: 600;
+    }
+
+    .notification-side-card p {
+      margin: 0;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-sm);
+      line-height: 1.45;
+    }
+
+    @media (max-width: 900px) {
+      .notification-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="bh-ui borrower-ui" data-page-title="Notifications" data-page-active="notifications">
+  <main id="borrowerPageContent">
+    <div class="bh-page-kicker">Borrower alerts and reminders</div>
+
+    <div class="notification-layout">
+      <section class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span>Notification list</span>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary" id="notificationCount">0 updates</span>
+            <button class="btn btn-outline-primary btn-sm" id="markAllReadBtn" type="button">Mark all read</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="notification-list" id="notificationList"></div>
+        </div>
+      </section>
+
+      <aside class="notification-side-card">
+        <h5>Notification status</h5>
+        <p id="notificationSummary">Loading your latest account and borrowing updates.</p>
+      </aside>
+    </div>
+  </main>
+
+  <script src="/js/borrower-layout.js"></script>
+  <script>
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, function(ch) {
+        return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[ch];
+      });
+    }
+
+    function iconForType(type) {
+      const text = String(type || '').toLowerCase();
+      if (text.includes('approved') || text.includes('return_recorded')) return { icon: 'bi-check-circle', tone: 'success' };
+      if (text.includes('rejected') || text.includes('overdue')) return { icon: 'bi-exclamation-triangle', tone: 'danger' };
+      if (text.includes('released')) return { icon: 'bi-box-arrow-up', tone: 'success' };
+      if (text.includes('cancelled')) return { icon: 'bi-x-circle', tone: 'warning' };
+      if (text.includes('reminder')) return { icon: 'bi-clock', tone: 'warning' };
+      return { icon: 'bi-bell', tone: 'info' };
+    }
+
+    function formatTime(value) {
+      if (!value) return '-';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return date.toLocaleString([], {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+      });
+    }
+
+    function normalizeNotification(row) {
+      const icon = iconForType(row.type);
+      return {
+        id: row.notification_id || row.id,
+        type: icon.tone,
+        icon: icon.icon,
+        title: row.title || 'Notification',
+        message: row.message || '',
+        time: formatTime(row.created_at),
+        is_read: Number(row.is_read || 0) === 1
+      };
+    }
+
+    function renderNotifications(items) {
+      const list = document.getElementById('notificationList');
+      const unreadCount = items.filter(function(item) { return !item.is_read; }).length;
+      document.getElementById('notificationCount').textContent = items.length + ' update' + (items.length === 1 ? '' : 's');
+      document.getElementById('notificationSummary').textContent = unreadCount
+        ? 'You have ' + unreadCount + ' unread notification' + (unreadCount === 1 ? '' : 's') + '.'
+        : 'All notifications are marked as read.';
+      document.getElementById('markAllReadBtn').disabled = unreadCount === 0;
+      if (!items.length) {
+        list.innerHTML = '<div class="notification-empty"><i class="bi bi-bell"></i>No notifications yet.</div>';
+        return;
+      }
+      list.innerHTML = items.map(function(item) {
+        const iconClass = item.type === 'danger' || item.type === 'warning' || item.type === 'success' ? ' ' + item.type : '';
+        return '<article class="notification-item' + (item.is_read ? '' : ' unread') + '">' +
+          '<div class="notification-icon' + iconClass + '"><i class="bi ' + item.icon + '"></i></div>' +
+          '<div class="notification-content">' +
+            '<h5>' + escapeHtml(item.title) + '</h5>' +
+            '<p>' + escapeHtml(item.message) + '</p>' +
+            '<div class="notification-time">' + escapeHtml(item.time) + '</div>' +
+          '</div>' +
+        '</article>';
+      }).join('');
+    }
+
+    function showLoadError(message) {
+      document.getElementById('notificationCount').textContent = '0 updates';
+      document.getElementById('notificationSummary').textContent = 'Notifications could not be loaded.';
+      document.getElementById('markAllReadBtn').disabled = true;
+      document.getElementById('notificationList').innerHTML =
+        '<div class="notification-empty"><i class="bi bi-exclamation-triangle"></i>' + escapeHtml(message) + '</div>';
+    }
+
+    async function loadNotifications() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/pages/login.html';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/notifications', {
+          headers: { authorization: token }
+        });
+        if (response.status === 401 || response.status === 403) {
+          localStorage.clear();
+          window.location.href = '/pages/login.html';
+          return;
+        }
+        const data = await response.json().catch(function() { return []; });
+        if (!response.ok) throw new Error(data.message || 'Unable to load notifications.');
+        renderNotifications(data.map(normalizeNotification));
+        if (window.refreshBorrowerNotificationBadge) window.refreshBorrowerNotificationBadge();
+      } catch (err) {
+        showLoadError(err.message || 'Unable to load notifications.');
+      }
+    }
+
+    async function markAllRead() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/pages/login.html';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/notifications/read-all', {
+          method: 'PUT',
+          headers: { authorization: token }
+        });
+        const data = await response.json().catch(function() { return {}; });
+        if (!response.ok) throw new Error(data.message || 'Unable to update notifications.');
+        loadNotifications();
+        if (window.refreshBorrowerNotificationBadge) window.refreshBorrowerNotificationBadge();
+      } catch (err) {
+        showLoadError(err.message || 'Unable to update notifications.');
+      }
+    }
+
+    document.getElementById('markAllReadBtn').addEventListener('click', markAllRead);
+    loadNotifications();
+  </script>
+</body>
+</html>

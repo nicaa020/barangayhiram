@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Requests - BarangayHiram</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/app.css" rel="stylesheet">
+  <style>
+    .requests-empty {
+      display: none;
+      padding: 34px 16px;
+      text-align: center;
+      color: var(--bh-text-muted);
+    }
+
+    .requests-empty i {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--bh-accent);
+      font-size: 28px;
+    }
+
+    .request-number {
+      color: var(--bh-text);
+      font-weight: 650;
+    }
+
+    .request-equipment {
+      min-width: 190px;
+      color: var(--bh-text);
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .request-date {
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-sm);
+      line-height: 1.3;
+    }
+
+    .request-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .status-summary-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .status-summary-item {
+      padding: 12px;
+      border-radius: var(--bh-radius-lg);
+      background: var(--bh-surface);
+      border: 0.5px solid var(--bh-border-soft);
+    }
+
+    .status-summary-item span {
+      display: block;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-xs);
+      line-height: 1.2;
+    }
+
+    .status-summary-item strong {
+      display: block;
+      margin-top: 3px;
+      color: var(--bh-text);
+      font-size: 20px;
+      font-weight: 650;
+      line-height: 1;
+    }
+
+    @media (max-width: 780px) {
+      .status-summary-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body class="bh-ui borrower-ui" data-page-title="My Requests" data-page-active="requests">
+  <main id="borrowerPageContent">
+    <div class="bh-page-kicker">Borrowing history and request status</div>
+
+    <div class="status-summary-strip">
+      <div class="status-summary-item"><span>Total requests</span><strong id="totalRequests">0</strong></div>
+      <div class="status-summary-item"><span>Pending</span><strong id="pendingRequests">0</strong></div>
+      <div class="status-summary-item"><span>Released</span><strong id="releasedRequests">0</strong></div>
+      <div class="status-summary-item"><span>Overdue</span><strong id="overdueRequests">0</strong></div>
+    </div>
+
+    <section class="card bh-filter-card mb-4">
+      <div class="card-body">
+        <div class="row g-2 align-items-end">
+          <div class="col-lg-8">
+            <label class="form-label" for="requestSearch">Search requests</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input class="form-control" id="requestSearch" type="search" placeholder="Search by request number or equipment name">
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <label class="form-label" for="statusFilter">Status</label>
+            <select class="form-select" id="statusFilter">
+              <option value="">All statuses</option>
+              <option>Pending</option>
+              <option>Approved</option>
+              <option>Rejected</option>
+              <option>Ready for Release</option>
+              <option>Released</option>
+              <option>Returned</option>
+              <option>Overdue</option>
+              <option>Cancelled</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Request list</span>
+        <span class="badge bg-primary" id="visibleCount">0 records</span>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="ps-3">Request number</th>
+                <th>Equipment name</th>
+                <th>Quantity</th>
+                <th>Borrow date</th>
+                <th>Expected return date</th>
+                <th>Status</th>
+                <th class="text-end pe-3">Action</th>
+              </tr>
+            </thead>
+            <tbody id="requestRows"></tbody>
+          </table>
+        </div>
+        <div class="requests-empty" id="emptyState">
+          <i class="bi bi-inbox"></i>
+          No borrower requests matched your filters.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/borrower-layout.js"></script>
+  <script>
+    let requestItems = [];
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, function(ch) {
+        return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[ch];
+      });
+    }
+
+    function statusBadge(status) {
+      const classes = {
+        Pending: 'bg-warning text-dark',
+        Approved: 'bg-primary',
+        Rejected: 'bg-danger',
+        'Ready for Release': 'bg-info text-dark',
+        Released: 'bg-info text-dark',
+        Returned: 'bg-success',
+        Overdue: 'bg-danger',
+        Cancelled: 'bg-secondary'
+      };
+      return '<span class="badge ' + (classes[status] || 'bg-secondary') + '">' + escapeHtml(status) + '</span>';
+    }
+
+    function canCancel(status) {
+      return ['Pending', 'Approved', 'Ready for Release'].includes(status);
+    }
+
+    function renderSummary(rows) {
+      document.getElementById('totalRequests').textContent = rows.length;
+      document.getElementById('pendingRequests').textContent = rows.filter(function(row) { return row.status === 'Pending'; }).length;
+      document.getElementById('releasedRequests').textContent = rows.filter(function(row) { return row.status === 'Released'; }).length;
+      document.getElementById('overdueRequests').textContent = rows.filter(function(row) { return row.status === 'Overdue'; }).length;
+    }
+
+    function normalizeRequest(row) {
+      return {
+        id: row.request_id || row.transaction_id,
+        equipment: row.equipment_name || 'Equipment',
+        quantity: Number(row.quantity || row.quantity_borrowed || 0),
+        borrow_date: row.borrow_date || row.date_borrowed || '',
+        return_date: row.return_date || row.due_date || '',
+        status: row.display_status || row.status || 'Pending'
+      };
+    }
+
+    function renderRows(rows) {
+      const tbody = document.getElementById('requestRows');
+      const empty = document.getElementById('emptyState');
+      document.getElementById('visibleCount').textContent = rows.length + ' record' + (rows.length === 1 ? '' : 's');
+      empty.style.display = rows.length ? 'none' : 'block';
+      tbody.innerHTML = rows.map(function(row) {
+        const cancelButton = canCancel(row.status)
+          ? '<button class="btn btn-outline-danger btn-sm" type="button" onclick="cancelRequest(' + row.id + ')">Cancel</button>'
+          : '';
+        return '<tr>' +
+          '<td class="ps-3"><span class="request-number">#' + row.id + '</span></td>' +
+          '<td><div class="request-equipment">' + escapeHtml(row.equipment) + '</div></td>' +
+          '<td>' + row.quantity + '</td>' +
+          '<td><div class="request-date">' + escapeHtml(row.borrow_date) + '</div></td>' +
+          '<td><div class="request-date">' + escapeHtml(row.return_date) + '</div></td>' +
+          '<td>' + statusBadge(row.status) + '</td>' +
+          '<td class="text-end pe-3"><div class="request-actions"><a class="btn btn-outline-primary btn-sm" href="/borrower/requests/' + row.id + '">View Details</a>' + cancelButton + '</div></td>' +
+        '</tr>';
+      }).join('');
+    }
+
+    async function cancelRequest(requestId) {
+      if (!confirm('Cancel this borrowing request? This can only be done before equipment is released.')) return;
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/pages/login.html';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/transactions/cancel/' + encodeURIComponent(requestId), {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: token
+          },
+          body: JSON.stringify({ reason: 'Cancelled by borrower' })
+        });
+        const data = await response.json().catch(function() { return {}; });
+        if (response.status === 401 || response.status === 403) {
+          localStorage.clear();
+          window.location.href = '/pages/login.html';
+          return;
+        }
+        if (!response.ok) throw new Error(data.message || 'Unable to cancel request.');
+        alert(data.message || 'Borrowing request cancelled successfully.');
+        loadRequests();
+      } catch (err) {
+        alert(err.message || 'Unable to cancel request.');
+      }
+    }
+
+    function applyFilters() {
+      const query = document.getElementById('requestSearch').value.trim().toLowerCase();
+      const status = document.getElementById('statusFilter').value;
+      const filtered = requestItems.filter(function(row) {
+        const requestNumber = String(row.id);
+        const matchesQuery = !query || requestNumber.includes(query) || row.equipment.toLowerCase().includes(query);
+        const matchesStatus = !status || row.status === status;
+        return matchesQuery && matchesStatus;
+      });
+
+      renderRows(filtered);
+    }
+
+    function showLoadError(message) {
+      document.getElementById('requestRows').innerHTML = '';
+      document.getElementById('visibleCount').textContent = '0 records';
+      const empty = document.getElementById('emptyState');
+      empty.style.display = 'block';
+      empty.innerHTML = '<i class="bi bi-exclamation-triangle"></i>' + escapeHtml(message);
+    }
+
+    async function loadRequests() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/pages/login.html';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/transactions', {
+          headers: { authorization: token }
+        });
+        if (response.status === 401 || response.status === 403) {
+          localStorage.clear();
+          window.location.href = '/pages/login.html';
+          return;
+        }
+        const data = await response.json().catch(function() { return []; });
+        if (!response.ok) throw new Error(data.message || 'Unable to load your requests.');
+        requestItems = data.map(normalizeRequest);
+        renderSummary(requestItems);
+        applyFilters();
+      } catch (err) {
+        showLoadError(err.message || 'Unable to load your requests.');
+      }
+    }
+
+    document.getElementById('requestSearch').addEventListener('input', applyFilters);
+    document.getElementById('statusFilter').addEventListener('change', applyFilters);
+    loadRequests();
+  </script>
+</body>
+</html>

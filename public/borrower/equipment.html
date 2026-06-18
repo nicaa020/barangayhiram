@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Equipment - BarangayHiram</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/app.css" rel="stylesheet">
+  <style>
+    .equipment-catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .equipment-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 230px;
+      padding: 16px;
+      border-radius: var(--bh-radius-lg);
+      background: var(--bh-surface);
+      border: 0.5px solid var(--bh-border-soft);
+    }
+
+    .equipment-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .equipment-card h5 {
+      margin: 0 0 5px;
+      color: var(--bh-text);
+      font-size: var(--bh-font-title);
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .equipment-category {
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-sm);
+      line-height: 1.25;
+    }
+
+    .equipment-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .equipment-meta-item {
+      min-width: 0;
+    }
+
+    .equipment-meta-item span {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-xs);
+      line-height: 1.2;
+    }
+
+    .equipment-meta-item strong {
+      display: block;
+      color: var(--bh-text);
+      font-size: var(--bh-font-sm);
+      font-weight: 600;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .equipment-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 0.5px solid var(--bh-border-soft);
+    }
+
+    .equipment-empty {
+      display: none;
+      padding: 32px 16px;
+      text-align: center;
+      color: var(--bh-text-muted);
+    }
+
+    .equipment-empty i {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--bh-accent);
+      font-size: 26px;
+    }
+
+    @media (max-width: 1180px) {
+      .equipment-catalog-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .equipment-catalog-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .equipment-meta {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="bh-ui borrower-ui" data-page-title="Browse Equipment" data-page-active="equipment">
+  <main id="borrowerPageContent">
+    <div class="bh-page-kicker">Available barangay equipment catalog</div>
+
+    <section class="card bh-filter-card mb-4">
+      <div class="card-body">
+        <div class="row g-2 align-items-end">
+          <div class="col-lg-8">
+            <label class="form-label" for="equipmentSearch">Search equipment</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input class="form-control" id="equipmentSearch" type="search" placeholder="Search by equipment name">
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <label class="form-label" for="categoryFilter">Category</label>
+            <select class="form-select" id="categoryFilter">
+              <option value="">All categories</option>
+              <option>Chairs</option>
+              <option>Tables</option>
+              <option>Tents</option>
+              <option>Sound Systems</option>
+              <option>Projectors</option>
+              <option>Generators</option>
+              <option>Sports Equipment</option>
+              <option>Others</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Equipment list</span>
+        <span class="badge bg-primary" id="equipmentCount">0 items</span>
+      </div>
+      <div class="card-body">
+        <div class="equipment-catalog-grid" id="equipmentCatalog"></div>
+        <div class="equipment-empty" id="emptyState">
+          <i class="bi bi-search"></i>
+          No equipment matched your search or selected category.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/borrower-layout.js"></script>
+  <script>
+    let equipmentItems = [];
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, function(ch) {
+        return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[ch];
+      });
+    }
+
+    function statusBadge(status) {
+      const classes = {
+        Available: 'bg-success',
+        Borrowed: 'bg-info text-dark',
+        'Under Maintenance': 'bg-warning text-dark',
+        Maintenance: 'bg-warning text-dark',
+        Unavailable: 'bg-secondary'
+      };
+      return '<span class="badge ' + (classes[status] || 'bg-secondary') + '">' + escapeHtml(status) + '</span>';
+    }
+
+    function normalizeEquipment(item) {
+      return {
+        id: item.item_id || item.equipment_id,
+        name: item.specific_item_name || item.name || 'Unnamed equipment',
+        category: item.category || 'Others',
+        available: Number(item.quantity_available || item.available_quantity || 0),
+        condition: item.condition || 'Good',
+        location: item.location || '-',
+        status: item.status || 'Available',
+        highValue: item.is_high_value === true || item.is_high_value === 1 || item.is_high_value === '1'
+      };
+    }
+
+    function renderEquipment(items) {
+      const catalog = document.getElementById('equipmentCatalog');
+      const emptyState = document.getElementById('emptyState');
+      const count = document.getElementById('equipmentCount');
+
+      count.textContent = items.length + ' item' + (items.length === 1 ? '' : 's');
+      emptyState.style.display = items.length ? 'none' : 'block';
+      catalog.innerHTML = items.map(function(item) {
+        return '<article class="equipment-card">' +
+          '<div class="equipment-card-header">' +
+            '<div>' +
+              '<h5>' + escapeHtml(item.name) + '</h5>' +
+              '<div class="equipment-category">' + escapeHtml(item.category) + '</div>' +
+            '</div>' +
+            (item.highValue ? '<span class="badge bg-primary">High-value</span>' : '') +
+          '</div>' +
+          '<div class="equipment-meta">' +
+            '<div class="equipment-meta-item"><span>Available quantity</span><strong>' + item.available + '</strong></div>' +
+            '<div class="equipment-meta-item"><span>Condition</span><strong>' + escapeHtml(item.condition) + '</strong></div>' +
+            '<div class="equipment-meta-item"><span>Location</span><strong>' + escapeHtml(item.location) + '</strong></div>' +
+            '<div class="equipment-meta-item"><span>Status</span><strong>' + statusBadge(item.status) + '</strong></div>' +
+          '</div>' +
+          '<div class="equipment-card-footer">' +
+            '<span class="text-muted small">Requests will be handled on the request page.</span>' +
+            '<a class="btn btn-outline-primary btn-sm" href="/borrower/equipment/' + item.id + '">View Details</a>' +
+          '</div>' +
+        '</article>';
+      }).join('');
+    }
+
+    function applyFilters() {
+      const query = document.getElementById('equipmentSearch').value.trim().toLowerCase();
+      const category = document.getElementById('categoryFilter').value;
+      const filtered = equipmentItems.filter(function(item) {
+        const matchesName = item.name.toLowerCase().includes(query);
+        const matchesCategory = !category || item.category === category;
+        return matchesName && matchesCategory;
+      });
+
+      renderEquipment(filtered);
+    }
+
+    function showLoadError(message) {
+      document.getElementById('equipmentCatalog').innerHTML = '';
+      document.getElementById('equipmentCount').textContent = '0 items';
+      const emptyState = document.getElementById('emptyState');
+      emptyState.style.display = 'block';
+      emptyState.innerHTML = '<i class="bi bi-exclamation-triangle"></i>' + escapeHtml(message);
+    }
+
+    async function loadEquipment() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/pages/login.html';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/equipment', {
+          headers: { authorization: token }
+        });
+
+        if (response.status === 401 || response.status === 403) {
+          localStorage.clear();
+          window.location.href = '/pages/login.html';
+          return;
+        }
+
+        const data = await response.json().catch(function() { return []; });
+        if (!response.ok) throw new Error(data.message || 'Unable to load equipment catalog.');
+
+        equipmentItems = data.map(normalizeEquipment);
+        applyFilters();
+      } catch (err) {
+        showLoadError(err.message || 'Unable to load equipment catalog.');
+      }
+    }
+
+    document.getElementById('equipmentSearch').addEventListener('input', applyFilters);
+    document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+    loadEquipment();
+  </script>
+</body>
+</html>

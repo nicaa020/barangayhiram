@@ -32,44 +32,97 @@
     .stat-icon { width: 55px; height: 55px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #fff; }
     .stat-info .number { font-size: 1.8rem; font-weight: 700; color: #333; line-height: 1; }
     .stat-info .label { color: #6c757d; font-size: 0.82rem; margin-top: 3px; }
+    .report-summary-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; padding: 14px 20px; border-top: 1px solid #f0f0f0; }
+    .report-summary-item { background: #f8fafc; border: 0.5px solid #edf0f4; border-radius: 8px; padding: 10px; }
+    .report-summary-item span { display: block; color: #6c757d; font-size: 0.74rem; line-height: 1.25; }
+    .report-summary-item strong { display: block; margin-top: 3px; color: #212529; font-size: 1.1rem; line-height: 1.1; }
     @media (max-width: 768px) { .sidebar { position: static; width: 100%; min-height: auto; } .main-content { margin-left: 0; } .topbar { position: static; } }
+    @media (max-width: 1100px) { .report-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   </style>
   <link href="/css/app.css" rel="stylesheet">
 </head>
-<body>
+<body class="bh-ui">
   <div class="sidebar">
     <div class="sidebar-brand">
-      <svg viewBox="0 0 100 100" width="55" height="55"><circle cx="50" cy="50" r="48" fill="#ffffff22" /><circle cx="50" cy="50" r="44" fill="#ffffff11" /><circle cx="50" cy="50" r="38" fill="#ffffff" /><path d="M50 18 L72 28 L72 50 C72 65 62 75 50 82 C38 75 28 65 28 50 L28 28 Z" fill="#0d6efd" stroke="#0a58ca" stroke-width="1" /><polygon points="50,24 51.5,28 56,28 52.5,31 54,35 50,32 46,35 47.5,31 44,28 48.5,28" fill="#ffc107" /><path d="M50 48 L40 55 L40 68 L45 68 L45 60 L55 60 L55 68 L60 68 L60 55 Z" fill="#ffffff" /><rect x="47" y="62" width="6" height="6" fill="#0a58ca" /></svg>
-      <h5 class="text-white mb-0 mt-1" style="font-weight:700;">BarangayHiram</h5><small style="color:rgba(255,255,255,0.7);font-size:0.72rem;">Brgy. 628, Zone 63</small>
+      <svg viewBox="0 0 100 100" width="55" height="55">
+        <circle cx="50" cy="50" r="48" fill="#ffffff22" />
+        <circle cx="50" cy="50" r="44" fill="#ffffff11" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(0 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(45 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(90 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(135 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(180 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(225 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(270 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(315 50 50)" />
+        <circle cx="50" cy="50" r="38" fill="#ffffff" />
+        <path d="M50 18 L72 28 L72 50 C72 65 62 75 50 82 C38 75 28 65 28 50 L28 28 Z" fill="#0d6efd" stroke="#0a58ca" stroke-width="1" />
+        <polygon points="50,24 51.5,28 56,28 52.5,31 54,35 50,32 46,35 47.5,31 44,28 48.5,28" fill="#ffc107" />
+        <polygon points="36,36 37.2,39 41,39 38,41.5 39,45 36,43 33,45 34,41.5 31,39 34.8,39" fill="#ffc107" />
+        <polygon points="64,36 65.2,39 69,39 66,41.5 67,45 64,43 61,45 62,41.5 59,39 62.8,39" fill="#ffc107" />
+        <path d="M50 48 L40 55 L40 68 L45 68 L45 60 L55 60 L55 68 L60 68 L60 55 Z" fill="#ffffff" />
+        <rect x="47" y="62" width="6" height="6" fill="#0a58ca" />
+      </svg>
+      <h5 class="mb-0 mt-1" style="font-weight:700;">BarangayHiram</h5><small>Brgy. 628, Zone 63</small>
     </div>
     <nav class="sidebar-nav">
-      <a href="dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a><a href="equipment.html" class="nav-link"><i class="bi bi-box-seam"></i> Equipment</a><a href="borrowers.html" class="nav-link"><i class="bi bi-people"></i> Borrowers</a><a href="transactions.html" class="nav-link"><i class="bi bi-arrow-left-right"></i> Transactions</a><a href="returns.html" class="nav-link"><i class="bi bi-arrow-return-left"></i> Returns</a><a href="reports.html" class="nav-link active"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a><a href="staff.html" class="nav-link admin-only"><i class="bi bi-person-gear"></i> Staff Accounts</a>
+      <a href="dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a><a href="equipment.html" class="nav-link"><i class="bi bi-box-seam"></i> Equipment</a><a href="borrowers.html" class="nav-link"><i class="bi bi-people"></i> Borrowers</a><a href="transactions.html" class="nav-link"><i class="bi bi-arrow-left-right"></i> Transactions</a><a href="returns.html" class="nav-link"><i class="bi bi-arrow-return-left"></i> Returns</a><a href="reports.html" class="nav-link active"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a><a href="new-users.html" class="nav-link admin-only"><i class="bi bi-person-check"></i> New Users</a><a href="staff.html" class="nav-link admin-only"><i class="bi bi-person-gear"></i> Staff Accounts</a>
     </nav>
     <div class="sidebar-footer"><a class="nav-link" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a></div>
   </div>
   <div class="main-content">
-    <div class="topbar"><h4><i class="bi bi-file-earmark-bar-graph me-2 text-primary"></i>Reports</h4><div class="topbar-right"><div class="user-info"><div class="name" id="userName">Loading...</div><div class="role" id="userRole"></div></div><div class="avatar" id="userAvatar">A</div></div></div>
+    <div class="topbar"><h4>Reports</h4><div class="topbar-right"><div class="user-info"><div class="name" id="userName">Loading...</div><div class="role" id="userRole"></div></div><div class="avatar" id="userAvatar">A</div></div></div>
     <div class="page-content">
-      <div class="row g-3 mb-4">
-        <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#0d6efd;"><i class="bi bi-box-seam"></i></div><div class="stat-info"><div class="number" id="totalEquipment">--</div><div class="label">Equipment</div></div></div></div>
-        <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#20c997;"><i class="bi bi-people"></i></div><div class="stat-info"><div class="number" id="totalBorrowers">--</div><div class="label">Borrowers</div></div></div></div>
-        <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#fd7e14;"><i class="bi bi-list-check"></i></div><div class="stat-info"><div class="number" id="totalTransactions">--</div><div class="label">Transactions</div></div></div></div>
-        <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#dc3545;"><i class="bi bi-clock-history"></i></div><div class="stat-info"><div class="number" id="overdueTransactions">--</div><div class="label">Overdue</div></div></div></div>
+      <div class="bh-stats-grid">
+        <div><div class="stat-card"><div class="stat-info"><div class="label"><i class="bi bi-box-seam"></i> Total Equipment</div><div class="number bh-value-teal" id="totalEquipment">--</div><div class="bh-stat-sub">Inventory quantity</div></div></div></div>
+        <div><div class="stat-card"><div class="stat-info"><div class="label"><i class="bi bi-check-circle"></i> Available Equipment</div><div class="number bh-value-teal" id="availableEquipment">--</div><div class="bh-stat-sub">Ready to release</div></div></div></div>
+        <div><div class="stat-card"><div class="stat-info"><div class="label"><i class="bi bi-box-arrow-up"></i> Currently Borrowed</div><div class="number bh-value-blue" id="borrowedEquipment">--</div><div class="bh-stat-sub">Released quantity</div></div></div></div>
+        <div><div class="stat-card"><div class="stat-info"><div class="label"><i class="bi bi-hourglass-split"></i> Pending Requests</div><div class="number bh-value-amber" id="pendingRequests">--</div><div class="bh-stat-sub">Awaiting review</div></div></div></div>
+        <div><div class="stat-card"><div class="stat-info"><div class="label"><i class="bi bi-clock-history"></i> Overdue Items</div><div class="number bh-value-red" id="overdueTransactions">--</div><div class="bh-stat-sub">Needs attention</div></div></div></div>
+        <div><div class="stat-card"><div class="stat-info"><div class="label"><i class="bi bi-arrow-return-left"></i> Returned Transactions</div><div class="number bh-value-teal" id="returnedTransactions">--</div><div class="bh-stat-sub">Completed returns</div></div></div></div>
+        <div><div class="stat-card"><div class="stat-info"><div class="label"><i class="bi bi-exclamation-triangle"></i> Damaged/Lost Items</div><div class="number bh-value-red" id="damagedLostItems">--</div><div class="bh-stat-sub">Damaged or incomplete</div></div></div></div>
+        <div><div class="stat-card"><div class="stat-info"><div class="label"><i class="bi bi-person-check"></i> Verified Borrowers</div><div class="number bh-value-blue" id="verifiedBorrowers">--</div><div class="bh-stat-sub">Approved accounts</div></div></div></div>
+      </div>
+      <div class="card mb-4 bh-filter-card">
+        <div class="card-header">Report filters</div>
+        <div class="card-body">
+          <div class="row g-2 align-items-end">
+            <div class="col-md-2"><label class="form-label">Report</label><select class="form-select" id="reportType"><option value="borrowed">Borrowed Items</option><option value="inventory">Inventory</option><option value="inventory-recapitulation">Inventory Recapitulation</option><option value="most-borrowed-equipment">Most Borrowed Equipment</option><option value="borrowed-by-category">Most Borrowed Categories</option><option value="borrowed-by-borrower-type">Most Borrower Types</option><option value="requests-by-status">Requests by Status</option><option value="borrowers">Borrowers</option><option value="overdue">Overdue</option></select></div>
+            <div class="col-md-2"><label class="form-label">Date From</label><input class="form-control" id="dateFrom" type="date"></div>
+            <div class="col-md-2"><label class="form-label">Date To</label><input class="form-control" id="dateTo" type="date"></div>
+            <div class="col-md-2"><label class="form-label">Category</label><select class="form-select" id="categoryFilter"><option value="">All Categories</option><option>Chairs</option><option>Tables</option><option>Tents</option><option>Sound Systems</option><option>Projectors</option><option>Generators</option><option>Sports Equipment</option><option>Others</option></select></div>
+            <div class="col-md-2"><label class="form-label">Borrower Type</label><select class="form-select" id="borrowerTypeFilter"><option value="">All Types</option><option>Resident</option><option>Student</option><option>Transient</option></select></div>
+            <div class="col-md-2"><label class="form-label">Status</label><select class="form-select" id="statusFilter"><option value="">All Status</option><option>Pending</option><option>Approved</option><option>Released</option><option>Returned</option><option>Rejected</option><option>Overdue</option><option>Cancelled</option></select></div>
+            <div class="col-12 text-end d-flex flex-wrap justify-content-end gap-2">
+              <button class="btn btn-outline-primary" id="exportReportPdfBtn" onclick="exportCurrentReportPdf()"><i class="bi bi-file-earmark-pdf me-1"></i>Export PDF</button>
+              <button class="btn btn-primary" onclick="loadReport()"><i class="bi bi-search me-1"></i>Apply filters</button>
+            </div>
+          </div>
+        </div>
+        <div class="report-summary-grid" id="reportSummaryGrid"></div>
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light" id="reportHead"></thead>
+            <tbody id="reportBody"><tr><td class="text-center py-4 text-muted">Select filters to load a report.</td></tr></tbody>
+          </table>
+        </div>
       </div>
       <div class="row g-4">
-        <div class="col-lg-7"><div class="card"><div class="card-header"><i class="bi bi-bar-chart me-2 text-primary"></i>Equipment Utilization</div><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead class="table-light"><tr><th class="ps-3">Equipment</th><th>Category</th><th>Total</th><th>Available</th><th>Status</th><th>Times Borrowed</th></tr></thead><tbody id="utilizationTable"><tr><td colspan="6" class="text-center py-4 text-muted">Loading...</td></tr></tbody></table></div></div></div></div>
-        <div class="col-lg-5"><div class="card"><div class="card-header"><i class="bi bi-calendar3 me-2 text-primary"></i>Monthly Transactions</div><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead class="table-light"><tr><th class="ps-3">Month</th><th>Total</th><th>Completed</th><th>Ongoing</th></tr></thead><tbody id="monthlyTable"><tr><td colspan="4" class="text-center py-4 text-muted">Loading...</td></tr></tbody></table></div></div></div></div>
+        <div class="col-lg-7"><div class="card"><div class="card-header">Equipment utilization</div><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0" id="utilizationReportTable"><thead class="table-light"><tr><th class="ps-3">Equipment</th><th>Category</th><th>Total</th><th>Available</th><th>Status</th><th>Times Borrowed</th></tr></thead><tbody id="utilizationTable"><tr><td colspan="6" class="text-center py-4 text-muted">Loading...</td></tr></tbody></table></div></div></div></div>
+        <div class="col-lg-5"><div class="card"><div class="card-header">Monthly transactions</div><div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead class="table-light"><tr><th class="ps-3">Month</th><th>Total</th><th>Completed</th><th>Ongoing</th></tr></thead><tbody id="monthlyTable"><tr><td colspan="4" class="text-center py-4 text-muted">Loading...</td></tr></tbody></table></div></div></div></div>
       </div>
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
   <script src="/js/app.js"></script>
   <script>
     const token = localStorage.getItem('token');
     if (!token) window.location.href = '/pages/login.html';
     const fullName = localStorage.getItem('full_name') || 'Admin';
     const role = localStorage.getItem('role') || 'staff';
-    if (role !== 'admin') {
+    if (role !== 'admin' && role !== 'super_admin' && role !== 'staff') {
       document.querySelectorAll('.admin-only').forEach(function(link) { link.classList.add('d-none'); });
     }
     document.getElementById('userName').textContent = fullName;
@@ -78,13 +131,255 @@
     function escapeHtml(value) { return String(value || '').replace(/[&<>"']/g, function(char) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]; }); }
     async function api(path) { const res = await fetch(path, { headers: { authorization: token } }); if (res.status === 403) logout(); return res; }
     function statusBadge(status) { const colors = { Available: 'success', Borrowed: 'danger', 'Under Maintenance': 'warning text-dark' }; return '<span class="badge bg-' + (colors[status] || 'secondary') + '">' + escapeHtml(status) + '</span>'; }
+    function borrowingBadge(status) { const colors = { Pending:'warning text-dark', Approved:'primary', Released:'info text-dark', Returned:'success', Rejected:'danger', Overdue:'danger', Cancelled:'secondary' }; return '<span class="badge bg-' + (colors[status] || 'secondary') + '">' + escapeHtml(status) + '</span>'; }
+    function numberValue(value) { return Number(value || 0); }
+    function renderSummary(items) {
+      const grid = document.getElementById('reportSummaryGrid');
+      grid.innerHTML = items.map(function(item) {
+        return '<div class="report-summary-item"><span>' + escapeHtml(item.label) + '</span><strong>' + escapeHtml(item.value) + '</strong></div>';
+      }).join('');
+    }
+    function appendTotalRow(cols, label, values) {
+      return '<tr class="table-light fw-semibold"><td class="ps-3" colspan="' + cols + '">' + escapeHtml(label) + '</td>' +
+        values.map(function(value) { return '<td>' + escapeHtml(value) + '</td>'; }).join('') +
+        '</tr>';
+    }
+    function summarizeBorrowed(rows) {
+      renderSummary([
+        { label: 'Total transactions', value: rows.length },
+        { label: 'Total quantity borrowed', value: rows.reduce(function(sum, r) { return sum + numberValue(r.quantity_borrowed); }, 0) },
+        { label: 'Currently released', value: rows.filter(function(r) { return r.status === 'Released'; }).length },
+        { label: 'Returned', value: rows.filter(function(r) { return r.status === 'Returned' || r.status === 'Completed'; }).length },
+        { label: 'Overdue', value: rows.filter(function(r) { return r.status === 'Overdue'; }).length }
+      ]);
+    }
+    function summarizeInventory(rows) {
+      renderSummary([
+        { label: 'Total quantity', value: rows.reduce(function(sum, r) { return sum + numberValue(r.quantity); }, 0) },
+        { label: 'Available quantity', value: rows.reduce(function(sum, r) { return sum + numberValue(r.available_quantity); }, 0) },
+        { label: 'Borrowed quantity', value: rows.reduce(function(sum, r) { return sum + numberValue(r.borrowed_quantity); }, 0) },
+        { label: 'Damaged/Lost quantity', value: rows.reduce(function(sum, r) { return sum + ((r.condition === 'Damaged' || numberValue(r.problem_returns) > 0) ? Math.max(numberValue(r.problem_returns), 1) : 0); }, 0) },
+        { label: 'Low stock items', value: rows.filter(function(r) { return numberValue(r.available_quantity) <= 2; }).length }
+      ]);
+    }
+    function summarizeOverdue(rows) {
+      renderSummary([
+        { label: 'Total overdue transactions', value: rows.length },
+        { label: 'Total overdue quantity', value: rows.reduce(function(sum, r) { return sum + numberValue(r.quantity_borrowed); }, 0) },
+        { label: 'Longest days overdue', value: rows.reduce(function(max, r) { return Math.max(max, numberValue(r.days_overdue)); }, 0) }
+      ]);
+    }
+    function summarizeRecap(rows) {
+      renderSummary([
+        { label: 'Categories shown', value: rows.length },
+        { label: 'Overall total quantity', value: rows.reduce(function(sum, r) { return sum + numberValue(r.total_quantity); }, 0) },
+        { label: 'Overall available', value: rows.reduce(function(sum, r) { return sum + numberValue(r.available_quantity); }, 0) },
+        { label: 'Overall borrowed', value: rows.reduce(function(sum, r) { return sum + numberValue(r.borrowed_quantity); }, 0) },
+        { label: 'Damaged/Maintenance items', value: rows.reduce(function(sum, r) { return sum + numberValue(r.damaged_or_maintenance_items); }, 0) }
+      ]);
+    }
+    function summarizeMostBorrowedEquipment(rows) {
+      renderSummary([
+        { label: 'Equipment shown', value: rows.length },
+        { label: 'Total requests', value: rows.reduce(function(sum, r) { return sum + numberValue(r.total_requests); }, 0) },
+        { label: 'Total quantity borrowed', value: rows.reduce(function(sum, r) { return sum + numberValue(r.total_quantity); }, 0) },
+        { label: 'Unique borrowers served', value: rows.reduce(function(sum, r) { return sum + numberValue(r.unique_borrowers); }, 0) },
+        { label: 'Currently released', value: rows.reduce(function(sum, r) { return sum + numberValue(r.currently_released); }, 0) }
+      ]);
+    }
+    function summarizeGroupedDemand(rows, label) {
+      renderSummary([
+        { label: label + ' shown', value: rows.length },
+        { label: 'Total requests', value: rows.reduce(function(sum, r) { return sum + numberValue(r.total_requests); }, 0) },
+        { label: 'Total quantity borrowed', value: rows.reduce(function(sum, r) { return sum + numberValue(r.total_quantity); }, 0) },
+        { label: 'Top ' + label.toLowerCase(), value: rows.length ? (rows[0].category || rows[0].borrower_type || rows[0].status || '-') : '-' },
+        { label: 'Top quantity', value: rows.length ? numberValue(rows[0].total_quantity) : 0 }
+      ]);
+    }
+    function textFromCell(cell) { return String(cell ? cell.textContent : '').replace(/\s+/g, ' ').trim(); }
+    function collectTableData(table) {
+      const head = Array.from(table.querySelectorAll('thead th')).map(textFromCell);
+      const body = Array.from(table.querySelectorAll('tbody tr')).map(function(row) {
+        return Array.from(row.querySelectorAll('td')).map(textFromCell);
+      }).filter(function(row) {
+        return row.length && !row.some(function(value) { return value.includes('No records') || value.includes('Loading') || value.includes('Select filters'); });
+      });
+      return { head: head, body: body };
+    }
+    function appliedFiltersText() {
+      const filters = [];
+      const pairs = [
+        ['Date From', 'dateFrom'],
+        ['Date To', 'dateTo'],
+        ['Category', 'categoryFilter'],
+        ['Borrower Type', 'borrowerTypeFilter'],
+        ['Status', 'statusFilter']
+      ];
+      pairs.forEach(function(pair) {
+        const value = document.getElementById(pair[1]).value;
+        if (value) filters.push(pair[0] + ': ' + value);
+      });
+      return filters.length ? filters.join(' | ') : 'None';
+    }
+    function exportPdfReport(config) {
+      if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert('PDF export is still loading. Please try again in a moment.');
+        return;
+      }
+      const tableData = collectTableData(config.table);
+      if (!tableData.head.length || !tableData.body.length) {
+        alert('No table data is available to export.');
+        return;
+      }
+
+      const doc = new window.jspdf.jsPDF({ orientation: config.orientation || 'landscape', unit: 'pt', format: 'a4' });
+      const generatedAt = new Date().toLocaleString();
+      const staffName = fullName || 'Staff';
+      const marginLeft = 40;
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(15);
+      doc.text('BarangayHiram', marginLeft, 36);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text('Barangay 628, Zone 63', marginLeft, 52);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(13);
+      doc.text(config.title, marginLeft, 78);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.text('Date generated: ' + generatedAt, marginLeft, 96);
+      doc.text('Applied filters: ' + (config.filters || 'None'), marginLeft, 112);
+      doc.text('Generated by: ' + staffName, marginLeft, 128);
+
+      doc.autoTable({
+        head: [tableData.head],
+        body: tableData.body,
+        startY: 146,
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 4, overflow: 'linebreak' },
+        headStyles: { fillColor: [13, 110, 253], textColor: 255 },
+        margin: { left: marginLeft, right: marginLeft }
+      });
+      const blob = doc.output('blob');
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = config.fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      const preview = window.open(blobUrl, '_blank');
+      if (!preview) {
+        alert('PDF was generated and downloaded. If it does not open automatically, check your browser downloads.');
+      }
+      setTimeout(function() {
+        URL.revokeObjectURL(blobUrl);
+      }, 60000);
+    }
+    function currentReportMeta() {
+      const type = document.getElementById('reportType').value;
+      const map = {
+        borrowed: { title: 'Borrowed Items Report', fileName: 'barangayhiram-borrowed-items-report.pdf' },
+        inventory: { title: 'Inventory Report', fileName: 'barangayhiram-inventory-report.pdf' },
+        'inventory-recapitulation': { title: 'Inventory Recapitulation Report', fileName: 'barangayhiram-inventory-recapitulation-report.pdf' },
+        overdue: { title: 'Overdue Items Report', fileName: 'barangayhiram-overdue-items-report.pdf' }
+      };
+      return map[type] || null;
+    }
+    function updateExportButtonVisibility() {
+      document.getElementById('exportReportPdfBtn').classList.toggle('d-none', !currentReportMeta());
+    }
+    function exportCurrentReportPdf() {
+      const meta = currentReportMeta();
+      if (!meta) {
+        alert('PDF export is available only for Borrowed Items, Inventory, and Overdue reports.');
+        return;
+      }
+      exportPdfReport({
+        title: meta.title,
+        fileName: meta.fileName,
+        filters: appliedFiltersText(),
+        table: document.querySelector('#reportBody').closest('table')
+      });
+    }
+    function queryString() {
+      const params = new URLSearchParams();
+      [['date_from','dateFrom'], ['date_to','dateTo'], ['category','categoryFilter'], ['borrower_type','borrowerTypeFilter'], ['status','statusFilter']].forEach(function(pair) {
+        const value = document.getElementById(pair[1]).value;
+        if (value) params.set(pair[0], value);
+      });
+      return params.toString();
+    }
+    async function loadReport() {
+      const type = document.getElementById('reportType').value;
+      const qs = queryString();
+      const res = await api('/api/dashboard/reports/' + type + (qs ? '?' + qs : ''));
+      const data = await res.json();
+      const head = document.getElementById('reportHead');
+      const body = document.getElementById('reportBody');
+      if (!res.ok) {
+        body.innerHTML = '<tr><td class="text-center py-4 text-danger">' + escapeHtml(data.message || 'Unable to load report.') + '</td></tr>';
+        return;
+      }
+      if (type === 'borrowed') {
+        summarizeBorrowed(data);
+        head.innerHTML = '<tr><th class="ps-3">ID</th><th>Equipment</th><th>Category</th><th>Borrower</th><th>Type</th><th>Qty</th><th>Dates</th><th>Status</th></tr>';
+        body.innerHTML = data.length ? data.map(function(r) { return '<tr><td class="ps-3">#' + r.transaction_id + '</td><td>' + escapeHtml(r.equipment_name) + '</td><td>' + escapeHtml(r.category) + '</td><td>' + escapeHtml(r.borrower_name) + '</td><td>' + escapeHtml(r.borrower_type) + '</td><td>' + r.quantity_borrowed + '</td><td>' + escapeHtml(r.date_borrowed) + ' to ' + escapeHtml(r.due_date) + '</td><td>' + borrowingBadge(r.status) + '</td></tr>'; }).join('') + appendTotalRow(5, 'Total', [data.reduce(function(sum, r) { return sum + numberValue(r.quantity_borrowed); }, 0), '', '']) : emptyReport(8);
+      } else if (type === 'inventory') {
+        summarizeInventory(data);
+        head.innerHTML = '<tr><th class="ps-3">Equipment</th><th>Category</th><th>Total</th><th>Available</th><th>Borrowed</th><th>Condition</th><th>Status</th><th>Times Borrowed</th></tr>';
+        body.innerHTML = data.length ? data.map(function(r) { return '<tr><td class="ps-3">' + escapeHtml(r.name) + '</td><td>' + escapeHtml(r.category) + '</td><td>' + r.quantity + '</td><td>' + r.available_quantity + '</td><td>' + r.borrowed_quantity + '</td><td>' + escapeHtml(r.condition) + '</td><td>' + statusBadge(r.status) + '</td><td>' + r.times_borrowed + '</td></tr>'; }).join('') + appendTotalRow(2, 'Total', [data.reduce(function(sum, r) { return sum + numberValue(r.quantity); }, 0), data.reduce(function(sum, r) { return sum + numberValue(r.available_quantity); }, 0), data.reduce(function(sum, r) { return sum + numberValue(r.borrowed_quantity); }, 0), '', '', '']) : emptyReport(8);
+      } else if (type === 'inventory-recapitulation') {
+        summarizeRecap(data);
+        head.innerHTML = '<tr><th class="ps-3">Category</th><th>Item Count</th><th>Total Quantity</th><th>Available</th><th>Borrowed</th><th>Damaged/Maintenance</th></tr>';
+        body.innerHTML = data.length ? data.map(function(r) { return '<tr><td class="ps-3">' + escapeHtml(r.category) + '</td><td>' + r.item_count + '</td><td>' + r.total_quantity + '</td><td>' + r.available_quantity + '</td><td>' + r.borrowed_quantity + '</td><td>' + (r.damaged_or_maintenance_items || 0) + '</td></tr>'; }).join('') + appendTotalRow(1, 'Overall Total', [data.reduce(function(sum, r) { return sum + numberValue(r.item_count); }, 0), data.reduce(function(sum, r) { return sum + numberValue(r.total_quantity); }, 0), data.reduce(function(sum, r) { return sum + numberValue(r.available_quantity); }, 0), data.reduce(function(sum, r) { return sum + numberValue(r.borrowed_quantity); }, 0), data.reduce(function(sum, r) { return sum + numberValue(r.damaged_or_maintenance_items); }, 0)]) : emptyReport(6);
+      } else if (type === 'most-borrowed-equipment') {
+        summarizeMostBorrowedEquipment(data);
+        head.innerHTML = '<tr><th class="ps-3">Equipment</th><th>Category</th><th>Total Requests</th><th>Total Qty Borrowed</th><th>Unique Borrowers</th><th>Currently Released</th><th>Returned</th><th>Overdue</th></tr>';
+        body.innerHTML = data.length ? data.map(function(r) { return '<tr><td class="ps-3">' + escapeHtml(r.equipment_name) + '</td><td>' + escapeHtml(r.category) + '</td><td>' + r.total_requests + '</td><td>' + r.total_quantity + '</td><td>' + r.unique_borrowers + '</td><td>' + (r.currently_released || 0) + '</td><td>' + (r.returned_transactions || 0) + '</td><td>' + (r.overdue_transactions || 0) + '</td></tr>'; }).join('') + appendTotalRow(2, 'Total', [data.reduce(function(sum, r) { return sum + numberValue(r.total_requests); }, 0), data.reduce(function(sum, r) { return sum + numberValue(r.total_quantity); }, 0), data.reduce(function(sum, r) { return sum + numberValue(r.unique_borrowers); }, 0), data.reduce(function(sum, r) { return sum + numberValue(r.currently_released); }, 0), data.reduce(function(sum, r) { return sum + numberValue(r.returned_transactions); }, 0), data.reduce(function(sum, r) { return sum + numberValue(r.overdue_transactions); }, 0)]) : emptyReport(8);
+      } else if (type === 'borrowed-by-category') {
+        summarizeGroupedDemand(data, 'Categories');
+        head.innerHTML = '<tr><th class="ps-3">Category</th><th>Total Requests</th><th>Total Qty Borrowed</th></tr>';
+        body.innerHTML = data.length ? data.map(function(r) { return '<tr><td class="ps-3">' + escapeHtml(r.category || '-') + '</td><td>' + r.total_requests + '</td><td>' + r.total_quantity + '</td></tr>'; }).join('') + appendTotalRow(1, 'Total', [data.reduce(function(sum, r) { return sum + numberValue(r.total_requests); }, 0), data.reduce(function(sum, r) { return sum + numberValue(r.total_quantity); }, 0)]) : emptyReport(3);
+      } else if (type === 'borrowed-by-borrower-type') {
+        summarizeGroupedDemand(data, 'Borrower types');
+        head.innerHTML = '<tr><th class="ps-3">Borrower Type</th><th>Total Requests</th><th>Total Qty Borrowed</th></tr>';
+        body.innerHTML = data.length ? data.map(function(r) { return '<tr><td class="ps-3">' + escapeHtml(r.borrower_type || '-') + '</td><td>' + r.total_requests + '</td><td>' + r.total_quantity + '</td></tr>'; }).join('') + appendTotalRow(1, 'Total', [data.reduce(function(sum, r) { return sum + numberValue(r.total_requests); }, 0), data.reduce(function(sum, r) { return sum + numberValue(r.total_quantity); }, 0)]) : emptyReport(3);
+      } else if (type === 'requests-by-status') {
+        summarizeGroupedDemand(data, 'Statuses');
+        head.innerHTML = '<tr><th class="ps-3">Status</th><th>Total Requests</th><th>Total Qty Borrowed</th></tr>';
+        body.innerHTML = data.length ? data.map(function(r) { return '<tr><td class="ps-3">' + borrowingBadge(r.status || '-') + '</td><td>' + r.total_requests + '</td><td>' + r.total_quantity + '</td></tr>'; }).join('') + appendTotalRow(1, 'Total', [data.reduce(function(sum, r) { return sum + numberValue(r.total_requests); }, 0), data.reduce(function(sum, r) { return sum + numberValue(r.total_quantity); }, 0)]) : emptyReport(3);
+      } else if (type === 'borrowers') {
+        renderSummary([
+          { label: 'Total borrowers', value: data.length },
+          { label: 'Verified borrowers', value: data.filter(function(r) { return r.verification_status === 'Approved'; }).length },
+          { label: 'Active borrowings', value: data.reduce(function(sum, r) { return sum + numberValue(r.active_borrowings); }, 0) },
+          { label: 'Overdue items', value: data.reduce(function(sum, r) { return sum + numberValue(r.overdue_items); }, 0) }
+        ]);
+        head.innerHTML = '<tr><th class="ps-3">Borrower</th><th>Type</th><th>Contact</th><th>Status</th><th>Total Requests</th><th>Active</th><th>Overdue</th><th>Restriction</th></tr>';
+        body.innerHTML = data.length ? data.map(function(r) { return '<tr><td class="ps-3">' + escapeHtml(r.full_name) + '</td><td>' + escapeHtml(r.borrower_type) + '</td><td>' + escapeHtml(r.contact_number || '-') + '</td><td>' + borrowingBadge(r.verification_status) + '</td><td>' + r.total_requests + '</td><td>' + (r.active_borrowings || 0) + '</td><td>' + (r.overdue_items || 0) + '</td><td>' + (r.is_flagged ? escapeHtml(r.flag_reason || 'Restricted') : '<span class="text-muted">None</span>') + '</td></tr>'; }).join('') : emptyReport(8);
+      } else {
+        summarizeOverdue(data);
+        head.innerHTML = '<tr><th class="ps-3">ID</th><th>Equipment</th><th>Category</th><th>Borrower</th><th>Contact</th><th>Due Date</th><th>Days Overdue</th><th>Qty</th></tr>';
+        body.innerHTML = data.length ? data.map(function(r) { return '<tr><td class="ps-3">#' + r.transaction_id + '</td><td>' + escapeHtml(r.equipment_name) + '</td><td>' + escapeHtml(r.category) + '</td><td>' + escapeHtml(r.borrower_name) + '</td><td>' + escapeHtml(r.contact_number || '-') + '</td><td>' + escapeHtml(r.due_date) + '</td><td><span class="badge bg-danger">' + r.days_overdue + '</span></td><td>' + r.quantity_borrowed + '</td></tr>'; }).join('') + appendTotalRow(7, 'Total overdue quantity', [data.reduce(function(sum, r) { return sum + numberValue(r.quantity_borrowed); }, 0)]) : emptyReport(8);
+      }
+    }
+    function emptyReport(cols) {
+      return '<tr><td colspan="' + cols + '" class="text-center py-4 text-muted">No records found for the selected filters.</td></tr>';
+    }
     async function loadStats() {
       const res = await api('/api/dashboard/stats');
       const data = await res.json();
       document.getElementById('totalEquipment').textContent = data.total_equipment;
-      document.getElementById('totalBorrowers').textContent = data.total_borrowers;
-      document.getElementById('totalTransactions').textContent = data.total_transactions;
+      document.getElementById('availableEquipment').textContent = data.available_equipment;
+      document.getElementById('borrowedEquipment').textContent = data.borrowed_equipment;
+      document.getElementById('pendingRequests').textContent = data.pending_transactions;
       document.getElementById('overdueTransactions').textContent = data.overdue_transactions;
+      document.getElementById('returnedTransactions').textContent = data.completed_transactions;
+      document.getElementById('damagedLostItems').textContent = data.damaged_equipment;
+      document.getElementById('verifiedBorrowers').textContent = data.verified_borrowers;
     }
     async function loadUtilization() {
       const res = await api('/api/dashboard/utilization');
@@ -106,6 +401,14 @@
     }
     function logout() { localStorage.clear(); window.location.href = '/pages/login.html'; }
     loadStats();
+    const initialReport = new URLSearchParams(window.location.search).get('report');
+    if (initialReport) document.getElementById('reportType').value = initialReport;
+    ['reportType','dateFrom','dateTo','categoryFilter','borrowerTypeFilter','statusFilter'].forEach(function(id) {
+      document.getElementById(id).addEventListener('change', loadReport);
+    });
+    document.getElementById('reportType').addEventListener('change', updateExportButtonVisibility);
+    updateExportButtonVisibility();
+    loadReport();
     loadUtilization();
     loadMonthly();
   </script>

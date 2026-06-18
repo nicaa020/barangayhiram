@@ -33,36 +33,62 @@
   </style>
   <link href="/css/app.css" rel="stylesheet">
 </head>
-<body>
+<body class="bh-ui">
   <div class="sidebar">
     <div class="sidebar-brand">
-      <svg viewBox="0 0 100 100" width="55" height="55"><circle cx="50" cy="50" r="48" fill="#ffffff22" /><circle cx="50" cy="50" r="44" fill="#ffffff11" /><circle cx="50" cy="50" r="38" fill="#ffffff" /><path d="M50 18 L72 28 L72 50 C72 65 62 75 50 82 C38 75 28 65 28 50 L28 28 Z" fill="#0d6efd" stroke="#0a58ca" stroke-width="1" /><polygon points="50,24 51.5,28 56,28 52.5,31 54,35 50,32 46,35 47.5,31 44,28 48.5,28" fill="#ffc107" /><path d="M50 48 L40 55 L40 68 L45 68 L45 60 L55 60 L55 68 L60 68 L60 55 Z" fill="#ffffff" /><rect x="47" y="62" width="6" height="6" fill="#0a58ca" /></svg>
-      <h5 class="text-white mb-0 mt-1" style="font-weight:700;">BarangayHiram</h5><small style="color:rgba(255,255,255,0.7);font-size:0.72rem;">Brgy. 628, Zone 63</small>
+      <svg viewBox="0 0 100 100" width="55" height="55">
+        <circle cx="50" cy="50" r="48" fill="#ffffff22" />
+        <circle cx="50" cy="50" r="44" fill="#ffffff11" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(0 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(45 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(90 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(135 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(180 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(225 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(270 50 50)" />
+        <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(315 50 50)" />
+        <circle cx="50" cy="50" r="38" fill="#ffffff" />
+        <path d="M50 18 L72 28 L72 50 C72 65 62 75 50 82 C38 75 28 65 28 50 L28 28 Z" fill="#0d6efd" stroke="#0a58ca" stroke-width="1" />
+        <polygon points="50,24 51.5,28 56,28 52.5,31 54,35 50,32 46,35 47.5,31 44,28 48.5,28" fill="#ffc107" />
+        <polygon points="36,36 37.2,39 41,39 38,41.5 39,45 36,43 33,45 34,41.5 31,39 34.8,39" fill="#ffc107" />
+        <polygon points="64,36 65.2,39 69,39 66,41.5 67,45 64,43 61,45 62,41.5 59,39 62.8,39" fill="#ffc107" />
+        <path d="M50 48 L40 55 L40 68 L45 68 L45 60 L55 60 L55 68 L60 68 L60 55 Z" fill="#ffffff" />
+        <rect x="47" y="62" width="6" height="6" fill="#0a58ca" />
+      </svg>
+      <h5 class="mb-0 mt-1" style="font-weight:700;">BarangayHiram</h5><small>Brgy. 628, Zone 63</small>
     </div>
     <nav class="sidebar-nav">
-      <a href="dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a><a href="equipment.html" class="nav-link"><i class="bi bi-box-seam"></i> Equipment</a><a href="borrowers.html" class="nav-link"><i class="bi bi-people"></i> Borrowers</a><a href="transactions.html" class="nav-link"><i class="bi bi-arrow-left-right"></i> Transactions</a><a href="returns.html" class="nav-link active"><i class="bi bi-arrow-return-left"></i> Returns</a><a href="reports.html" class="nav-link"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a><a href="staff.html" class="nav-link admin-only"><i class="bi bi-person-gear"></i> Staff Accounts</a>
+      <a href="dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a><a href="equipment.html" class="nav-link"><i class="bi bi-box-seam"></i> Equipment</a><a href="borrowers.html" class="nav-link"><i class="bi bi-people"></i> Borrowers</a><a href="transactions.html" class="nav-link"><i class="bi bi-arrow-left-right"></i> Transactions</a><a href="returns.html" class="nav-link active"><i class="bi bi-arrow-return-left"></i> Returns</a><a href="reports.html" class="nav-link"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a><a href="new-users.html" class="nav-link admin-only"><i class="bi bi-person-check"></i> New Users</a><a href="staff.html" class="nav-link admin-only"><i class="bi bi-person-gear"></i> Staff Accounts</a>
     </nav>
     <div class="sidebar-footer"><a class="nav-link" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a></div>
   </div>
   <div class="main-content">
-    <div class="topbar"><h4><i class="bi bi-arrow-return-left me-2 text-primary"></i>Returns</h4><div class="topbar-right"><div class="user-info"><div class="name" id="userName">Loading...</div><div class="role" id="userRole"></div></div><div class="avatar" id="userAvatar">A</div></div></div>
+    <div class="topbar"><h4>Returns</h4><div class="topbar-right"><div class="user-info"><div class="name" id="userName">Loading...</div><div class="role" id="userRole"></div></div><div class="avatar" id="userAvatar">A</div></div></div>
     <div class="page-content">
-      <div class="card mb-4">
-        <div class="card-header"><i class="bi bi-check2-square me-2 text-primary"></i>Process Return</div>
+      <div class="card mb-4 bh-filter-card">
+        <div class="card-header">Process return</div>
         <div class="card-body">
           <div class="row g-3">
-            <div class="col-md-5"><label class="form-label">Active Transaction</label><select class="form-select" id="returnTransaction"></select></div>
-            <div class="col-md-3"><label class="form-label">Return Date</label><input type="date" class="form-control" id="returnDate"></div>
-            <div class="col-md-4"><label class="form-label">Condition</label><select class="form-select" id="returnCondition"><option value="Good">Good</option><option value="Damaged">Damaged</option><option value="Needs Repair">Needs Repair</option><option value="Missing Parts">Missing Parts</option></select></div>
+            <div class="col-md-5">
+              <label class="form-label">Active Transaction</label>
+              <div class="input-group mb-2">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" id="activeTransactionSearch" placeholder="Search active transaction...">
+              </div>
+              <select class="form-select" id="returnTransaction"></select>
+            </div>
+            <div class="col-md-2"><label class="form-label">Return Date</label><input type="date" class="form-control" id="returnDate"></div>
+            <div class="col-md-2"><label class="form-label">Returned Qty</label><input type="number" class="form-control" id="returnedQuantity" min="1" step="1" placeholder="Qty"></div>
+            <div class="col-md-3"><label class="form-label">Condition</label><select class="form-select" id="returnCondition"><option value="Good Condition">Good Condition</option><option value="Damaged">Damaged</option><option value="Incomplete">Incomplete</option></select></div>
             <div class="col-12"><label class="form-label">Remarks</label><textarea class="form-control" id="returnRemarks" rows="2" placeholder="Optional notes after inspection"></textarea></div>
           </div>
           <div class="alert alert-danger d-none mt-3" id="returnError"></div>
-          <div class="text-end mt-3"><button class="btn btn-success" onclick="processReturn()"><i class="bi bi-check-circle me-2"></i>Process Return</button></div>
+          <div class="text-end mt-3"><button class="btn btn-success" onclick="processReturn()"><i class="bi bi-check-circle me-2"></i>Process return</button></div>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center"><span><i class="bi bi-clock-history me-2 text-primary"></i>Return History</span><span class="badge bg-primary" id="returnCount">0 returns</span></div>
+        <div class="card-header d-flex justify-content-between align-items-center"><span>Return history</span><span class="badge bg-primary" id="returnCount">0 returns</span></div>
         <div class="card-body p-0"><div class="table-responsive"><table class="table table-hover mb-0"><thead class="table-light"><tr><th class="ps-3">ID</th><th>Borrower</th><th>Equipment</th><th>Qty</th><th>Borrowed</th><th>Returned</th><th>Condition</th><th>Remarks</th></tr></thead><tbody id="returnsTable"><tr><td colspan="8" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Loading...</td></tr></tbody></table></div></div>
       </div>
     </div>
@@ -76,12 +102,13 @@
     if (!token) window.location.href = '/pages/login.html';
     const fullName = localStorage.getItem('full_name') || 'Admin';
     const role = localStorage.getItem('role') || 'staff';
-    if (role !== 'admin') {
+    if (role !== 'admin' && role !== 'super_admin' && role !== 'staff') {
       document.querySelectorAll('.admin-only').forEach(function(link) { link.classList.add('d-none'); });
     }
     document.getElementById('userName').textContent = fullName;
     document.getElementById('userRole').textContent = role.charAt(0).toUpperCase() + role.slice(1);
     document.getElementById('userAvatar').textContent = fullName.charAt(0).toUpperCase();
+    let activeTransactions = [];
 
     function escapeHtml(value) {
       return String(value || '').replace(/[&<>"']/g, function(char) {
@@ -102,14 +129,38 @@
     async function loadActiveTransactions() {
       const res = await api('/api/transactions');
       const data = await res.json();
-      const active = data.filter(function(t) { return t.status !== 'Completed'; });
+      activeTransactions = data.filter(function(t) { return t.status === 'Released' || t.status === 'Overdue'; });
+      renderActiveTransactions();
+      const preselect = new URLSearchParams(window.location.search).get('transaction_id');
+      if (preselect) document.getElementById('returnTransaction').value = preselect;
+      syncReturnedQuantity();
+    }
+    function renderActiveTransactions() {
       const select = document.getElementById('returnTransaction');
-      select.innerHTML = active.map(function(t) {
+      const search = document.getElementById('activeTransactionSearch').value.toLowerCase();
+      const filtered = activeTransactions.filter(function(t) {
+        const text = ['#' + t.transaction_id, t.borrower_name, t.equipment_name, t.quantity_borrowed].join(' ').toLowerCase();
+        return !search || text.includes(search);
+      });
+      select.innerHTML = filtered.map(function(t) {
         return '<option value="' + t.transaction_id + '">#' + t.transaction_id + ' - ' + escapeHtml(t.borrower_name) + ' / ' + escapeHtml(t.equipment_name) + ' (' + t.quantity_borrowed + ')</option>';
       }).join('');
-      if (active.length === 0) select.innerHTML = '<option value="">No active transactions</option>';
-      const preselect = new URLSearchParams(window.location.search).get('transaction_id');
-      if (preselect) select.value = preselect;
+      if (filtered.length === 0) {
+        select.innerHTML = '<option value="">' + (activeTransactions.length ? 'No matching active transactions' : 'No active transactions') + '</option>';
+      }
+      syncReturnedQuantity();
+    }
+    function selectedTransaction() {
+      const id = document.getElementById('returnTransaction').value;
+      return activeTransactions.find(function(t) { return String(t.transaction_id) === String(id); });
+    }
+    function syncReturnedQuantity() {
+      const quantityInput = document.getElementById('returnedQuantity');
+      const transaction = selectedTransaction();
+      const quantity = transaction ? Number(transaction.quantity_borrowed || transaction.quantity || 0) : 0;
+      quantityInput.max = quantity || '';
+      quantityInput.value = quantity > 0 ? quantity : '';
+      quantityInput.placeholder = quantity > 0 ? 'Max ' + quantity : 'Qty';
     }
     async function loadReturns() {
       try {
@@ -132,12 +183,25 @@
       const payload = {
         transaction_id: document.getElementById('returnTransaction').value,
         actual_return_date: document.getElementById('returnDate').value,
+        returned_quantity: parseInt(document.getElementById('returnedQuantity').value, 10),
         condition_on_return: document.getElementById('returnCondition').value,
         remarks: document.getElementById('returnRemarks').value.trim()
       };
       const errorDiv = document.getElementById('returnError');
       if (!payload.transaction_id || !payload.actual_return_date) {
         errorDiv.textContent = 'Please choose a transaction and return date.';
+        errorDiv.classList.remove('d-none');
+        return;
+      }
+      if (!Number.isInteger(payload.returned_quantity) || payload.returned_quantity < 1) {
+        errorDiv.textContent = 'Returned quantity must be at least 1.';
+        errorDiv.classList.remove('d-none');
+        return;
+      }
+      const transaction = selectedTransaction();
+      const borrowedQuantity = transaction ? Number(transaction.quantity_borrowed || transaction.quantity || 0) : 0;
+      if (borrowedQuantity && payload.returned_quantity > borrowedQuantity) {
+        errorDiv.textContent = 'Returned quantity cannot exceed the borrowed quantity of ' + borrowedQuantity + '.';
         errorDiv.classList.remove('d-none');
         return;
       }
@@ -161,6 +225,8 @@
     }
     function logout() { localStorage.clear(); window.location.href = '/pages/login.html'; }
     document.getElementById('returnDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('activeTransactionSearch').addEventListener('input', renderActiveTransactions);
+    document.getElementById('returnTransaction').addEventListener('change', syncReturnedQuantity);
     loadActiveTransactions();
     loadReturns();
   </script>

@@ -109,7 +109,7 @@
   </style>
   <link href="/css/app.css" rel="stylesheet">
 </head>
-<body>
+<body class="bh-ui">
 
   <!-- ── SIDEBAR ── -->
   <div class="sidebar">
@@ -133,8 +133,8 @@
         <path d="M50 48 L40 55 L40 68 L45 68 L45 60 L55 60 L55 68 L60 68 L60 55 Z" fill="#ffffff" />
         <rect x="47" y="62" width="6" height="6" fill="#0a58ca" />
       </svg>
-      <h5 class="text-white mb-0 mt-1" style="font-weight:700;">BarangayHiram</h5>
-      <small style="color:rgba(255,255,255,0.7);font-size:0.72rem;">Brgy. 628, Zone 63</small>
+      <h5 class="mb-0 mt-1" style="font-weight:700;">BarangayHiram</h5>
+      <small>Brgy. 628, Zone 63</small>
     </div>
     <nav class="sidebar-nav">
       <a href="dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
@@ -143,6 +143,7 @@
       <a href="transactions.html" class="nav-link"><i class="bi bi-arrow-left-right"></i> Transactions</a>
       <a href="returns.html" class="nav-link"><i class="bi bi-arrow-return-left"></i> Returns</a>
       <a href="reports.html" class="nav-link"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a>
+      <a href="new-users.html" class="nav-link admin-only"><i class="bi bi-person-check"></i> New Users</a>
       <a href="staff.html" class="nav-link admin-only"><i class="bi bi-person-gear"></i> Staff Accounts</a>
     </nav>
     <div class="sidebar-footer">
@@ -155,7 +156,7 @@
 
     <!-- TOPBAR -->
     <div class="topbar">
-      <h4><i class="bi bi-people me-2 text-primary"></i>Borrowers Management</h4>
+      <h4>Borrowers management</h4>
       <div class="topbar-right">
         <div class="user-info">
           <div class="name" id="userName">Loading...</div>
@@ -169,18 +170,18 @@
     <div class="page-content">
 
       <!-- Search and Add -->
-      <div class="card mb-4">
+      <div class="card mb-4 bh-filter-card">
         <div class="card-body">
           <div class="row g-2 align-items-center">
             <div class="col-md-8">
               <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-search"></i></span>
-                <input type="text" class="form-control" id="searchInput" placeholder="Search by name, address, or contact number...">
+                <input type="text" class="form-control" id="searchInput" placeholder="Search borrowers...">
               </div>
             </div>
             <div class="col-md-4 text-end">
               <button class="btn btn-primary" onclick="openAddModal()">
-                <i class="bi bi-person-plus me-2"></i>Add Borrower
+                <i class="bi bi-person-plus me-2"></i>Add borrower
               </button>
             </div>
           </div>
@@ -190,7 +191,7 @@
       <!-- Borrowers Table -->
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <span><i class="bi bi-people me-2 text-primary"></i>Borrowers List</span>
+          <span>Borrowers list</span>
           <span class="badge bg-primary" id="borrowerCount">0 borrowers</span>
         </div>
         <div class="card-body p-0">
@@ -200,6 +201,7 @@
                 <tr>
                   <th class="ps-3">ID</th>
                   <th>Name</th>
+                  <th>Email</th>
                   <th>Address</th>
                   <th>Contact Number</th>
                   <th>Date Registered</th>
@@ -208,7 +210,7 @@
               </thead>
               <tbody id="borrowersTable">
                 <tr>
-                  <td colspan="6" class="text-center py-4 text-muted">
+                  <td colspan="7" class="text-center py-4 text-muted">
                     <div class="spinner-border spinner-border-sm me-2"></div>Loading...
                   </td>
                 </tr>
@@ -337,6 +339,7 @@
           <i class="bi bi-exclamation-triangle text-danger" style="font-size:2.5rem;"></i>
           <p class="mt-2 mb-0">Are you sure you want to delete <strong id="deleteName"></strong>?</p>
           <input type="hidden" id="deleteId">
+          <div class="alert alert-danger d-none mt-3 text-start" id="deleteError"></div>
         </div>
         <div class="modal-footer justify-content-center">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -369,7 +372,7 @@
     // ── User info ──
     const fullName = localStorage.getItem('full_name') || 'Admin';
     const role     = localStorage.getItem('role') || 'staff';
-    if (role !== 'admin') {
+    if (role !== 'admin' && role !== 'super_admin' && role !== 'staff') {
       document.querySelectorAll('.admin-only').forEach(function(link) { link.classList.add('d-none'); });
     }
     document.getElementById('userName').textContent   = fullName;
@@ -392,7 +395,7 @@
 
     function displayStatus(transaction) {
       const today = new Date().toISOString().split('T')[0];
-      if (transaction.status !== 'Completed' && transaction.due_date < today) {
+      if (transaction.status === 'Released' && transaction.due_date < today) {
         return 'Overdue';
       }
       return transaction.status;
@@ -404,6 +407,12 @@
       toast.className = 'toast align-items-center text-white border-0 bg-' + (type || 'success');
       document.getElementById('toastMessage').textContent = message;
       new bootstrap.Toast(toast).show();
+    }
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, function(char) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char];
+      });
     }
 
     // ── Load borrowers ──
@@ -425,34 +434,44 @@
       document.getElementById('borrowerCount').textContent = data.length + ' borrowers';
 
       if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">No borrowers found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">No borrowers found.</td></tr>';
         return;
       }
 
       tbody.innerHTML = data.map(function(b) {
         const initial = b.full_name.charAt(0).toUpperCase();
         const date    = b.created_at ? b.created_at.split(' ')[0] : '-';
+        const restrictionAction = b.is_flagged
+          ? '<button class="btn btn-outline-success btn-icon" onclick="clearRestriction(' + b.borrower_id + ')" title="Clear restriction"><i class="bi bi-unlock"></i></button>'
+          : '';
+        const restrictionBadge = b.is_flagged
+          ? '<br><span class="badge bg-danger mt-1">' + (b.flag_reason || 'Restricted') + '</span>'
+          : '';
         return '<tr>' +
           '<td class="ps-3"><strong>#' + b.borrower_id + '</strong></td>' +
           '<td>' +
             '<div class="d-flex align-items-center gap-2">' +
               '<div class="borrower-avatar">' + initial + '</div>' +
-              '<span>' + b.full_name + '</span>' +
+              '<span>' + b.full_name + restrictionBadge + '</span>' +
             '</div>' +
           '</td>' +
+          '<td>' + escapeHtml(b.email || b.username || '-') + '</td>' +
           '<td>' + (b.address || '-') + '</td>' +
           '<td>' + (b.contact_number || '-') + '</td>' +
           '<td>' + date + '</td>' +
           '<td>' +
-            '<button class="btn btn-sm btn-outline-info btn-action me-1" onclick="viewHistory(' + b.borrower_id + ', \'' + b.full_name + '\')" title="View History">' +
+            '<div class="bh-action-group">' +
+            '<button class="btn btn-outline-info btn-icon" onclick="viewHistory(' + b.borrower_id + ', \'' + b.full_name + '\')" title="View history">' +
               '<i class="bi bi-clock-history"></i>' +
             '</button>' +
-            '<button class="btn btn-sm btn-outline-primary btn-action me-1" onclick="openEditModal(' + JSON.stringify(b).replace(/"/g, '&quot;') + ')" title="Edit">' +
+            '<button class="btn btn-outline-primary btn-icon" onclick="openEditModal(' + JSON.stringify(b).replace(/"/g, '&quot;') + ')" title="Edit">' +
               '<i class="bi bi-pencil"></i>' +
             '</button>' +
-            '<button class="btn btn-sm btn-outline-danger btn-action" onclick="openDeleteModal(' + b.borrower_id + ', \'' + b.full_name + '\')" title="Delete">' +
+            '<button class="btn btn-outline-danger btn-icon" onclick="openDeleteModal(' + b.borrower_id + ', \'' + b.full_name + '\')" title="Delete">' +
               '<i class="bi bi-trash"></i>' +
             '</button>' +
+            restrictionAction +
+            '</div>' +
           '</td>' +
         '</tr>';
       }).join('');
@@ -463,6 +482,8 @@
       const search = this.value.toLowerCase();
       const filtered = allBorrowers.filter(function(b) {
         return b.full_name.toLowerCase().includes(search) ||
+               (b.email || '').toLowerCase().includes(search) ||
+               (b.username || '').toLowerCase().includes(search) ||
                (b.address || '').toLowerCase().includes(search) ||
                (b.contact_number || '').toLowerCase().includes(search);
       });
@@ -595,6 +616,7 @@
     function openDeleteModal(id, name) {
       document.getElementById('deleteId').value         = id;
       document.getElementById('deleteName').textContent = name;
+      document.getElementById('deleteError').classList.add('d-none');
       new bootstrap.Modal(document.getElementById('deleteModal')).show();
     }
 
@@ -606,13 +628,38 @@
           method:  'DELETE',
           headers: { 'authorization': token }
         });
+        const data = await res.json();
         if (res.ok) {
           bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
           showToast('Borrower deleted successfully!', 'danger');
           loadBorrowers();
+        } else {
+          const errorDiv = document.getElementById('deleteError');
+          errorDiv.textContent = data.message || 'This borrower cannot be deleted right now.';
+          errorDiv.classList.remove('d-none');
         }
       } catch (err) {
-        console.error(err);
+        const errorDiv = document.getElementById('deleteError');
+        errorDiv.textContent = 'Cannot connect to server.';
+        errorDiv.classList.remove('d-none');
+      }
+    }
+
+    async function clearRestriction(id) {
+      try {
+        const res = await fetch('/api/borrowers/' + id + '/clear-flag', {
+          method: 'PUT',
+          headers: { 'authorization': token }
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showToast(data.message || 'Borrower restriction cleared.', 'success');
+          loadBorrowers();
+        } else {
+          showToast(data.message || 'Unable to clear borrower restriction.', 'danger');
+        }
+      } catch (err) {
+        showToast('Cannot connect to server.', 'danger');
       }
     }
 

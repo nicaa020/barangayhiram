@@ -42,7 +42,11 @@ document.addEventListener('DOMContentLoaded', function() {
     link.addEventListener('click', closeSidebar);
   });
 
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') closeSidebar();
+  });
+
   window.addEventListener('resize', function() {
-    if (window.innerWidth > 768) closeSidebar();
+    if (window.innerWidth > 1024) closeSidebar();
   });
 });

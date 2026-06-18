@@ -3,249 +3,766 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BarangayHiram - Barangay Equipment Lending System</title>
+  <title>BarangayHiram - Equipment Portal</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/app.css" rel="stylesheet">
   <style>
     html, body { height: 100%; margin: 0; }
-    body {
-      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+    body.login-page {
+      background: var(--bh-surface);
+      color: var(--bh-text);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 14px;
     }
-    .login-wrapper { min-height: 100vh; display: flex; flex-direction: column; }
-    .login-container {
-      flex: 1;
+    .auth-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(480px, 52%) minmax(420px, 48%);
+      background: var(--bh-bg);
+    }
+    .auth-panel {
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 34px;
+      overflow-y: auto;
     }
-    .login-card {
-      background: #ffffff;
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      max-width: 400px;
-      width: 100%;
-      padding: 40px;
+    .auth-card {
+      width: min(620px, 100%);
     }
-    .barangay-logo {
+    .brand-row {
       display: flex;
       align-items: center;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    .brand-logo {
+      width: 50px;
+      height: 50px;
+      padding: 4px;
+      border-radius: var(--bh-radius-lg);
+      background: var(--bh-accent);
+      display: inline-flex;
+      align-items: center;
       justify-content: center;
-      margin: 0 auto 20px;
+      flex: 0 0 auto;
     }
-    .barangay-logo svg { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
-    .system-title { color: #0d6efd; font-weight: 700; font-size: 1.75rem; margin-bottom: 5px; }
-    .system-subtitle { color: #6c757d; font-size: 0.9rem; margin-bottom: 30px; }
-    .form-control:focus {
-      border-color: #0d6efd;
-      box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.25);
-    }
-    .btn-login {
-      background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
-      border: none;
-      padding: 12px;
+    .brand-logo svg { width: 42px; height: 42px; }
+    .brand-text strong {
+      display: block;
+      color: var(--bh-text);
+      font-size: 16px;
       font-weight: 600;
-      color: #fff;
-      width: 100%;
-      border-radius: 5px;
-      transition: all 0.3s ease;
+      line-height: 1.2;
+    }
+    .brand-text span {
+      display: block;
+      margin-top: 2px;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-xs);
+      line-height: 1.25;
+    }
+    .section-title {
+      color: var(--bh-text);
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      letter-spacing: 0;
+    }
+    .section-sub {
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-base);
+      line-height: 1.45;
+      margin-bottom: 18px;
+      max-width: 520px;
+    }
+    .login-mode-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .login-mode {
+      min-height: 82px;
+      border: 0.5px solid var(--bh-border-soft);
+      border-radius: var(--bh-radius-lg);
+      background: var(--bh-bg);
+      color: var(--bh-text-muted);
+      padding: 12px;
+      text-align: left;
+    }
+    .login-mode strong {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--bh-text);
+      font-size: var(--bh-font-base);
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .login-mode span {
+      display: block;
+      font-size: var(--bh-font-xs);
+      line-height: 1.35;
+    }
+    .login-mode.active {
+      border-color: var(--bh-accent);
+      background: var(--bh-accent-soft);
+      color: var(--bh-accent-dark);
+    }
+    .login-mode.active strong { color: var(--bh-accent-dark); }
+    .form-label {
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-sm);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .form-control,
+    .form-select,
+    .input-group-text {
+      min-height: 36px;
+      border-color: var(--bh-border-soft);
+      border-radius: var(--bh-radius);
+      background-color: var(--bh-surface);
+      color: var(--bh-text);
+      font-size: var(--bh-font-base);
+    }
+    textarea.form-control { min-height: 70px; }
+    .input-group .input-group-text:first-child { border-right: 0; }
+    .input-group .form-control { border-left: 0; }
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--bh-accent);
+      box-shadow: 0 0 0 2px rgba(29, 158, 117, 0.12);
+      background-color: var(--bh-surface);
+    }
+    .password-toggle {
       cursor: pointer;
+      background: var(--bh-surface);
+      border-left: 0;
     }
-    .btn-login:hover {
-      background: linear-gradient(135deg, #0a58ca 0%, #084298 100%);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(13,110,253,0.4);
+    .password-toggle:hover { background: var(--bh-surface-soft); }
+    .btn-portal {
+      width: 100%;
+      min-height: 36px;
+      border: 1px solid var(--bh-accent);
+      border-radius: var(--bh-radius);
+      background: var(--bh-accent);
+      color: #fff;
+      padding: 8px 12px;
+      font-size: var(--bh-font-base);
+      font-weight: 500;
     }
-    .btn-login:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-    .footer {
-      background: #343a40;
-      color: #adb5bd;
+    .btn-portal:hover { background: var(--bh-accent-dark); border-color: var(--bh-accent-dark); }
+    .btn-portal:disabled { opacity: .7; cursor: not-allowed; }
+    .btn-outline-portal {
+      min-height: 34px;
+      border: 1px solid var(--bh-accent);
+      border-radius: var(--bh-radius);
+      background: transparent;
+      color: var(--bh-accent);
+      padding: 7px 12px;
+      font-size: var(--bh-font-base);
+      font-weight: 500;
+    }
+    .btn-outline-portal:hover { background: var(--bh-accent-soft); }
+    .helper-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-sm);
+      margin-top: 12px;
+    }
+    .helper-row a,
+    .helper-row button {
+      color: var(--bh-accent);
+      font-weight: 500;
+      text-decoration: none;
+      border: 0;
+      background: transparent;
+      padding: 0;
+    }
+    .alert {
+      display: none;
+      border-radius: var(--bh-radius);
+      border-width: .5px;
+      font-size: var(--bh-font-sm);
+      padding: 9px 10px;
+    }
+    .auth-section { display: none; }
+    .auth-section.visible { display: block; }
+    .notice-box {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      border: 0.5px solid var(--bh-border-soft);
+      border-radius: var(--bh-radius);
+      background: var(--bh-surface);
+      color: var(--bh-text-muted);
+      padding: 10px 12px;
+      font-size: var(--bh-font-sm);
+      line-height: 1.4;
+      margin-bottom: 16px;
+    }
+    .notice-box i { color: var(--bh-accent); font-size: 16px; margin-top: 1px; }
+    .type-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .type-card {
+      border: 0.5px solid var(--bh-border-soft);
+      border-radius: var(--bh-radius);
+      background: var(--bh-bg);
+      padding: 10px 8px;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-sm);
+      font-weight: 500;
       text-align: center;
-      padding: 15px;
-      font-size: 0.85rem;
     }
-    .input-group-text { background: #f8f9fa; border-right: none; }
-    .input-group .form-control { border-left: none; }
-    .password-toggle { cursor: pointer; background: #f8f9fa; border-left: none; }
-    .password-toggle:hover { background: #e9ecef; }
-    .alert { display: none; }
+    .type-card i { display: block; margin-bottom: 4px; font-size: 20px; }
+    .type-card.active {
+      border-color: var(--bh-accent);
+      background: var(--bh-accent-soft);
+      color: var(--bh-accent-dark);
+    }
+    .upload-area {
+      border: 0.5px dashed var(--bh-border);
+      border-radius: var(--bh-radius);
+      background: var(--bh-surface);
+      padding: 12px;
+    }
+    .camera-box {
+      display: grid;
+      gap: 10px;
+    }
+    .camera-frame {
+      min-height: 190px;
+      border: 0.5px dashed var(--bh-border);
+      border-radius: var(--bh-radius);
+      background: var(--bh-bg);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      color: var(--bh-text-muted);
+      text-align: center;
+      padding: 12px;
+    }
+    .camera-frame video,
+    .camera-frame img {
+      width: 100%;
+      max-height: 240px;
+      object-fit: contain;
+      border-radius: var(--bh-radius);
+      background: #000;
+    }
+    .camera-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .password-rules {
+      margin: 6px 0 0;
+      padding-left: 18px;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-xs);
+    }
+    .visual-panel {
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+      background: var(--bh-surface);
+    }
+ .visual-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0)),
+    url("/images/barangayhiram-login-hero.png") 100% center / cover no-repeat;
+}
+    .footer {
+      display: none;
+    }
+    @media (max-width: 960px) {
+      .auth-shell { grid-template-columns: 1fr; }
+      .auth-panel { min-height: auto; padding: 24px 16px; }
+      .visual-panel { min-height: 340px; padding: 22px 16px; }
+    }
+    @media (max-width: 560px) {
+      .login-mode-grid,
+      .type-cards { grid-template-columns: 1fr; }
+      .section-title { font-size: 20px; }
+    }
   </style>
-  <link href="/css/app.css" rel="stylesheet">
 </head>
-<body>
-
-  <div class="login-wrapper">
-    <div class="login-container">
-      <div class="login-card">
-
-        <!-- Logo -->
-        <div class="barangay-logo">
-          <svg viewBox="0 0 100 100" width="90" height="90">
-            <circle cx="50" cy="50" r="48" fill="#0d6efd" />
-            <circle cx="50" cy="50" r="44" fill="#0a58ca" />
-            <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(0 50 50)" />
-            <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(45 50 50)" />
-            <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(90 50 50)" />
-            <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(135 50 50)" />
-            <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(180 50 50)" />
-            <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(225 50 50)" />
-            <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(270 50 50)" />
-            <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(315 50 50)" />
-            <circle cx="50" cy="50" r="38" fill="#ffffff" />
-            <path d="M50 18 L72 28 L72 50 C72 65 62 75 50 82 C38 75 28 65 28 50 L28 28 Z" fill="#0d6efd" stroke="#0a58ca" stroke-width="1" />
-            <polygon points="50,24 51.5,28 56,28 52.5,31 54,35 50,32 46,35 47.5,31 44,28 48.5,28" fill="#ffc107" />
-            <polygon points="36,36 37.2,39 41,39 38,41.5 39,45 36,43 33,45 34,41.5 31,39 34.8,39" fill="#ffc107" />
-            <polygon points="64,36 65.2,39 69,39 66,41.5 67,45 64,43 61,45 62,41.5 59,39 62.8,39" fill="#ffc107" />
-            <path d="M50 48 L40 55 L40 68 L45 68 L45 60 L55 60 L55 68 L60 68 L60 55 Z" fill="#ffffff" />
-            <rect x="47" y="62" width="6" height="6" fill="#0a58ca" />
-          </svg>
+<body class="bh-ui login-page">
+  <div class="auth-shell">
+    <main class="auth-panel">
+      <div class="auth-card">
+        <div class="brand-row">
+          <div class="brand-logo">
+            <svg viewBox="0 0 100 100" width="55" height="55">
+              <circle cx="50" cy="50" r="48" fill="#ffffff22" />
+              <circle cx="50" cy="50" r="44" fill="#ffffff11" />
+              <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(0 50 50)" />
+              <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(45 50 50)" />
+              <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(90 50 50)" />
+              <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(135 50 50)" />
+              <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(180 50 50)" />
+              <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(225 50 50)" />
+              <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(270 50 50)" />
+              <line x1="50" y1="6" x2="50" y2="14" stroke="#ffc107" stroke-width="3" transform="rotate(315 50 50)" />
+              <circle cx="50" cy="50" r="38" fill="#ffffff" />
+              <path d="M50 18 L72 28 L72 50 C72 65 62 75 50 82 C38 75 28 65 28 50 L28 28 Z" fill="#0d6efd" stroke="#0a58ca" stroke-width="1" />
+              <polygon points="50,24 51.5,28 56,28 52.5,31 54,35 50,32 46,35 47.5,31 44,28 48.5,28" fill="#ffc107" />
+              <polygon points="36,36 37.2,39 41,39 38,41.5 39,45 36,43 33,45 34,41.5 31,39 34.8,39" fill="#ffc107" />
+              <polygon points="64,36 65.2,39 69,39 66,41.5 67,45 64,43 61,45 62,41.5 59,39 62.8,39" fill="#ffc107" />
+              <path d="M50 48 L40 55 L40 68 L45 68 L45 60 L55 60 L55 68 L60 68 L60 55 Z" fill="#ffffff" />
+              <rect x="47" y="62" width="6" height="6" fill="#0a58ca" />
+            </svg>
+          </div>
+          <div class="brand-text">
+            <strong>BarangayHiram</strong>
+            <span>Equipment Borrowing Portal</span>
+          </div>
         </div>
 
-        <!-- Title -->
-        <div class="text-center">
-          <h1 class="system-title">BarangayHiram</h1>
-          <p class="system-subtitle">Barangay Equipment Lending System<br />Brgy. 628, Zone 63, Manila</p>
-        </div>
+        <section class="auth-section visible" id="section-login">
+          <h1 class="section-title" id="loginTitle">Staff sign in</h1>
+          <p class="section-sub" id="loginSubtitle">Choose your account type, then sign in to the correct BarangayHiram workspace.</p>
 
-        <!-- Alerts -->
-        <div class="alert alert-danger" id="errorAlert">
-          <i class="bi bi-exclamation-circle me-2"></i>
-          <span id="errorMessage">Invalid username or password.</span>
-        </div>
-        <div class="alert alert-success" id="successAlert">
-          <i class="bi bi-check-circle me-2"></i>
-          Login successful! Redirecting to dashboard...
-        </div>
+          <div class="login-mode-grid">
+            <button class="login-mode active" type="button" data-login-mode="staff">
+              <strong><i class="bi bi-shield-check"></i>Admin / Staff</strong>
+              <span>Manage equipment, borrowers, requests, release, returns, and reports.</span>
+            </button>
+            <button class="login-mode" type="button" data-login-mode="borrower">
+              <strong><i class="bi bi-person-circle"></i>Borrower</strong>
+              <span>View account status, request equipment, and track your borrowing history.</span>
+            </button>
+          </div>
 
-        <!-- Form with id="loginForm" — this is required! -->
-        <form id="loginForm">
-          <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-person"></i></span>
-              <input type="text" class="form-control" id="username" placeholder="Enter your username" required>
+          <div class="alert alert-danger" id="loginError"><i class="bi bi-exclamation-circle me-2"></i><span></span></div>
+          <div class="alert alert-success" id="loginSuccess"><i class="bi bi-check-circle me-2"></i><span>Login successful. Redirecting...</span></div>
+
+          <form id="loginForm">
+            <div class="mb-3">
+              <label class="form-label" for="loginUsername" id="loginUsernameLabel">Username or email</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                <input type="text" class="form-control" id="loginUsername" autocomplete="username" inputmode="email" placeholder="staff account or email" required>
+              </div>
             </div>
-          </div>
-
-          <div class="mb-4">
-            <label for="password" class="form-label">Password</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="bi bi-lock"></i></span>
-              <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
-              <span class="input-group-text password-toggle" onclick="togglePassword()">
-                <i class="bi bi-eye" id="toggleIcon"></i>
-              </span>
+            <div class="mb-3">
+              <label class="form-label" for="loginPassword">Password</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                <input type="password" class="form-control" id="loginPassword" autocomplete="current-password" placeholder="Enter your password" required>
+                <button class="input-group-text password-toggle" type="button" data-toggle-password="loginPassword" data-toggle-icon="loginPasswordIcon"><i class="bi bi-eye" id="loginPasswordIcon"></i></button>
+              </div>
             </div>
-          </div>
+            <div class="helper-row mb-3">
+              <label class="d-inline-flex align-items-center gap-2 mb-0"><input type="checkbox" id="rememberLogin"> Remember me</label>
+              <button type="button" id="forgotPasswordLink">Forgot password?</button>
+            </div>
+            <button class="btn-portal" type="submit" id="loginBtn"><i class="bi bi-box-arrow-in-right me-2"></i>Sign in</button>
+            <div class="helper-row justify-content-center">
+              <span>No borrower account yet?</span>
+              <button type="button" data-go-section="register">Create one here</button>
+            </div>
+          </form>
+        </section>
 
-          <button type="submit" class="btn-login mb-3" id="loginBtn">
-            <i class="bi bi-box-arrow-in-right me-2"></i>Login
-          </button>
+        <section class="auth-section" id="section-register">
+          <h1 class="section-title">Create a borrower account</h1>
+          <p class="section-sub">New borrower accounts are reviewed by barangay staff before borrowing is allowed.</p>
+          <div class="notice-box"><i class="bi bi-info-circle"></i><span>Capture your valid government ID with address, or school ID for students, using the live camera. Make sure the photo is clear, well-lit, and all ID details are readable. File upload is not allowed for borrower verification.</span></div>
 
-          <div class="text-center">
-            <small class="text-muted">
-              <i class="bi bi-shield-lock me-1"></i>
-              Authorized Personnel Only
-            </small>
-          </div>
-        </form>
+          <div class="alert alert-danger" id="registerError"><span></span></div>
+          <div class="alert alert-success" id="registerSuccess"><span></span></div>
 
+          <form id="registerForm">
+            <div class="type-cards">
+              <button class="type-card active" type="button" data-borrower-type="Resident"><i class="bi bi-house"></i>Resident</button>
+              <button class="type-card" type="button" data-borrower-type="Student"><i class="bi bi-mortarboard"></i>Student</button>
+              <button class="type-card" type="button" data-borrower-type="Transient"><i class="bi bi-geo-alt"></i>Transient</button>
+            </div>
+            <input type="hidden" id="borrowerType" value="Resident">
+
+            <div class="row g-3">
+              <div class="col-md-6"><label class="form-label" for="regFirstName">First name</label><input class="form-control" id="regFirstName" autocomplete="given-name" required></div>
+              <div class="col-md-6"><label class="form-label" for="regLastName">Last name</label><input class="form-control" id="regLastName" autocomplete="family-name" required></div>
+              <div class="col-md-6"><label class="form-label" for="regEmail">Email address</label><input class="form-control" id="regEmail" type="email" autocomplete="email" placeholder="you@email.com" required></div>
+              <div class="col-md-6"><label class="form-label" for="regContact">Contact number</label><input class="form-control" id="regContact" inputmode="tel" placeholder="09171234567 or +639171234567" required></div>
+              <div class="col-md-6">
+                <label class="form-label" for="regPassword">Password</label>
+                <div class="input-group">
+                  <input class="form-control" type="password" id="regPassword" autocomplete="new-password" required>
+                  <button class="input-group-text password-toggle" type="button" data-toggle-password="regPassword" data-toggle-icon="regPasswordIcon"><i class="bi bi-eye" id="regPasswordIcon"></i></button>
+                </div>
+                <ul class="password-rules"><li>At least 8 characters</li><li>Uppercase, lowercase, number, and special character</li></ul>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="regConfirmPassword">Confirm password</label>
+                <div class="input-group">
+                  <input class="form-control" type="password" id="regConfirmPassword" autocomplete="new-password" required>
+                  <button class="input-group-text password-toggle" type="button" data-toggle-password="regConfirmPassword" data-toggle-icon="regConfirmPasswordIcon"><i class="bi bi-eye" id="regConfirmPasswordIcon"></i></button>
+                </div>
+              </div>
+              <div class="col-md-6"><label class="form-label" for="regValidId">ID / Reference number</label><input class="form-control" id="regValidId" placeholder="Valid ID number, school ID, or reference" required></div>
+              <div class="col-md-6">
+                <label class="form-label">Capture valid ID</label>
+                <div class="upload-area camera-box">
+                  <div class="camera-frame" id="cameraFrame">
+                    <div id="cameraPlaceholder"><i class="bi bi-camera d-block mb-1 fs-4"></i>Start the camera and capture your valid government ID with address or school ID. Keep the ID clear, centered, and readable.</div>
+                    <video id="documentCamera" autoplay playsinline muted style="display:none;"></video>
+                    <img id="documentPreview" alt="Captured verification document" style="display:none;">
+                    <canvas id="documentCanvas" style="display:none;"></canvas>
+                  </div>
+                  <div class="camera-actions">
+                    <button class="btn-outline-portal" type="button" id="startCameraBtn"><i class="bi bi-camera-video me-1"></i>Start camera</button>
+                    <button class="btn-outline-portal" type="button" id="captureDocumentBtn" disabled><i class="bi bi-camera me-1"></i>Capture</button>
+                    <button class="btn-outline-portal" type="button" id="retakeDocumentBtn" disabled><i class="bi bi-arrow-repeat me-1"></i>Retake</button>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3"><label class="form-label" for="regHouseNumber">House / Unit number</label><input class="form-control" id="regHouseNumber" placeholder="Example: 123" required></div>
+              <div class="col-md-3"><label class="form-label" for="regStreet">Street / Purok</label><input class="form-control" id="regStreet" placeholder="Example: Road 7" required></div>
+              <div class="col-md-3"><label class="form-label" for="regBarangay">Barangay</label><input class="form-control" id="regBarangay" placeholder="Example: Barangay 628" required></div>
+              <div class="col-md-3"><label class="form-label" for="regCity">City</label><input class="form-control" id="regCity" placeholder="Example: Manila" required></div>
+            </div>
+
+            <button class="btn-portal mt-4" type="submit" id="registerBtn"><i class="bi bi-person-plus me-2"></i>Submit registration</button>
+            <div class="helper-row justify-content-center">
+              <span>Already registered?</span>
+              <button type="button" data-go-section="login">Sign in</button>
+            </div>
+          </form>
+        </section>
       </div>
-    </div>
+    </main>
 
-    <footer class="footer">
-      <i class="bi bi-building me-1"></i>
-      <span class="login-footer-meta">Barangay 628, Zone 63</span>
-      <span class="mx-1">&copy;</span><span id="footerYear"></span>
-    </footer>
+    <aside class="visual-panel" aria-label="BarangayHiram equipment borrowing illustration"></aside>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    let loginMode = 'staff';
+    let cameraStream = null;
+    let capturedDocumentData = '';
 
-    document.getElementById('footerYear').textContent = new Date().getFullYear();
-
-    // If already logged in go to dashboard
-    window.onload = function() {
-      const token = localStorage.getItem('token');
-      if (token) {
-        window.location.href = '/pages/dashboard.html';
+    function resetAlert(id) {
+      const box = document.getElementById(id);
+      box.style.display = 'none';
+      const span = box.querySelector('span');
+      if (span) span.textContent = '';
+    }
+    function showAlert(id, message) {
+      const box = document.getElementById(id);
+      const span = box.querySelector('span');
+      if (span) span.textContent = message;
+      box.style.display = 'block';
+    }
+    function setButtonLoading(button, loading, label) {
+      button.disabled = loading;
+      button.innerHTML = loading ? '<span class="spinner-border spinner-border-sm me-2"></span>' + label : button.dataset.defaultText;
+    }
+    function getPasswordError(password) {
+      if (!password || password.length < 8) return 'Password must be at least 8 characters.';
+      if (!/[A-Z]/.test(password)) return 'Password must include at least one uppercase letter.';
+      if (!/[a-z]/.test(password)) return 'Password must include at least one lowercase letter.';
+      if (!/[0-9]/.test(password)) return 'Password must include at least one number.';
+      if (!/[^A-Za-z0-9]/.test(password)) return 'Password must include at least one special character.';
+      return '';
+    }
+    function getIdentifierError(value) {
+      if (!value || /\s/.test(value)) return 'Username or email must not contain spaces.';
+      if (!value.includes('@')) return /^[A-Za-z0-9._-]{4,30}$/.test(value) ? '' : 'Username must be 4-30 characters using letters, numbers, dots, underscores, or hyphens.';
+      const parts = value.split('@');
+      if (parts.length !== 2) return 'Email must contain exactly one @ symbol.';
+      const local = parts[0];
+      const domain = parts[1];
+      if (!local || !domain) return 'Email must have text before and after @.';
+      if (local.startsWith('.') || local.endsWith('.') || local.includes('..')) return 'Dots cannot start, end, or repeat in the email name.';
+      if (domain.startsWith('-') || domain.endsWith('-')) return 'Email domain cannot begin or end with a hyphen.';
+      if (!domain.includes('.') || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Please enter a valid email address.';
+      return '';
+    }
+    function getContactError(value) {
+      return /^([0-9]{11}|\+63[0-9]{10})$/.test(value) ? '' : 'Contact number must be 11 digits or +63 followed by 10 numbers.';
+    }
+    function switchSection(section) {
+      document.querySelectorAll('.auth-section').forEach(function(panel) { panel.classList.remove('visible'); });
+      document.getElementById('section-' + section).classList.add('visible');
+      if (section !== 'register') stopCamera();
+    }
+    function setCameraPlaceholder(message) {
+      const placeholder = document.getElementById('cameraPlaceholder');
+      placeholder.style.display = 'block';
+      placeholder.innerHTML = '<i class="bi bi-camera d-block mb-1 fs-4"></i>' + message;
+    }
+    async function startCamera() {
+      resetAlert('registerError');
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showAlert('registerError', 'Camera access is not supported by this browser.');
+        return;
       }
-    };
-
-    // Toggle password visibility
-    function togglePassword() {
-      const input = document.getElementById('password');
-      const icon  = document.getElementById('toggleIcon');
-      if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.replace('bi-eye', 'bi-eye-slash');
-      } else {
-        input.type = 'password';
-        icon.classList.replace('bi-eye-slash', 'bi-eye');
+      try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: 'environment' } },
+          audio: false
+        });
+        const video = document.getElementById('documentCamera');
+        document.getElementById('documentPreview').style.display = 'none';
+        document.getElementById('cameraPlaceholder').style.display = 'none';
+        video.srcObject = cameraStream;
+        video.style.display = 'block';
+        capturedDocumentData = '';
+        document.getElementById('captureDocumentBtn').disabled = false;
+        document.getElementById('retakeDocumentBtn').disabled = true;
+      } catch (err) {
+        showAlert('registerError', 'Camera permission is required to capture your verification document live.');
       }
     }
+    function stopCamera() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(function(track) { track.stop(); });
+        cameraStream = null;
+      }
+      const video = document.getElementById('documentCamera');
+      if (video) {
+        video.pause();
+        video.srcObject = null;
+        video.style.display = 'none';
+      }
+      const captureButton = document.getElementById('captureDocumentBtn');
+      if (captureButton) captureButton.disabled = true;
+    }
+    function captureDocument() {
+      const video = document.getElementById('documentCamera');
+      if (!video.videoWidth || !video.videoHeight) {
+        showAlert('registerError', 'Camera is still loading. Please try capturing again.');
+        return;
+      }
+      const canvas = document.getElementById('documentCanvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      capturedDocumentData = canvas.toDataURL('image/jpeg', 0.88);
+      const preview = document.getElementById('documentPreview');
+      preview.src = capturedDocumentData;
+      preview.style.display = 'block';
+      stopCamera();
+      document.getElementById('cameraPlaceholder').style.display = 'none';
+      document.getElementById('retakeDocumentBtn').disabled = false;
+    }
+    function resetCapturedDocument() {
+      capturedDocumentData = '';
+      document.getElementById('documentPreview').removeAttribute('src');
+      document.getElementById('documentPreview').style.display = 'none';
+      document.getElementById('retakeDocumentBtn').disabled = true;
+      setCameraPlaceholder('Start the camera and capture your valid government ID with address or school ID. Keep the ID clear, centered, and readable.');
+    }
 
-    // Handle login form
+    document.querySelectorAll('[data-go-section]').forEach(function(button) {
+      button.addEventListener('click', function() { switchSection(button.dataset.goSection); });
+    });
+    document.querySelectorAll('[data-toggle-password]').forEach(function(button) {
+      button.addEventListener('click', function() {
+        const input = document.getElementById(button.dataset.togglePassword);
+        const icon = document.getElementById(button.dataset.toggleIcon);
+        input.type = input.type === 'password' ? 'text' : 'password';
+        icon.classList.toggle('bi-eye');
+        icon.classList.toggle('bi-eye-slash');
+      });
+    });
+    document.querySelectorAll('.login-mode').forEach(function(button) {
+      button.addEventListener('click', function() {
+        loginMode = button.dataset.loginMode;
+        document.querySelectorAll('.login-mode').forEach(function(mode) { mode.classList.remove('active'); });
+        button.classList.add('active');
+        document.getElementById('loginTitle').textContent = loginMode === 'borrower' ? 'Borrower sign in' : 'Staff sign in';
+        document.getElementById('loginSubtitle').textContent = loginMode === 'borrower'
+          ? 'Access your borrower dashboard, request history, and account verification status.'
+          : 'Access equipment management, borrower approvals, release, returns, and reports.';
+        document.getElementById('loginUsernameLabel').textContent = loginMode === 'borrower' ? 'Email address' : 'Username or email';
+        document.getElementById('loginUsername').placeholder = loginMode === 'borrower' ? 'you@email.com' : 'staff account or email';
+      });
+    });
+    document.querySelectorAll('.type-card').forEach(function(button) {
+      button.addEventListener('click', function() {
+        document.querySelectorAll('.type-card').forEach(function(card) { card.classList.remove('active'); });
+        button.classList.add('active');
+        document.getElementById('borrowerType').value = button.dataset.borrowerType;
+        const barangayLabel = document.querySelector('label[for="regBarangay"]');
+        const cityLabel = document.querySelector('label[for="regCity"]');
+        barangayLabel.textContent = button.dataset.borrowerType === 'Transient' ? 'Temporary barangay' : 'Barangay';
+        cityLabel.textContent = button.dataset.borrowerType === 'Transient' ? 'Temporary city' : 'City';
+      });
+    });
+    document.querySelectorAll('button[id$="Btn"]').forEach(function(button) {
+      button.dataset.defaultText = button.innerHTML;
+    });
+    async function syncEmailVerificationAfterRedirect() {
+      const pendingEmail = localStorage.getItem('pending_verification_email');
+      if (!pendingEmail) {
+        showAlert('loginSuccess', 'Email verified. You may now log in. Barangay staff approval is still required before borrowing.');
+        return;
+      }
+      try {
+        const response = await fetch('/api/auth/email-verification-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: pendingEmail })
+        });
+        const data = await response.json();
+        if (response.ok && data.verified) {
+          localStorage.removeItem('pending_verification_email');
+          showAlert('loginSuccess', data.message || 'Email verified. You may now log in.');
+          return;
+        }
+        showAlert('loginError', (data && data.message) || 'Email verification is not confirmed yet.');
+      } catch (err) {
+        showAlert('loginSuccess', 'Email verified. You may now log in. Barangay staff approval is still required before borrowing.');
+      }
+    }
+    if (new URLSearchParams(window.location.search).get('email_verified') === '1') {
+      syncEmailVerificationAfterRedirect();
+    }
+
+    document.getElementById('forgotPasswordLink').addEventListener('click', function() {
+      resetAlert('loginSuccess');
+      showAlert('loginError', 'Forgot password is not available yet. Please contact the barangay office.');
+    });
+    document.getElementById('startCameraBtn').addEventListener('click', startCamera);
+    document.getElementById('captureDocumentBtn').addEventListener('click', captureDocument);
+    document.getElementById('retakeDocumentBtn').addEventListener('click', function() {
+      resetCapturedDocument();
+      startCamera();
+    });
+
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const btn      = document.getElementById('loginBtn');
-
-      // Hide both alerts
-      document.getElementById('errorAlert').style.display   = 'none';
-      document.getElementById('successAlert').style.display = 'none';
-
-      // Show loading spinner on button
-      btn.disabled  = true;
-      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Logging in...';
-
+      resetAlert('loginError');
+      resetAlert('loginSuccess');
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const identifierError = getIdentifierError(username);
+      if (identifierError) return showAlert('loginError', identifierError);
+      const button = document.getElementById('loginBtn');
+      setButtonLoading(button, true, 'Signing in...');
       try {
-        // Call the login API
         const response = await fetch('/api/auth/login', {
-          method:  'POST',
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({ username: username, password: password })
+          body: JSON.stringify({ username: username, password: password })
         });
-
         const data = await response.json();
-        console.log('Login response:', data);
-
-        if (response.ok) {
-          // Save token and user info
-          localStorage.setItem('token',     data.token);
-          localStorage.setItem('full_name', data.user.full_name);
-          localStorage.setItem('role',      data.user.role);
-          localStorage.setItem('user',      JSON.stringify(data.user));
-
-          // Show success message
-          document.getElementById('successAlert').style.display = 'block';
-
-          // Redirect to dashboard after 1 second
-          setTimeout(function() {
-            window.location.href = '/pages/dashboard.html';
-          }, 1000);
-
-        } else {
-          // Show error message from server
-          document.getElementById('errorMessage').textContent = data.message || 'Invalid username or password.';
-          document.getElementById('errorAlert').style.display = 'block';
-          btn.disabled  = false;
-          btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Login';
+        if (!response.ok) {
+          showAlert('loginError', data.message || 'Unable to sign in.');
+          return;
         }
-
-      } catch (error) {
-        console.error('Login error:', error);
-        document.getElementById('errorMessage').textContent = 'Cannot connect to server. Make sure the server is running.';
-        document.getElementById('errorAlert').style.display = 'block';
-        btn.disabled  = false;
-        btn.innerHTML = '<i class="bi bi-box-arrow-in-right me-2"></i>Login';
+        const userRole = data.user && data.user.role;
+        const staffRoles = ['super_admin', 'admin', 'staff'];
+        if (loginMode === 'staff' && !staffRoles.includes(userRole)) {
+          showAlert('loginError', 'This is a borrower account. Please use the Borrower login option.');
+          return;
+        }
+        if (loginMode === 'borrower' && userRole !== 'borrower') {
+          showAlert('loginError', 'This is a staff/admin account. Please use the Admin / Staff login option.');
+          return;
+        }
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('full_name', data.user.full_name);
+        localStorage.setItem('role', userRole);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        showAlert('loginSuccess', 'Login successful. Redirecting...');
+        setTimeout(function() {
+          window.location.href = data.redirect_to || (userRole === 'borrower' ? '/borrower/dashboard' : '/pages/dashboard.html');
+        }, 800);
+      } catch (err) {
+        showAlert('loginError', 'Cannot connect to server. Make sure the server is running.');
+      } finally {
+        setButtonLoading(button, false, '');
       }
     });
 
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      resetAlert('registerError');
+      resetAlert('registerSuccess');
+      const firstName = document.getElementById('regFirstName').value.trim();
+      const lastName = document.getElementById('regLastName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const contact = document.getElementById('regContact').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const confirmPassword = document.getElementById('regConfirmPassword').value;
+      const borrowerType = document.getElementById('borrowerType').value;
+      const validId = document.getElementById('regValidId').value.trim();
+      const houseNumber = document.getElementById('regHouseNumber').value.trim();
+      const street = document.getElementById('regStreet').value.trim();
+      const barangay = document.getElementById('regBarangay').value.trim();
+      const city = document.getElementById('regCity').value.trim();
+      const address = [houseNumber, street, barangay, city].filter(Boolean).join(', ');
+      const identifierError = getIdentifierError(email);
+      const contactError = getContactError(contact);
+      const passwordError = getPasswordError(password);
+      if (!firstName || !lastName) return showAlert('registerError', 'Please enter first name and last name.');
+      if (identifierError) return showAlert('registerError', identifierError);
+      if (contactError) return showAlert('registerError', contactError);
+      if (passwordError) return showAlert('registerError', passwordError);
+      if (password !== confirmPassword) return showAlert('registerError', 'Password and confirm password must match.');
+      if (!validId) return showAlert('registerError', 'Please enter your ID or reference number.');
+      if ((borrowerType === 'Resident' || borrowerType === 'Transient') && (!houseNumber || !street || !barangay || !city)) {
+        return showAlert('registerError', 'Please complete your house/unit number, street or purok, barangay, and city.');
+      }
+      if (!capturedDocumentData) return showAlert('registerError', 'Please capture your valid government ID with address or school ID using the live camera. Make sure the ID is clear and readable.');
+      const button = document.getElementById('registerBtn');
+      setButtonLoading(button, true, 'Submitting...');
+      try {
+        const response = await fetch('/api/auth/register-borrower', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: email,
+            password: password,
+            first_name: firstName,
+            last_name: lastName,
+            full_name: firstName + ' ' + lastName,
+            borrower_type: borrowerType,
+            contact_number: contact,
+            address: address,
+            valid_id_reference: validId,
+            verification_document_name: 'live-camera-verification.jpg',
+            verification_document_data: capturedDocumentData,
+            verification_capture_method: 'live_camera'
+          })
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          showAlert('registerError', data.message || 'Unable to submit registration.');
+          return;
+        }
+        showAlert('registerSuccess', data.message || 'Registration submitted. Please check your email and verify your account before logging in.');
+        localStorage.setItem('pending_verification_email', email);
+        document.getElementById('registerForm').reset();
+        resetCapturedDocument();
+        document.getElementById('borrowerType').value = 'Resident';
+        document.querySelectorAll('.type-card').forEach(function(card) { card.classList.toggle('active', card.dataset.borrowerType === 'Resident'); });
+      } catch (err) {
+        showAlert('registerError', 'Cannot connect to server.');
+      } finally {
+        setButtonLoading(button, false, '');
+      }
+    });
   </script>
 </body>
 </html>

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Borrowing Request - BarangayHiram</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/app.css" rel="stylesheet">
+  <style>
+    .request-form-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .request-note {
+      padding: 12px 14px;
+      border: 0.5px solid rgba(24, 95, 165, 0.22);
+      border-radius: var(--bh-radius);
+      background: var(--bh-accent-soft);
+      color: var(--bh-accent-dark);
+      font-size: var(--bh-font-sm);
+      line-height: 1.45;
+    }
+
+    .selected-equipment-panel {
+      padding: 14px;
+      border: 0.5px solid var(--bh-border-soft);
+      border-radius: var(--bh-radius-lg);
+      background: var(--bh-surface);
+    }
+
+    .selected-equipment-panel h5 {
+      margin: 0 0 4px;
+      color: var(--bh-text);
+      font-size: var(--bh-font-title);
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .selected-equipment-panel p {
+      margin: 0;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-sm);
+      line-height: 1.4;
+    }
+
+    .selected-equipment-meta {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .selected-equipment-meta div {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-sm);
+    }
+
+    .selected-equipment-meta strong {
+      color: var(--bh-text);
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .form-feedback {
+      display: none;
+      margin-bottom: 14px;
+    }
+
+    .equipment-picker {
+      display: grid;
+      gap: 4px;
+    }
+
+    .equipment-picker-button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 38px;
+      padding-top: 7px;
+      padding-bottom: 7px;
+      text-align: left;
+    }
+
+    .equipment-results {
+      display: none;
+      max-height: 168px;
+      overflow-y: auto;
+      border: 0.5px solid var(--bh-border-soft);
+      border-radius: var(--bh-radius);
+      background: #fff;
+    }
+
+    .equipment-results.open {
+      display: block;
+    }
+
+    .equipment-option {
+      width: 100%;
+      padding: 8px 10px;
+      border: 0;
+      border-bottom: 0.5px solid var(--bh-border-soft);
+      background: transparent;
+      color: var(--bh-text);
+      text-align: left;
+    }
+
+    .equipment-option:last-child {
+      border-bottom: 0;
+    }
+
+    .equipment-option:hover,
+    .equipment-option:focus {
+      background: var(--bh-accent-soft);
+      outline: none;
+    }
+
+    .equipment-option[disabled] {
+      color: var(--bh-text-light);
+      cursor: not-allowed;
+      background: var(--bh-bg);
+    }
+
+    .equipment-option strong,
+    .equipment-option small {
+      display: block;
+      line-height: 1.35;
+    }
+
+    .equipment-option strong {
+      font-size: var(--bh-font-sm);
+      font-weight: 600;
+    }
+
+    .equipment-option small {
+      color: var(--bh-text-muted);
+      font-size: var(--bh-font-xs);
+    }
+
+    @media (max-width: 980px) {
+      .request-form-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="bh-ui borrower-ui" data-page-title="New Borrowing Request" data-page-active="request">
+  <main id="borrowerPageContent">
+    <div class="bh-page-kicker">Borrowing reservation form</div>
+
+    <div class="request-form-layout">
+      <section class="card">
+        <div class="card-header">Request form</div>
+        <div class="card-body">
+          <div class="alert form-feedback" id="formFeedback" role="alert"></div>
+
+          <form id="borrowRequestForm" novalidate>
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label" for="equipmentId">Selected equipment</label>
+                <div class="input-group mb-2">
+                  <span class="input-group-text"><i class="bi bi-search"></i></span>
+                  <input class="form-control" id="equipmentSearch" type="search" placeholder="Search equipment name, category, location, or condition">
+                </div>
+                <div class="equipment-picker">
+                  <button class="form-select equipment-picker-button" id="equipmentPickerButton" type="button">
+                    <span id="equipmentPickerText">Choose equipment</span>
+                  </button>
+                  <div class="equipment-results" id="equipmentResults"></div>
+                </div>
+                <select class="form-select d-none" id="equipmentId" required>
+                  <option value="">Choose equipment</option>
+                </select>
+                <div class="invalid-feedback">Please select equipment.</div>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label" for="quantity">Quantity</label>
+                <input class="form-control" id="quantity" type="number" min="1" step="1" value="1" required>
+                <div class="invalid-feedback">Quantity must be greater than 0.</div>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label" for="borrowDate">Borrow date</label>
+                <input class="form-control" id="borrowDate" type="date" required>
+                <div class="invalid-feedback">Borrow date is required.</div>
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label" for="returnDate">Expected return date</label>
+                <input class="form-control" id="returnDate" type="date" required>
+                <div class="invalid-feedback">Return date must not be before borrow date.</div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label" for="eventLocation">Event/location where equipment will be used</label>
+                <input class="form-control" id="eventLocation" type="text" placeholder="Example: Barangay covered court" required>
+                <div class="invalid-feedback">Event/location is required.</div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label" for="purpose">Purpose</label>
+                <textarea class="form-control" id="purpose" rows="4" placeholder="Briefly describe why you need this equipment" required></textarea>
+                <div class="invalid-feedback">Purpose is required.</div>
+              </div>
+
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 justify-content-end mt-4">
+              <a href="/borrower/equipment" class="btn btn-outline-primary">Cancel</a>
+              <button type="submit" class="btn btn-primary" id="submitRequestBtn">
+                <i class="bi bi-send me-1"></i>Submit Pending Request
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <aside class="d-grid gap-3">
+        <div class="selected-equipment-panel">
+          <h5 id="selectedName">No equipment selected</h5>
+          <p id="selectedDescription">Choose equipment to see availability details.</p>
+          <div class="selected-equipment-meta">
+            <div><span>Category</span><strong id="selectedCategory">-</strong></div>
+            <div><span>Available</span><strong id="selectedAvailable">-</strong></div>
+            <div><span>Condition</span><strong id="selectedCondition">-</strong></div>
+            <div><span>Status</span><strong id="selectedStatus">-</strong></div>
+          </div>
+        </div>
+
+        <div class="request-note">
+          <strong><i class="bi bi-info-circle me-1"></i>Inventory rule</strong>
+          Submitting this form only creates a Pending request. Inventory quantities must change only during staff release and return.
+        </div>
+
+        <div class="request-note" id="highValueNote" style="display:none;">
+          <strong><i class="bi bi-shield-check me-1"></i>High-value equipment</strong>
+          This item may require additional endorsement before release.
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script src="/js/borrower-layout.js"></script>
+  <script>
+    let equipmentItems = [];
+
+    function getQueryParam(name) {
+      return new URLSearchParams(window.location.search).get(name);
+    }
+
+    function showFeedback(type, message) {
+      const feedback = document.getElementById('formFeedback');
+      feedback.className = 'alert form-feedback alert-' + type;
+      feedback.textContent = message;
+      feedback.style.display = 'block';
+    }
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, function(ch) {
+        return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[ch];
+      });
+    }
+
+    function selectedEquipment() {
+      const selectedId = document.getElementById('equipmentId').value;
+      return equipmentItems.find(function(item) { return String(item.id) === String(selectedId); });
+    }
+
+    function equipmentOptionLabel(item) {
+      return item.name + ' (' + item.available + ' available)';
+    }
+
+    function openEquipmentResults() {
+      document.getElementById('equipmentResults').classList.add('open');
+    }
+
+    function closeEquipmentResults() {
+      document.getElementById('equipmentResults').classList.remove('open');
+    }
+
+    function selectEquipmentById(id) {
+      const select = document.getElementById('equipmentId');
+      select.value = String(id || '');
+      const item = selectedEquipment();
+      document.getElementById('equipmentSearch').value = item ? item.name : '';
+      updateSelectedEquipment();
+      closeEquipmentResults();
+    }
+
+    function renderEquipmentResults(filteredItems) {
+      const results = document.getElementById('equipmentResults');
+      if (!filteredItems.length) {
+        results.innerHTML = '<div class="p-3 text-muted small">No equipment matched your search.</div>';
+        return;
+      }
+
+      results.innerHTML = filteredItems.map(function(item) {
+        const disabled = item.available < 1 || item.status === 'Under Maintenance' || item.condition === 'Under Maintenance';
+        return '<button class="equipment-option" type="button" data-id="' + item.id + '"' + (disabled ? ' disabled' : '') + '>' +
+          '<strong>' + escapeHtml(item.name) + '</strong>' +
+          '<small>' + escapeHtml(item.category) + ' &middot; ' + item.available + ' available &middot; ' + escapeHtml(item.location || 'Storage Room') + '</small>' +
+        '</button>';
+      }).join('');
+    }
+
+    function populateEquipment(keepOpen) {
+      const select = document.getElementById('equipmentId');
+      const query = document.getElementById('equipmentSearch').value.trim().toLowerCase();
+      const selectedValue = select.value || getQueryParam('equipment_id') || '';
+      const filteredItems = equipmentItems.filter(function(item) {
+        if (!query) return true;
+        return item.name.toLowerCase().includes(query) ||
+          item.category.toLowerCase().includes(query) ||
+          String(item.location || '').toLowerCase().includes(query) ||
+          String(item.condition || '').toLowerCase().includes(query) ||
+          String(item.status || '').toLowerCase().includes(query);
+      });
+
+      select.innerHTML = '<option value="">Choose equipment</option>' + filteredItems.map(function(item) {
+        const disabled = item.available < 1 || item.status === 'Under Maintenance' || item.condition === 'Under Maintenance';
+        return '<option value="' + item.id + '"' + (disabled ? ' disabled' : '') + '>' +
+          equipmentOptionLabel(item) +
+        '</option>';
+      }).join('');
+      renderEquipmentResults(filteredItems);
+
+      if (filteredItems.some(function(item) { return String(item.id) === String(selectedValue); })) {
+        select.value = String(selectedValue);
+      }
+      updateSelectedEquipment();
+      if (keepOpen) openEquipmentResults();
+    }
+
+    function updateSelectedEquipment() {
+      const item = selectedEquipment();
+      document.getElementById('equipmentPickerText').textContent = item ? equipmentOptionLabel(item) : 'Choose equipment';
+      document.getElementById('selectedName').textContent = item ? item.name : 'No equipment selected';
+      document.getElementById('selectedDescription').textContent = item ? item.description : 'Choose equipment to see availability details.';
+      document.getElementById('selectedCategory').textContent = item ? item.category : '-';
+      document.getElementById('selectedAvailable').textContent = item ? item.available : '-';
+      document.getElementById('selectedCondition').textContent = item ? item.condition : '-';
+      document.getElementById('selectedStatus').textContent = item ? item.status : '-';
+      document.getElementById('highValueNote').style.display = item && item.highValue ? 'block' : 'none';
+    }
+
+    function normalizeEquipment(item) {
+      return {
+        id: item.item_id || item.equipment_id,
+        name: item.specific_item_name || item.name || 'Unnamed equipment',
+        category: item.category || 'Others',
+        available: Number(item.quantity_available || item.available_quantity || 0),
+        condition: item.condition || 'Good',
+        location: item.location || 'Storage Room',
+        status: item.status || 'Available',
+        highValue: item.is_high_value === true || item.is_high_value === 1 || item.is_high_value === '1',
+        description: item.description || 'No description provided.'
+      };
+    }
+
+    async function loadEquipment() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/pages/login.html';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/equipment', {
+          headers: { authorization: token }
+        });
+        if (response.status === 401 || response.status === 403) {
+          localStorage.clear();
+          window.location.href = '/pages/login.html';
+          return;
+        }
+
+        const data = await response.json().catch(function() { return []; });
+        if (!response.ok) throw new Error(data.message || 'Unable to load equipment list.');
+        equipmentItems = data.map(normalizeEquipment);
+        populateEquipment(false);
+      } catch (err) {
+        showFeedback('danger', err.message || 'Unable to load equipment list.');
+        populateEquipment(false);
+      }
+    }
+
+    function validateForm() {
+      const form = document.getElementById('borrowRequestForm');
+      const equipmentId = document.getElementById('equipmentId');
+      const quantity = document.getElementById('quantity');
+      const borrowDate = document.getElementById('borrowDate');
+      const returnDate = document.getElementById('returnDate');
+      const purpose = document.getElementById('purpose');
+      const eventLocation = document.getElementById('eventLocation');
+      let valid = true;
+
+      [equipmentId, quantity, borrowDate, returnDate, purpose, eventLocation].forEach(function(field) {
+        field.classList.remove('is-invalid');
+      });
+
+      if (!equipmentId.value) {
+        equipmentId.classList.add('is-invalid');
+        valid = false;
+      }
+      if (!Number.isInteger(Number(quantity.value)) || Number(quantity.value) < 1) {
+        quantity.classList.add('is-invalid');
+        valid = false;
+      }
+      if (!borrowDate.value) {
+        borrowDate.classList.add('is-invalid');
+        valid = false;
+      }
+      if (!returnDate.value || (borrowDate.value && returnDate.value < borrowDate.value)) {
+        returnDate.classList.add('is-invalid');
+        valid = false;
+      }
+      if (!purpose.value.trim()) {
+        purpose.classList.add('is-invalid');
+        valid = false;
+      }
+      if (!eventLocation.value.trim()) {
+        eventLocation.classList.add('is-invalid');
+        valid = false;
+      }
+
+      form.classList.toggle('was-validated', !valid);
+      return valid;
+    }
+
+    async function submitRequest(event) {
+      event.preventDefault();
+      if (!validateForm()) {
+        showFeedback('danger', 'Please complete the required fields before submitting.');
+        return;
+      }
+
+      const button = document.getElementById('submitRequestBtn');
+      const payload = {
+        equipment_id: document.getElementById('equipmentId').value,
+        quantity: document.getElementById('quantity').value,
+        borrow_date: document.getElementById('borrowDate').value,
+        return_date: document.getElementById('returnDate').value,
+        purpose: document.getElementById('purpose').value.trim(),
+        event_location: document.getElementById('eventLocation').value.trim()
+      };
+
+      button.disabled = true;
+      button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Submitting';
+
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          window.location.href = '/pages/login.html';
+          return;
+        }
+
+        const response = await fetch('/api/transactions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token
+          },
+          body: JSON.stringify(payload)
+        });
+        const result = await response.json().catch(function() { return {}; });
+        if (!response.ok) throw new Error(result.message || 'Unable to submit request.');
+        showFeedback('success', 'Borrowing request submitted successfully. Status: Pending.');
+
+        document.getElementById('borrowRequestForm').reset();
+        document.getElementById('equipmentSearch').value = '';
+        populateEquipment();
+      } catch (error) {
+        showFeedback('warning', error.message + ' No inventory quantity was changed.');
+      } finally {
+        button.disabled = false;
+        button.innerHTML = '<i class="bi bi-send me-1"></i>Submit Pending Request';
+      }
+    }
+
+    document.getElementById('equipmentId').addEventListener('change', updateSelectedEquipment);
+    document.getElementById('equipmentSearch').addEventListener('focus', function() {
+      populateEquipment(true);
+    });
+    document.getElementById('equipmentSearch').addEventListener('input', function() {
+      populateEquipment(true);
+    });
+    document.getElementById('equipmentPickerButton').addEventListener('click', function() {
+      const results = document.getElementById('equipmentResults');
+      if (results.classList.contains('open')) closeEquipmentResults();
+      else populateEquipment(true);
+    });
+    document.getElementById('equipmentResults').addEventListener('click', function(event) {
+      const option = event.target.closest('.equipment-option');
+      if (!option || option.disabled) return;
+      selectEquipmentById(option.getAttribute('data-id'));
+    });
+    document.addEventListener('click', function(event) {
+      if (!event.target.closest('.equipment-picker') && event.target.id !== 'equipmentSearch') {
+        closeEquipmentResults();
+      }
+    });
+    document.getElementById('borrowRequestForm').addEventListener('submit', submitRequest);
+    loadEquipment();
+  </script>
+</body>
+</html>
