@@ -56,6 +56,25 @@ async function getAuthUser(userId) {
   });
 }
 
+function wait(ms) {
+  return new Promise(function(resolve) {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function waitForAuthUser(userId) {
+  let lastError = null;
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    try {
+      return await getAuthUser(userId);
+    } catch (err) {
+      lastError = err;
+      await wait(250 * (attempt + 1));
+    }
+  }
+  throw lastError || new Error('Supabase Auth user was not found after signup.');
+}
+
 async function deleteAuthUser(userId) {
   if (!userId) return;
   try {
@@ -94,7 +113,9 @@ async function createBorrowerProfileAccount(details) {
     throw new Error('Supabase Auth did not return a user id.');
   }
 
+  let confirmedAuthUser = authUser;
   try {
+    confirmedAuthUser = await waitForAuthUser(authUserId);
     const profileRows = await createProfile({
       id: authUserId,
       full_name: details.full_name,
@@ -115,8 +136,17 @@ async function createBorrowerProfileAccount(details) {
       profile: Array.isArray(profileRows) ? profileRows[0] : profileRows
     };
   } catch (err) {
-    await deleteAuthUser(authUserId);
-    throw err;
+    if (!String(err.message || '').includes('profiles_id_fkey')) {
+      await deleteAuthUser(authUserId);
+      throw err;
+    }
+    return {
+      skipped: false,
+      auth_user_id: authUserId,
+      email_confirmed_at: confirmedAuthUser.email_confirmed_at || confirmedAuthUser.confirmed_at || null,
+      profile: null,
+      profile_sync_error: err.message
+    };
   }
 }
 
