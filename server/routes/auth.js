@@ -500,6 +500,13 @@ router.post('/email-verification-status', async function(req, res) {
   });
 });
 
+router.get('/supabase-public-config', function(req, res) {
+  return res.status(200).json({
+    url: process.env.SUPABASE_URL || '',
+    anon_key: process.env.SUPABASE_ANON_KEY || ''
+  });
+});
+
 router.get('/me', auth, function(req, res) {
   db.get(
     `SELECT u.user_id, u.username, u.email, u.first_name, u.last_name, u.full_name,

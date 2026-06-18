@@ -54,6 +54,18 @@ app.get('/borrower/requests/:id', function(req, res) {
   res.sendFile(path.join(publicDir, 'borrower', 'request-detail.html'));
 });
 
+app.get('/forgot-password', function(req, res) {
+  res.sendFile(path.join(publicDir, 'pages', 'forgot-password.html'));
+});
+
+app.get('/reset-password', function(req, res) {
+  res.sendFile(path.join(publicDir, 'pages', 'reset-password.html'));
+});
+
+app.get('/login', function(req, res) {
+  res.redirect('/pages/login.html');
+});
+
 app.get('/', function(req, res) {
   res.redirect('/pages/login.html');
 });

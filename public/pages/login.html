@@ -639,8 +639,7 @@
     }
 
     document.getElementById('forgotPasswordLink').addEventListener('click', function() {
-      resetAlert('loginSuccess');
-      showAlert('loginError', 'Forgot password is not available yet. Please contact the barangay office.');
+      window.location.href = '/forgot-password';
     });
     document.getElementById('startCameraBtn').addEventListener('click', startCamera);
     document.getElementById('captureDocumentBtn').addEventListener('click', captureDocument);
