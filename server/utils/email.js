@@ -163,8 +163,61 @@ async function sendBorrowerReadyEmail(user) {
   });
 }
 
+async function sendRequestStatusEmail(user, request, status, reason) {
+  const name = user.full_name || request.borrower_name || 'Borrower';
+  const requestLabel = 'Request #' + request.transaction_id;
+  let subject = 'BarangayHiram borrowing request update';
+  let statusMessage = requestLabel + ' for ' + request.equipment_name + ' has been updated to ' + status + '.';
+
+  if (status === 'Approved') {
+    subject = 'Your BarangayHiram borrowing request is approved';
+    statusMessage = requestLabel + ' for ' + request.equipment_name + ' has been approved. Please wait for staff release instructions.';
+  } else if (status === 'Rejected') {
+    subject = 'Your BarangayHiram borrowing request was rejected';
+    statusMessage = requestLabel + ' for ' + request.equipment_name + ' was rejected. ' + (reason ? 'Reason: ' + reason : 'Please contact barangay staff for details.');
+  } else if (status === 'Released') {
+    subject = 'Your BarangayHiram equipment has been released';
+    statusMessage = requestLabel + ' for ' + request.equipment_name + ' has been released. Please return it on or before ' + (request.due_date || 'the expected return date') + '.';
+  }
+
+  return sendMail({
+    to: user.email || user.username,
+    subject: subject,
+    text:
+      'Hello ' + name + ',\n\n' +
+      statusMessage + '\n\n' +
+      'BarangayHiram\nBarangay 628, Zone 63',
+    html:
+      '<p>Hello ' + encodeHeader(name) + ',</p>' +
+      '<p>' + encodeHeader(statusMessage) + '</p>' +
+      '<p>BarangayHiram<br>Barangay 628, Zone 63</p>'
+  });
+}
+
+async function sendOverdueEmail(user, request) {
+  const name = user.full_name || request.borrower_name || 'Borrower';
+  const message = 'Request #' + request.transaction_id + ' for ' + request.equipment_name + ' is overdue. Please return the equipment immediately.';
+
+  return sendMail({
+    to: user.email || user.username,
+    subject: 'BarangayHiram overdue equipment notice',
+    text:
+      'Hello ' + name + ',\n\n' +
+      message + '\n\n' +
+      'Expected return date: ' + (request.due_date || '-') + '\n\n' +
+      'BarangayHiram\nBarangay 628, Zone 63',
+    html:
+      '<p>Hello ' + encodeHeader(name) + ',</p>' +
+      '<p>' + encodeHeader(message) + '</p>' +
+      '<p>Expected return date: ' + encodeHeader(request.due_date || '-') + '</p>' +
+      '<p>BarangayHiram<br>Barangay 628, Zone 63</p>'
+  });
+}
+
 module.exports = {
   isConfigured,
   sendMail,
-  sendBorrowerReadyEmail
+  sendBorrowerReadyEmail,
+  sendRequestStatusEmail,
+  sendOverdueEmail
 };

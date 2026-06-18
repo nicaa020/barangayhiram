@@ -7,6 +7,7 @@ const admin = require('../middleware/admin');
 const logActivity = require('../utils/activity');
 const recomputeEquipmentAvailability = require('../utils/availability');
 const overdue = require('../utils/overdue');
+const email = require('../utils/email');
 
 const STATUS_FLOW = {
   Pending: ['Approved', 'Rejected', 'Cancelled'],
@@ -357,10 +358,12 @@ router.put('/:id', auth, admin, function(req, res) {
 
   db.get(
     `SELECT t.*, b.user_id as borrower_user_id, b.full_name as borrower_name,
+            u.username as borrower_username, u.email as borrower_email,
             e.name as equipment_name, e.quantity as equipment_quantity,
             e.available_quantity as equipment_available_quantity
      FROM transactions t
      JOIN borrowers b ON t.borrower_id = b.borrower_id
+     LEFT JOIN users u ON b.user_id = u.user_id
      JOIN equipment e ON t.equipment_id = e.equipment_id
      WHERE t.transaction_id = ?`,
     [req.params.id],
@@ -430,6 +433,13 @@ router.put('/:id', auth, admin, function(req, res) {
             const notification = requestNotificationContent(status, transaction, reason);
             createNotification(transaction.borrower_user_id, notification.title, notification.message, notification.type, function(err) {
               if (err) return res.status(500).json({ message: 'Status updated, but notification could not be created: ' + err.message });
+              email.sendRequestStatusEmail({
+                full_name: transaction.borrower_name,
+                username: transaction.borrower_username,
+                email: transaction.borrower_email
+              }, transaction, status, reason).catch(function(emailErr) {
+                console.warn('Unable to send request status email:', emailErr.message);
+              });
               return res.status(200).json({
                 message: extraMessage || ('Borrowing status updated to ' + status),
                 status: status,

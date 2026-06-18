@@ -1,6 +1,7 @@
 'use strict';
 
 const db = require('../database/db');
+const email = require('./email');
 
 function all(sql, params) {
   return new Promise((resolve, reject) => {
@@ -36,9 +37,13 @@ async function markOverdueRequests() {
             t.equipment_id,
             t.due_date,
             b.user_id as borrower_user_id,
+            b.full_name as borrower_name,
+            u.username as borrower_username,
+            u.email as borrower_email,
             e.name as equipment_name
      FROM transactions t
      JOIN borrowers b ON t.borrower_id = b.borrower_id
+     LEFT JOIN users u ON b.user_id = u.user_id
      JOIN equipment e ON t.equipment_id = e.equipment_id
      WHERE t.status = 'Released'
        AND t.due_date < date('now')`
@@ -82,6 +87,14 @@ async function markOverdueRequests() {
         ]
       );
       results.notifications_created += 1;
+
+      email.sendOverdueEmail({
+        full_name: request.borrower_name,
+        username: request.borrower_username,
+        email: request.borrower_email
+      }, request).catch(function(emailErr) {
+        console.warn('Unable to send overdue email:', emailErr.message);
+      });
     }
   }
 
