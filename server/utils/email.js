@@ -1,5 +1,7 @@
 'use strict';
 
+const appUrl = require('./appUrl');
+
 const net = require('net');
 const tls = require('tls');
 
@@ -142,7 +144,7 @@ async function sendMail(options) {
 
 async function sendBorrowerReadyEmail(user) {
   const name = user.full_name || 'Borrower';
-  const loginUrl = (process.env.APP_URL || 'http://127.0.0.1:3001').replace(/\/+$/, '') + '/pages/login.html';
+  const loginUrl = appUrl.loginUrl('http://127.0.0.1:3001');
   return sendMail({
     to: user.email || user.username,
     subject: 'Your BarangayHiram account is approved',

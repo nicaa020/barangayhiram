@@ -11,6 +11,7 @@ const admin = require('../middleware/admin');
 const logActivity = require('../utils/activity');
 const supabaseProfiles = require('../utils/supabaseProfiles');
 const email = require('../utils/email');
+const appUrl = require('../utils/appUrl');
 
 const USERNAME_REQUIREMENTS = 'Username must be 4-60 characters, or use a valid email address.';
 const PASSWORD_REQUIREMENTS = 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character.';
@@ -117,9 +118,7 @@ function publicUser(user) {
 }
 
 function emailRedirectTo(req) {
-  const appUrl = (process.env.APP_URL || process.env.PUBLIC_APP_URL || '').replace(/\/+$/, '');
-  if (appUrl) return appUrl + '/pages/login.html?email_verified=1';
-  return req.protocol + '://' + req.get('host') + '/pages/login.html?email_verified=1';
+  return appUrl.loginUrl(req.protocol + '://' + req.get('host'), 'email_verified=1');
 }
 
 async function ensureBorrowerEmailConfirmed(user) {
