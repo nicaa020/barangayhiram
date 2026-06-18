@@ -180,12 +180,16 @@
         const documentLink = user.verification_document
           ? '<a href="' + escapeHtml(user.verification_document) + '" target="_blank" rel="noopener">View captured ID</a>'
           : '<span class="text-muted">No document</span>';
-        const actions = (user.status === 'Pending' || user.verification_status === 'Pending')
+        const pendingReview = user.status === 'Pending' || user.verification_status === 'Pending';
+        const approvedReview = user.status === 'Approved' || user.verification_status === 'Approved' || user.status === 'Active';
+        const actions = pendingReview
           ? '<div class="bh-action-group">' +
             '<button class="btn btn-outline-success btn-icon" onclick="approveUser(' + user.user_id + ')" title="Approve"><i class="bi bi-check2"></i></button>' +
             '<button class="btn btn-outline-danger btn-icon" onclick="openRejectModal(' + user.user_id + ')" title="Reject"><i class="bi bi-x-lg"></i></button>' +
             '</div>'
-          : '<span class="text-muted small">Reviewed</span>';
+          : approvedReview
+            ? '<div class="bh-action-group"><button class="btn btn-outline-primary btn-icon" onclick="resendApprovalEmail(' + user.user_id + ')" title="Resend approval email"><i class="bi bi-envelope"></i></button></div>'
+            : '<span class="text-muted small">Reviewed</span>';
         return '<tr>' +
           '<td class="ps-3"><div class="d-flex align-items-center gap-2"><div class="user-avatar">' + initial + '</div><div><div>' + escapeHtml(user.full_name) + '</div><small class="text-muted">' + escapeHtml(user.username) + '</small></div></div></td>' +
           '<td>' + escapeHtml(user.borrower_type || 'Borrower') + '</td>' +
@@ -217,7 +221,10 @@
       });
       const data = await res.json();
       if (res.ok) {
-        showToast('New user ' + status.toLowerCase() + '.', status === 'Approved' ? 'success' : 'danger');
+        const emailNote = status === 'Approved'
+          ? (data.email_sent ? ' Approval email sent.' : data.email_skipped_reason ? ' Approval email not sent: ' + data.email_skipped_reason + '.' : '')
+          : '';
+        showToast('New user ' + status.toLowerCase() + '.' + emailNote, status === 'Approved' ? 'success' : 'danger');
         loadUsers();
       } else {
         showToast(data.message || 'Unable to update new user account.', 'danger');
@@ -227,6 +234,16 @@
 
     async function approveUser(id) {
       await updateVerification(id, 'Approved', '');
+    }
+
+    async function resendApprovalEmail(id) {
+      const res = await api('/api/auth/users/' + id + '/resend-approval-email', { method: 'POST' });
+      const data = await res.json();
+      if (res.ok) {
+        showToast(data.message || 'Approval email sent.', 'success');
+      } else {
+        showToast((data.message || 'Approval email was not sent.') + (data.email_skipped_reason ? ' Reason: ' + data.email_skipped_reason + '.' : '') + (data.email_error ? ' ' + data.email_error : ''), 'danger');
+      }
     }
 
     function openRejectModal(id) {

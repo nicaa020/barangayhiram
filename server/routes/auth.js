@@ -689,6 +689,30 @@ router.put('/users/:id/verification', auth, admin, function(req, res) {
   });
 });
 
+router.post('/users/:id/resend-approval-email', auth, admin, function(req, res) {
+  db.run('UPDATE users SET borrow_ready_email_sent_at = NULL WHERE user_id = ?', [req.params.id], function(err) {
+    if (err) return res.status(500).json({ message: 'Unable to prepare approval email resend.' });
+    sendBorrowerReadyEmailIfEligible(req.params.id)
+      .then(function(emailResult) {
+        if (emailResult.sent) {
+          return res.status(200).json({ message: 'Approval email sent.', email_sent: true });
+        }
+        return res.status(400).json({
+          message: 'Approval email was not sent.',
+          email_sent: false,
+          email_skipped_reason: emailResult.reason || 'unknown'
+        });
+      })
+      .catch(function(emailErr) {
+        return res.status(500).json({
+          message: 'Approval email could not be sent.',
+          email_sent: false,
+          email_error: emailErr.message
+        });
+      });
+  });
+});
+
 router.put('/change-password', auth, function(req, res) {
   const currentPassword = req.body.current_password;
   const newPassword = req.body.new_password;
