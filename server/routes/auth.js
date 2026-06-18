@@ -219,28 +219,35 @@ async function sendBorrowerReadyEmailIfEligible(userId) {
   if (!user) return { sent: false, skipped: true, reason: 'missing_user' };
   if (user.borrow_ready_email_sent_at) return { sent: false, skipped: true, reason: 'already_sent' };
   if (!user.email_verified_at) {
-    let emailStatus = await ensureBorrowerEmailConfirmed(Object.assign({}, user, { role: 'borrower' }));
-    if (!emailStatus.confirmed) {
-      const authUser = await supabaseProfiles.findAuthUserByEmail(user.email || user.username);
-      const confirmedAt = authUser && (authUser.email_confirmed_at || authUser.confirmed_at || null);
-      if (confirmedAt) {
-        await new Promise(function(resolve, reject) {
-          db.run(
-            'UPDATE users SET supabase_auth_user_id = ?, email_verified_at = ?, updated_at = datetime("now") WHERE user_id = ?',
-            [authUser.id, confirmedAt, user.user_id],
-            function(err) {
-              if (err) reject(err);
-              else resolve();
-            }
-          );
-        });
-        user.supabase_auth_user_id = authUser.id;
-        user.email_verified_at = confirmedAt;
-        emailStatus = { confirmed: true, email_verified_at: confirmedAt };
+    try {
+      let emailStatus = await ensureBorrowerEmailConfirmed(Object.assign({}, user, { role: 'borrower' }));
+      if (emailStatus.confirmed) {
+        user.email_verified_at = emailStatus.email_verified_at;
       }
+      if (!emailStatus.confirmed) {
+        const authUser = await supabaseProfiles.findAuthUserByEmail(user.email || user.username);
+        const confirmedAt = authUser && (authUser.email_confirmed_at || authUser.confirmed_at || null);
+        if (confirmedAt) {
+          await new Promise(function(resolve, reject) {
+            db.run(
+              'UPDATE users SET supabase_auth_user_id = ?, email_verified_at = ?, updated_at = datetime("now") WHERE user_id = ?',
+              [authUser.id, confirmedAt, user.user_id],
+              function(err) {
+                if (err) reject(err);
+                else resolve();
+              }
+            );
+          });
+          user.supabase_auth_user_id = authUser.id;
+          user.email_verified_at = confirmedAt;
+        }
+      }
+    } catch (err) {
+      console.warn('Unable to sync email verification before approval email:', err.message);
     }
-    if (!emailStatus.confirmed) return { sent: false, skipped: true, reason: 'email_not_verified' };
-    user.email_verified_at = emailStatus.email_verified_at;
+  }
+  if (!user.email_verified_at) {
+    console.warn('Sending approval email before local email verification sync for user #' + user.user_id);
   }
   if (!['Approved', 'Active'].includes(user.status) || user.verification_status !== 'Approved') {
     return { sent: false, skipped: true, reason: 'account_not_approved' };
@@ -815,3 +822,4 @@ router.delete('/users/:id', auth, admin, deleteUserAccount);
 router.post('/users/:id/delete', auth, admin, deleteUserAccount);
 
 module.exports = router;
+

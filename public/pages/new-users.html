@@ -242,7 +242,7 @@
       if (res.ok) {
         showToast(data.message || 'Approval email sent.', 'success');
       } else {
-        showToast(data.message || (data.email_error ? 'Approval email could not be sent: ' + data.email_error : 'Approval email was not sent.'), 'danger');
+        showToast((data.message || 'Approval email was not sent.') + (data.email_skipped_reason ? ' Reason: ' + data.email_skipped_reason + '.' : '') + (data.email_error ? ' ' + data.email_error : ''), 'danger');
       }
     }
 
