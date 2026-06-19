@@ -26,6 +26,10 @@ function cleanText(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function todayDateString() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 function truthy(value) {
   return value === true || value === 1 || value === '1' || value === 'true' || value === 'on';
 }
@@ -253,6 +257,9 @@ router.post('/', auth, function(req, res) {
   }
   if (!Number.isInteger(quantity_borrowed) || quantity_borrowed < 1) {
     return res.status(400).json({ message: 'Quantity must be at least 1.' });
+  }
+  if (date_borrowed < todayDateString()) {
+    return res.status(400).json({ message: 'Borrow date cannot be earlier than today.' });
   }
   if (due_date < date_borrowed) {
     return res.status(400).json({ message: 'Return date cannot be earlier than borrow date.' });

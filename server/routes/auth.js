@@ -730,6 +730,9 @@ router.put('/users/:id/verification', auth, admin, function(req, res) {
   if (status !== 'Approved' && status !== 'Rejected') {
     return res.status(400).json({ message: 'Verification status must be Approved or Rejected.' });
   }
+  if (status === 'Rejected' && !notes) {
+    return res.status(400).json({ message: 'Rejection reason is required.' });
+  }
 
   db.get('SELECT * FROM users WHERE user_id = ?', [req.params.id], function(err, user) {
     if (err) return res.status(500).json({ message: 'Database error.' });
@@ -841,6 +844,9 @@ router.put('/change-password', auth, function(req, res) {
 function deleteUserAccount(req, res) {
   const userId = parseInt(req.params.id, 10);
   if (!Number.isInteger(userId)) return res.status(400).json({ message: 'Invalid account selected.' });
+  if (req.user.role !== 'super_admin') {
+    return res.status(403).json({ message: 'Only the super admin can delete staff accounts.' });
+  }
   if (userId === req.user.user_id) {
     return res.status(400).json({ message: 'You cannot delete your own account while logged in.' });
   }

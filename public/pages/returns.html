@@ -198,6 +198,11 @@
         errorDiv.classList.remove('d-none');
         return;
       }
+      if ((payload.condition_on_return === 'Damaged' || payload.condition_on_return === 'Incomplete') && !payload.remarks) {
+        errorDiv.textContent = 'Remarks are required for damaged or incomplete returns.';
+        errorDiv.classList.remove('d-none');
+        return;
+      }
       const transaction = selectedTransaction();
       const borrowedQuantity = transaction ? Number(transaction.quantity_borrowed || transaction.quantity || 0) : 0;
       if (borrowedQuantity && payload.returned_quantity > borrowedQuantity) {

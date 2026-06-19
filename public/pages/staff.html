@@ -243,6 +243,9 @@
       tbody.innerHTML = data.map(function(user) {
         const initial = (user.full_name || user.username).charAt(0).toUpperCase();
         const created = user.created_at ? user.created_at.split(' ')[0] : '-';
+        const deleteButton = role === 'super_admin'
+          ? '<button type="button" class="btn btn-outline-danger btn-icon" onclick="confirmDeleteById(' + user.user_id + ')" title="Delete"><i class="bi bi-trash"></i></button>'
+          : '';
         return '<tr>' +
           '<td class="ps-3"><div class="d-flex align-items-center gap-2"><div class="staff-avatar">' + initial + '</div><div><span>' + escapeHtml(user.full_name) + '</span></div></div></td>' +
           '<td>' + escapeHtml(user.username) + '</td>' +
@@ -251,7 +254,7 @@
           '<td>' + created + '</td>' +
           '<td><div class="bh-action-group">' +
             '<button type="button" class="btn btn-outline-primary btn-icon" onclick="openEditModal(' + user.user_id + ')" title="Edit"><i class="bi bi-pencil"></i></button>' +
-            '<button type="button" class="btn btn-outline-danger btn-icon" onclick="confirmDeleteById(' + user.user_id + ')" title="Delete"><i class="bi bi-trash"></i></button>' +
+            deleteButton +
             '</div>' +
           '</td>' +
         '</tr>';
@@ -428,6 +431,16 @@
     }
 
     async function deleteStaffById(id, errorDiv) {
+      if (role !== 'super_admin') {
+        const message = 'Only the super admin can delete staff accounts.';
+        if (errorDiv) {
+          errorDiv.textContent = message;
+          errorDiv.classList.remove('d-none');
+        } else {
+          window.alert(message);
+        }
+        return;
+      }
       let res = await api('/api/auth/users/' + id, { method: 'DELETE' });
       let data = await readResponse(res);
 

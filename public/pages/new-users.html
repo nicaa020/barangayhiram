@@ -345,6 +345,12 @@
 
     async function submitReject() {
       const id = document.getElementById('rejectUserId').value;
+      const notes = document.getElementById('rejectNotes').value.trim();
+      if (!notes) {
+        document.getElementById('rejectError').textContent = 'Rejection reason is required.';
+        document.getElementById('rejectError').classList.remove('d-none');
+        return;
+      }
       const confirmed = await confirmBarangayHiramAction({
         title: 'Reject borrower?',
         message: 'This borrower account will be rejected. The borrower will not be allowed to borrow equipment.',
@@ -352,7 +358,7 @@
         confirmClass: 'btn-danger'
       });
       if (!confirmed) return;
-      const ok = await updateVerification(id, 'Rejected', document.getElementById('rejectNotes').value.trim());
+      const ok = await updateVerification(id, 'Rejected', notes);
       if (ok) bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
     }
 

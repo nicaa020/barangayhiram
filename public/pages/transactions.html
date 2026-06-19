@@ -349,6 +349,17 @@
         errorDiv.classList.remove('d-none');
         return;
       }
+      const today = new Date().toISOString().split('T')[0];
+      if (payload.date_borrowed < today) {
+        errorDiv.textContent = 'Borrow date cannot be earlier than today.';
+        errorDiv.classList.remove('d-none');
+        return;
+      }
+      if (payload.due_date < payload.date_borrowed) {
+        errorDiv.textContent = 'Return date cannot be earlier than borrow date.';
+        errorDiv.classList.remove('d-none');
+        return;
+      }
       try {
         const res = await api('/api/transactions', { method: 'POST', headers: { 'Content-Type': 'application/json', authorization: token }, body: JSON.stringify(payload) });
         const data = await res.json();

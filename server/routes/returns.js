@@ -88,6 +88,9 @@ router.post('/', auth, admin, function(req, res) {
   if (!RETURN_STATUSES.includes(return_condition)) {
     return res.status(400).json({ message: 'Invalid return condition selected.' });
   }
+  if ((return_condition === 'Damaged' || return_condition === 'Incomplete') && !penalty_notes) {
+    return res.status(400).json({ message: 'Remarks are required for damaged or incomplete returns.' });
+  }
 
   db.get(
     `SELECT t.*,
