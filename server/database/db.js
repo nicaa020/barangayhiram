@@ -51,27 +51,42 @@ db.serialize(() => {
 
   db.get('SELECT COUNT(*) as total FROM users', [], (err, row) => {
     if (err) {
-      console.error('Default admin check error:', err.message);
+      console.error('Default super admin check error:', err.message);
       return;
     }
-    if (row.total > 0) return;
 
     const username = process.env.SUPER_ADMIN_USERNAME || process.env.ADMIN_USERNAME || 'super.admin';
     const password = process.env.SUPER_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || 'Barangay2026!';
     const fullName = process.env.SUPER_ADMIN_FULL_NAME || process.env.ADMIN_FULL_NAME || 'Super Administrator';
     const hashed = bcrypt.hashSync(password, 10);
 
-    db.run(
-      'INSERT INTO users (username, password, full_name, role, status) VALUES (?, ?, ?, ?, ?)',
-      [username, hashed, fullName, 'super_admin', 'Active'],
-      (insertErr) => {
-        if (insertErr) {
-          console.error('Default super admin seed error:', insertErr.message);
-        } else {
-          console.log('Default super admin account ready.');
-        }
+    db.get('SELECT user_id FROM users WHERE username = ?', [username], (findErr, user) => {
+      if (findErr) {
+        console.error('Default super admin lookup error:', findErr.message);
+        return;
       }
-    );
+
+      if (user) {
+        db.run(
+          'UPDATE users SET password = ?, full_name = ?, role = ?, status = ?, updated_at = datetime("now") WHERE user_id = ?',
+          [hashed, fullName, 'super_admin', 'Active', user.user_id],
+          (updateErr) => {
+            if (updateErr) console.error('Default super admin update error:', updateErr.message);
+            else console.log('Default super admin account ready.');
+          }
+        );
+        return;
+      }
+
+      db.run(
+        'INSERT INTO users (username, password, full_name, role, status) VALUES (?, ?, ?, ?, ?)',
+        [username, hashed, fullName, 'super_admin', 'Active'],
+        (insertErr) => {
+          if (insertErr) console.error('Default super admin seed error:', insertErr.message);
+          else console.log('Default super admin account ready.');
+        }
+      );
+    });
   });
 
   db.run(`CREATE TABLE IF NOT EXISTS equipment (
