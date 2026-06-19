@@ -663,7 +663,8 @@ router.put('/profile', auth, function(req, res) {
 
 router.get('/users', auth, admin, function(req, res) {
   db.all(
-    `SELECT u.user_id, u.username, u.full_name, u.role, u.status, u.contact_number, u.created_at,
+    `SELECT u.user_id, u.username, u.email, u.first_name, u.last_name, u.full_name,
+            u.role, u.status, COALESCE(b.contact_number, u.contact_number) as contact_number, u.created_at,
             b.borrower_id, b.borrower_type, b.address, b.valid_id_reference,
             b.verification_document, b.verification_status, b.verification_notes,
             b.is_flagged, b.flag_reason

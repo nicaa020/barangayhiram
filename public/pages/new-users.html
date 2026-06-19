@@ -30,7 +30,14 @@
     .table td { font-size:.88rem; vertical-align:middle; }
     .badge { font-size:.75rem; padding:5px 10px; }
     .btn-action { padding:4px 10px; font-size:.8rem; }
+    .borrower-detail-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .borrower-detail-item { padding:10px 12px; border:1px solid #eef0f3; border-radius:8px; background:#fafafa; }
+    .borrower-detail-item span { display:block; color:#6c757d; font-size:.75rem; margin-bottom:3px; }
+    .borrower-detail-item strong { display:block; color:#333; font-size:.9rem; line-height:1.35; overflow-wrap:anywhere; }
+    .borrower-document-preview { min-height:180px; border:1px dashed #ced4da; border-radius:8px; display:flex; align-items:center; justify-content:center; text-align:center; background:#fafafa; padding:12px; }
+    .borrower-document-preview img { max-width:100%; max-height:320px; object-fit:contain; border-radius:8px; }
     @media (max-width:768px) { .sidebar { position:static; width:100%; min-height:auto; } .main-content { margin-left:0; } .topbar { position:static; } }
+    @media (max-width:640px) { .borrower-detail-grid { grid-template-columns:1fr; } }
   </style>
   <link href="/css/app.css" rel="stylesheet">
 </head>
@@ -101,6 +108,47 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div class="modal fade" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable"><div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-person-vcard me-2"></i>Borrower Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="detailsUserId">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="user-avatar" id="detailsInitial">B</div>
+          <div>
+            <h5 class="mb-1" id="detailsName">Borrower Name</h5>
+            <div class="text-muted small" id="detailsEmail">borrower@email.com</div>
+          </div>
+          <div class="ms-auto" id="detailsStatus"></div>
+        </div>
+
+        <div class="borrower-detail-grid mb-3">
+          <div class="borrower-detail-item"><span>First name</span><strong id="detailsFirstName">-</strong></div>
+          <div class="borrower-detail-item"><span>Last name</span><strong id="detailsLastName">-</strong></div>
+          <div class="borrower-detail-item"><span>Email / Username</span><strong id="detailsUsername">-</strong></div>
+          <div class="borrower-detail-item"><span>Contact number</span><strong id="detailsContact">-</strong></div>
+          <div class="borrower-detail-item"><span>Borrower type</span><strong id="detailsType">-</strong></div>
+          <div class="borrower-detail-item"><span>ID / Reference number</span><strong id="detailsIdRef">-</strong></div>
+          <div class="borrower-detail-item" style="grid-column:1/-1;"><span>Address</span><strong id="detailsAddress">-</strong></div>
+          <div class="borrower-detail-item" style="grid-column:1/-1;"><span>Admin remarks / verification notes</span><strong id="detailsNotes">-</strong></div>
+        </div>
+
+        <h6 class="mb-2">Captured ID / Supporting document</h6>
+        <div class="borrower-document-preview" id="detailsDocument">
+          <span class="text-muted">No captured document available.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger d-none" id="detailsRejectBtn"><i class="bi bi-x-lg me-1"></i>Reject</button>
+        <button type="button" class="btn btn-success d-none" id="detailsApproveBtn"><i class="bi bi-check2 me-1"></i>Approve</button>
+      </div>
+    </div></div>
   </div>
 
   <div class="modal fade" id="rejectModal" tabindex="-1">
@@ -182,14 +230,16 @@
           : '<span class="text-muted">No document</span>';
         const pendingReview = user.status === 'Pending' || user.verification_status === 'Pending';
         const approvedReview = user.status === 'Approved' || user.verification_status === 'Approved' || user.status === 'Active';
+        const viewButton = '<button class="btn btn-outline-info btn-icon" onclick="openDetailsModal(' + user.user_id + ')" title="View details"><i class="bi bi-eye"></i></button>';
         const actions = pendingReview
           ? '<div class="bh-action-group">' +
+            viewButton +
             '<button class="btn btn-outline-success btn-icon" onclick="approveUser(' + user.user_id + ')" title="Approve"><i class="bi bi-check2"></i></button>' +
             '<button class="btn btn-outline-danger btn-icon" onclick="openRejectModal(' + user.user_id + ')" title="Reject"><i class="bi bi-x-lg"></i></button>' +
             '</div>'
           : approvedReview
-            ? '<span class="text-muted small">Approved</span>'
-            : '<span class="text-muted small">Reviewed</span>';
+            ? '<div class="bh-action-group">' + viewButton + '<span class="text-muted small align-self-center">Approved</span></div>'
+            : '<div class="bh-action-group">' + viewButton + '<span class="text-muted small align-self-center">Reviewed</span></div>';
         return '<tr>' +
           '<td class="ps-3"><div class="d-flex align-items-center gap-2"><div class="user-avatar">' + initial + '</div><div><div>' + escapeHtml(user.full_name) + '</div><small class="text-muted">' + escapeHtml(user.username) + '</small></div></div></td>' +
           '<td>' + escapeHtml(user.borrower_type || 'Borrower') + '</td>' +
@@ -236,6 +286,49 @@
       await updateVerification(id, 'Approved', '');
     }
 
+    function displayValue(value) {
+      return value || '-';
+    }
+
+    function openDetailsModal(id) {
+      const user = allUsers.find(function(item) { return Number(item.user_id) === Number(id); });
+      if (!user) {
+        showToast('Borrower details not found.', 'danger');
+        return;
+      }
+
+      const status = user.status || user.verification_status || 'Pending';
+      const pendingReview = status === 'Pending' || user.verification_status === 'Pending';
+      const documentUrl = user.verification_document || '';
+      const isImage = /\.(png|jpe?g|webp|gif)$/i.test(documentUrl) || documentUrl.startsWith('data:image/');
+
+      document.getElementById('detailsUserId').value = user.user_id;
+      document.getElementById('detailsInitial').textContent = (user.full_name || user.username || 'B').charAt(0).toUpperCase();
+      document.getElementById('detailsName').textContent = displayValue(user.full_name);
+      document.getElementById('detailsEmail').textContent = displayValue(user.email || user.username);
+      document.getElementById('detailsStatus').innerHTML = statusBadge(status);
+      document.getElementById('detailsFirstName').textContent = displayValue(user.first_name);
+      document.getElementById('detailsLastName').textContent = displayValue(user.last_name);
+      document.getElementById('detailsUsername').textContent = displayValue(user.email || user.username);
+      document.getElementById('detailsContact').textContent = displayValue(user.contact_number);
+      document.getElementById('detailsType').textContent = displayValue(user.borrower_type);
+      document.getElementById('detailsIdRef').textContent = displayValue(user.valid_id_reference);
+      document.getElementById('detailsAddress').textContent = displayValue(user.address);
+      document.getElementById('detailsNotes').textContent = displayValue(user.verification_notes || user.admin_remarks);
+
+      if (!documentUrl) {
+        document.getElementById('detailsDocument').innerHTML = '<span class="text-muted">No captured document available.</span>';
+      } else if (isImage) {
+        document.getElementById('detailsDocument').innerHTML = '<img src="' + escapeHtml(documentUrl) + '" alt="Captured borrower ID">';
+      } else {
+        document.getElementById('detailsDocument').innerHTML = '<a href="' + escapeHtml(documentUrl) + '" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right me-1"></i>Open captured document</a>';
+      }
+
+      document.getElementById('detailsApproveBtn').classList.toggle('d-none', !pendingReview);
+      document.getElementById('detailsRejectBtn').classList.toggle('d-none', !pendingReview);
+      new bootstrap.Modal(document.getElementById('detailsModal')).show();
+    }
+
     function openRejectModal(id) {
       document.getElementById('rejectUserId').value = id;
       document.getElementById('rejectNotes').value = '';
@@ -256,6 +349,16 @@
 
     document.getElementById('searchInput').addEventListener('input', filterUsers);
     document.getElementById('statusFilter').addEventListener('change', filterUsers);
+    document.getElementById('detailsApproveBtn').addEventListener('click', async function() {
+      const id = document.getElementById('detailsUserId').value;
+      const ok = await updateVerification(id, 'Approved', '');
+      if (ok) bootstrap.Modal.getInstance(document.getElementById('detailsModal')).hide();
+    });
+    document.getElementById('detailsRejectBtn').addEventListener('click', function() {
+      const id = document.getElementById('detailsUserId').value;
+      bootstrap.Modal.getInstance(document.getElementById('detailsModal')).hide();
+      openRejectModal(id);
+    });
     loadUsers();
   </script>
 </body>
