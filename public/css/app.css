@@ -1315,8 +1315,7 @@ body.bh-ui.borrower-ui .borrower-nav-badge {
   }
 
   body.bh-ui.login-page .visual-panel {
-    min-height: 160px;
-    display: block;
+    display: none !important;
   }
 
   body.bh-ui.login-page .camera-actions .btn-outline-portal,
