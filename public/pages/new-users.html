@@ -188,7 +188,7 @@
             '<button class="btn btn-outline-danger btn-icon" onclick="openRejectModal(' + user.user_id + ')" title="Reject"><i class="bi bi-x-lg"></i></button>' +
             '</div>'
           : approvedReview
-            ? '<div class="bh-action-group"><button class="btn btn-outline-primary btn-icon" onclick="resendApprovalEmail(' + user.user_id + ')" title="Resend approval email"><i class="bi bi-envelope"></i></button></div>'
+            ? '<span class="text-muted small">Approved</span>'
             : '<span class="text-muted small">Reviewed</span>';
         return '<tr>' +
           '<td class="ps-3"><div class="d-flex align-items-center gap-2"><div class="user-avatar">' + initial + '</div><div><div>' + escapeHtml(user.full_name) + '</div><small class="text-muted">' + escapeHtml(user.username) + '</small></div></div></td>' +
@@ -234,16 +234,6 @@
 
     async function approveUser(id) {
       await updateVerification(id, 'Approved', '');
-    }
-
-    async function resendApprovalEmail(id) {
-      const res = await api('/api/auth/users/' + id + '/resend-approval-email', { method: 'POST' });
-      const data = await res.json();
-      if (res.ok) {
-        showToast(data.message || 'Approval email sent.', 'success');
-      } else {
-        showToast((data.message || 'Approval email was not sent.') + (data.email_skipped_reason ? ' Reason: ' + data.email_skipped_reason + '.' : '') + (data.email_error ? ' ' + data.email_error : ''), 'danger');
-      }
     }
 
     function openRejectModal(id) {
