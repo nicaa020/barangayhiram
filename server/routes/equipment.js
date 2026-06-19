@@ -49,6 +49,21 @@ function mapEquipment(row) {
   });
 }
 
+function checkDuplicateEquipment(name, category, excludeId, callback) {
+  const params = [name, category];
+  let sql = 'SELECT equipment_id FROM equipment WHERE LOWER(TRIM(name)) = LOWER(TRIM(?)) AND category = ?';
+  if (excludeId) {
+    sql += ' AND equipment_id != ?';
+    params.push(excludeId);
+  }
+  sql += ' LIMIT 1';
+
+  db.get(sql, params, function(err, row) {
+    if (err) return callback(err);
+    return callback(null, Boolean(row));
+  });
+}
+
 function equipmentSelectSql(whereSql) {
   return `SELECT e.*,
             COALESCE((
@@ -130,19 +145,26 @@ router.post('/', auth, admin, function(req, res) {
   const data = validateEquipment(req.body);
   if (data.error) return res.status(400).json({ message: data.error });
 
-  db.run(
-    `INSERT INTO equipment
-     (name, category, description, quantity, available_quantity, status, condition, location, is_high_value)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [data.name, data.category, data.description, data.quantity, data.quantity, data.status, data.condition, data.location, data.is_high_value],
-    function(err) {
-      if (err) return res.status(500).json({ message: err.message });
-      logActivity(req.user.user_id, 'Added equipment', data.name + ' (quantity: ' + data.quantity + ')', {
-        equipment_id: this.lastID
-      });
-      return res.status(200).json({ message: 'Equipment added successfully!', equipment_id: this.lastID, item_id: this.lastID });
+  checkDuplicateEquipment(data.name, data.category, null, function(err, exists) {
+    if (err) return res.status(500).json({ message: 'Unable to check duplicate equipment.' });
+    if (exists) {
+      return res.status(400).json({ message: 'This equipment already exists in the same category. Please edit the existing item or use a more specific name.' });
     }
-  );
+
+    db.run(
+      `INSERT INTO equipment
+       (name, category, description, quantity, available_quantity, status, condition, location, is_high_value)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [data.name, data.category, data.description, data.quantity, data.quantity, data.status, data.condition, data.location, data.is_high_value],
+      function(err) {
+        if (err) return res.status(500).json({ message: err.message });
+        logActivity(req.user.user_id, 'Added equipment', data.name + ' (quantity: ' + data.quantity + ')', {
+          equipment_id: this.lastID
+        });
+        return res.status(200).json({ message: 'Equipment added successfully!', equipment_id: this.lastID, item_id: this.lastID });
+      }
+    );
+  });
 });
 
 router.put('/:id', auth, admin, function(req, res) {
@@ -153,27 +175,34 @@ router.put('/:id', auth, admin, function(req, res) {
     if (err) return res.status(500).json({ message: err.message });
     if (!current) return res.status(404).json({ message: 'Equipment not found.' });
 
-    const borrowedQuantity = Math.max(Number(current.quantity || 0) - Number(current.available_quantity || 0), 0);
-    if (data.quantity < borrowedQuantity) {
-      return res.status(400).json({ message: 'Total quantity cannot be lower than the currently borrowed quantity.' });
-    }
-    const availableQuantity = Math.max(data.quantity - borrowedQuantity, 0);
-
-    db.run(
-      `UPDATE equipment
-       SET name = ?, category = ?, description = ?, quantity = ?, available_quantity = ?, status = ?,
-           condition = ?, location = ?, is_high_value = ?
-       WHERE equipment_id = ?`,
-      [data.name, data.category, data.description, data.quantity, availableQuantity, data.status, data.condition, data.location, data.is_high_value, req.params.id],
-      function(err) {
-        if (err) return res.status(500).json({ message: err.message });
-        if (this.changes === 0) return res.status(404).json({ message: 'Equipment not found.' });
-        logActivity(req.user.user_id, 'Updated equipment', data.name + ' (ID #' + req.params.id + ')', {
-          equipment_id: req.params.id
-        });
-        return res.status(200).json({ message: 'Equipment updated successfully!' });
+    checkDuplicateEquipment(data.name, data.category, req.params.id, function(err, exists) {
+      if (err) return res.status(500).json({ message: 'Unable to check duplicate equipment.' });
+      if (exists) {
+        return res.status(400).json({ message: 'Another equipment item already uses this name in the same category.' });
       }
-    );
+
+      const borrowedQuantity = Math.max(Number(current.quantity || 0) - Number(current.available_quantity || 0), 0);
+      if (data.quantity < borrowedQuantity) {
+        return res.status(400).json({ message: 'Total quantity cannot be lower than the currently borrowed quantity.' });
+      }
+      const availableQuantity = Math.max(data.quantity - borrowedQuantity, 0);
+
+      db.run(
+        `UPDATE equipment
+         SET name = ?, category = ?, description = ?, quantity = ?, available_quantity = ?, status = ?,
+             condition = ?, location = ?, is_high_value = ?
+         WHERE equipment_id = ?`,
+        [data.name, data.category, data.description, data.quantity, availableQuantity, data.status, data.condition, data.location, data.is_high_value, req.params.id],
+        function(err) {
+          if (err) return res.status(500).json({ message: err.message });
+          if (this.changes === 0) return res.status(404).json({ message: 'Equipment not found.' });
+          logActivity(req.user.user_id, 'Updated equipment', data.name + ' (ID #' + req.params.id + ')', {
+            equipment_id: req.params.id
+          });
+          return res.status(200).json({ message: 'Equipment updated successfully!' });
+        }
+      );
+    });
   });
 });
 

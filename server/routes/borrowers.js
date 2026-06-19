@@ -154,15 +154,17 @@ router.delete('/:id', auth, admin, function(req, res) {
     function(err, borrower) {
     if (err) return res.status(500).json({ message: err.message });
     if (!borrower) return res.status(404).json({ message: 'Borrower not found.' });
+    if (borrower.is_flagged) {
+      return res.status(400).json({ message: 'This borrower cannot be deleted because they have an unsettled damaged or incomplete return. Clear the restriction first.' });
+    }
 
     db.get(
       `SELECT COUNT(*) as total
        FROM transactions
        WHERE borrower_id = ?
-         AND (status IN ('Pending', 'Approved', 'Released', 'Overdue')
-           OR (due_date < date('now') AND status = 'Released')
-           OR (return_status IN ('Damaged', 'Incomplete') AND ? = 1))`,
-      [req.params.id, borrower.is_flagged ? 1 : 0],
+         AND (status IN ('Pending', 'Approved', 'Ready for Release', 'Released', 'Overdue')
+           OR (due_date < date('now') AND status = 'Released'))`,
+      [req.params.id],
       function(err, row) {
         if (err) return res.status(500).json({ message: 'Unable to check borrower records.' });
         if (row.total > 0) {

@@ -87,7 +87,7 @@
               <div class="input-group"><span class="input-group-text"><i class="bi bi-search"></i></span><input type="text" class="form-control" id="searchInput" placeholder="Search staff accounts..."></div>
             </div>
             <div class="col-md-4 text-end">
-              <button class="btn btn-primary" onclick="openAddModal()"><i class="bi bi-person-plus me-2"></i>Add staff account</button>
+              <button class="btn btn-primary super-admin-only" onclick="openAddModal()"><i class="bi bi-person-plus me-2"></i>Add staff account</button>
             </div>
           </div>
         </div>
@@ -178,6 +178,9 @@
     document.getElementById('userName').textContent = fullName;
     document.getElementById('userRole').textContent = role.charAt(0).toUpperCase() + role.slice(1);
     document.getElementById('userAvatar').textContent = fullName.charAt(0).toUpperCase();
+    document.querySelectorAll('.super-admin-only').forEach(function(element) {
+      if (role !== 'super_admin') element.classList.add('d-none');
+    });
 
     let allStaff = [];
     const USERNAME_REQUIREMENTS = 'Username must be 4-30 characters and use only letters, numbers, dots, underscores, or hyphens.';
@@ -243,9 +246,10 @@
       tbody.innerHTML = data.map(function(user) {
         const initial = (user.full_name || user.username).charAt(0).toUpperCase();
         const created = user.created_at ? user.created_at.split(' ')[0] : '-';
-        const deleteButton = role === 'super_admin'
-          ? '<button type="button" class="btn btn-outline-danger btn-icon" onclick="confirmDeleteById(' + user.user_id + ')" title="Delete"><i class="bi bi-trash"></i></button>'
-          : '';
+        const actionButtons = role === 'super_admin'
+          ? '<button type="button" class="btn btn-outline-primary btn-icon" onclick="openEditModal(' + user.user_id + ')" title="Edit"><i class="bi bi-pencil"></i></button>' +
+            '<button type="button" class="btn btn-outline-danger btn-icon" onclick="confirmDeleteById(' + user.user_id + ')" title="Delete"><i class="bi bi-trash"></i></button>'
+          : '<span class="text-muted small">View only</span>';
         return '<tr>' +
           '<td class="ps-3"><div class="d-flex align-items-center gap-2"><div class="staff-avatar">' + initial + '</div><div><span>' + escapeHtml(user.full_name) + '</span></div></div></td>' +
           '<td>' + escapeHtml(user.username) + '</td>' +
@@ -253,8 +257,7 @@
           '<td>' + statusBadge(user.status || 'Active') + '</td>' +
           '<td>' + created + '</td>' +
           '<td><div class="bh-action-group">' +
-            '<button type="button" class="btn btn-outline-primary btn-icon" onclick="openEditModal(' + user.user_id + ')" title="Edit"><i class="bi bi-pencil"></i></button>' +
-            deleteButton +
+            actionButtons +
             '</div>' +
           '</td>' +
         '</tr>';

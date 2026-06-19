@@ -34,6 +34,10 @@ function cleanText(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function isSuperAdmin(req) {
+  return req.user && req.user.role === 'super_admin';
+}
+
 function validateUsername(username) {
   if (USERNAME_PATTERN.test(username)) return null;
   if (!username || /\s/.test(username)) return USERNAME_REQUIREMENTS;
@@ -300,6 +304,9 @@ router.post('/register', auth, admin, function(req, res) {
   if (passwordError) return res.status(400).json({ message: passwordError });
   if (!STAFF_ROLES.includes(role)) {
     return res.status(400).json({ message: 'Invalid role selected.' });
+  }
+  if (!isSuperAdmin(req)) {
+    return res.status(403).json({ message: 'Only the super admin can create staff accounts.' });
   }
 
   const hashed = bcrypt.hashSync(password, 10);
@@ -700,6 +707,9 @@ router.put('/users/:id', auth, admin, function(req, res) {
   }
   if (!ALL_ROLES.includes(role)) return res.status(400).json({ message: 'Invalid role selected.' });
   if (!USER_STATUSES.includes(status)) return res.status(400).json({ message: 'Invalid account status selected.' });
+  if (!isSuperAdmin(req)) {
+    return res.status(403).json({ message: 'Only the super admin can update staff accounts and account permissions.' });
+  }
 
   function finishUpdate(sql, params) {
     db.run(sql, params, function(err) {
