@@ -56,19 +56,19 @@ db.serialize(() => {
     }
     if (row.total > 0) return;
 
-    const username = process.env.ADMIN_USERNAME || 'admin';
-    const password = process.env.ADMIN_PASSWORD || 'Barangay2026!';
-    const fullName = process.env.ADMIN_FULL_NAME || 'Barangay Admin';
+    const username = process.env.SUPER_ADMIN_USERNAME || process.env.ADMIN_USERNAME || 'super.admin';
+    const password = process.env.SUPER_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || 'Barangay2026!';
+    const fullName = process.env.SUPER_ADMIN_FULL_NAME || process.env.ADMIN_FULL_NAME || 'Super Administrator';
     const hashed = bcrypt.hashSync(password, 10);
 
     db.run(
       'INSERT INTO users (username, password, full_name, role, status) VALUES (?, ?, ?, ?, ?)',
-      [username, hashed, fullName, 'admin', 'Active'],
+      [username, hashed, fullName, 'super_admin', 'Active'],
       (insertErr) => {
         if (insertErr) {
-          console.error('Default admin seed error:', insertErr.message);
+          console.error('Default super admin seed error:', insertErr.message);
         } else {
-          console.log('Default admin account ready.');
+          console.log('Default super admin account ready.');
         }
       }
     );
