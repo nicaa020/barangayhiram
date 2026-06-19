@@ -12,6 +12,10 @@ function cleanText(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function todayDateString() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 function createNotification(userId, title, message, type, callback) {
   db.run(
     `INSERT INTO notifications (user_id, title, message, type, is_read)
@@ -81,6 +85,12 @@ router.post('/', auth, admin, function(req, res) {
 
   if (!transaction_id) {
     return res.status(400).json({ message: 'Transaction ID is required.' });
+  }
+  if (!actual_return_date) {
+    return res.status(400).json({ message: 'Return date is required.' });
+  }
+  if (actual_return_date < todayDateString()) {
+    return res.status(400).json({ message: 'Return date cannot be earlier than today.' });
   }
   if (!Number.isInteger(returned_quantity) || returned_quantity < 1) {
     return res.status(400).json({ message: 'Returned quantity must be greater than 0.' });

@@ -195,6 +195,11 @@
         errorDiv.classList.remove('d-none');
         return;
       }
+      if (payload.actual_return_date < new Date().toISOString().split('T')[0]) {
+        errorDiv.textContent = 'Return date cannot be earlier than today.';
+        errorDiv.classList.remove('d-none');
+        return;
+      }
       if (!Number.isInteger(payload.returned_quantity) || payload.returned_quantity < 1) {
         errorDiv.textContent = 'Returned quantity must be at least 1.';
         errorDiv.classList.remove('d-none');
@@ -246,6 +251,7 @@
     }
     function logout() { localStorage.clear(); window.location.href = '/pages/login.html'; }
     document.getElementById('returnDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('returnDate').setAttribute('min', new Date().toISOString().split('T')[0]);
     document.getElementById('activeTransactionSearch').addEventListener('input', renderActiveTransactions);
     document.getElementById('returnTransaction').addEventListener('change', syncReturnedQuantity);
     loadActiveTransactions();
