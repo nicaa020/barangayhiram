@@ -304,7 +304,7 @@ router.post('/', auth, function(req, res) {
       function(err, borrower) {
         if (err) return res.status(500).json({ message: err.message });
         if (!borrower) return res.status(404).json({ message: 'Borrower not found.' });
-        if (!borrower.email_verified_at) {
+        if (borrower.user_id && !borrower.email_verified_at) {
           return res.status(400).json({ message: 'Borrower must verify their email before borrowing.' });
         }
         if (borrower.account_status && !['Approved', 'Active'].includes(borrower.account_status)) {
