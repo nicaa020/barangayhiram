@@ -206,7 +206,16 @@ router.post('/', auth, admin, function(req, res) {
                         [return_condition + ' return on transaction #' + transaction_id + (penalty_notes ? ': ' + penalty_notes : ''), transaction.borrower_id],
                         function(err) {
                           if (err) return res.status(500).json({ message: err.message });
-                          finish();
+                          createNotification(
+                            transaction.borrower_user_id,
+                            'Borrowing account restricted',
+                            'Your BarangayHiram borrowing account has been restricted because request #' + transaction_id + ' for ' + transaction.equipment_name + ' was returned as ' + return_condition + '. Reason: ' + penalty_notes + ' Please coordinate with barangay staff to clear the restriction.',
+                            'account_restricted',
+                            function(err) {
+                              if (err) return res.status(500).json({ message: 'Restriction recorded, but notification could not be created: ' + err.message });
+                              finish();
+                            }
+                          );
                         }
                       );
                     } else {

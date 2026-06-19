@@ -203,6 +203,7 @@
   <script src="/js/borrower-layout.js"></script>
   <script>
     function statusClass(status) {
+      if (status === 'Banned' || status === 'Restricted') return 'badge bg-danger';
       if (status === 'Approved' || status === 'Active') return 'badge bg-success';
       if (status === 'Rejected') return 'badge bg-danger';
       if (status === 'Inactive') return 'badge bg-secondary';
@@ -226,7 +227,7 @@
         contact_number: row.contact_number || '',
         address: row.address || '',
         borrower_type: row.borrower_type || '-',
-        account_status: row.verification_status || row.status || 'Pending',
+        account_status: Number(row.is_flagged || 0) === 1 ? 'Banned' : (row.verification_status || row.status || 'Pending'),
         verification_document: row.verification_document || '',
         verification_notes: row.verification_notes || '',
         is_flagged: Number(row.is_flagged || 0) === 1,

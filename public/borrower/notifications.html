@@ -162,7 +162,7 @@
     function iconForType(type) {
       const text = String(type || '').toLowerCase();
       if (text.includes('approved') || text.includes('return_recorded')) return { icon: 'bi-check-circle', tone: 'success' };
-      if (text.includes('rejected') || text.includes('overdue')) return { icon: 'bi-exclamation-triangle', tone: 'danger' };
+      if (text.includes('rejected') || text.includes('overdue') || text.includes('restricted') || text.includes('banned')) return { icon: 'bi-exclamation-triangle', tone: 'danger' };
       if (text.includes('released')) return { icon: 'bi-box-arrow-up', tone: 'success' };
       if (text.includes('cancelled')) return { icon: 'bi-x-circle', tone: 'warning' };
       if (text.includes('reminder')) return { icon: 'bi-clock', tone: 'warning' };

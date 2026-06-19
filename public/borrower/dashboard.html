@@ -175,6 +175,7 @@
     }
 
     function accountBadgeClass(status) {
+      if (status === 'Banned' || status === 'Restricted') return 'badge bg-danger';
       if (status === 'Approved' || status === 'Active') return 'badge bg-success';
       if (status === 'Rejected') return 'badge bg-danger';
       if (status === 'Inactive') return 'badge bg-secondary';
@@ -261,7 +262,7 @@
         const transactions = await api('/api/transactions');
         if (!transactions) return;
 
-        const accountStatus = profile.status || profile.account_status || profile.verification_status || 'Pending';
+        const accountStatus = Number(profile.is_flagged || 0) === 1 ? 'Banned' : (profile.status || profile.account_status || profile.verification_status || 'Pending');
         localStorage.setItem('verification_status', accountStatus);
         if (profile.full_name) localStorage.setItem('full_name', profile.full_name);
 
