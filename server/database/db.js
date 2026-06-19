@@ -90,6 +90,8 @@ db.serialize(() => {
   addColumn('equipment', 'condition', 'TEXT DEFAULT "Good"');
   addColumn('equipment', 'location', 'TEXT');
   addColumn('equipment', 'is_high_value', 'INTEGER DEFAULT 0');
+  addColumn('equipment', 'updated_at', 'TEXT');
+  seedSampleEquipment();
 
   db.run(`CREATE TABLE IF NOT EXISTS borrowers (
     borrower_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -268,6 +270,39 @@ db.serialize(() => {
   });
 
 });
+
+function seedSampleEquipment() {
+  const items = [
+    ['Monoblock Chair - White', 'Chairs', 'White monoblock chairs for barangay events and meetings.', 80, 'Good', 'Barangay Hall Storage'],
+    ['Folding Table - 6ft', 'Tables', 'Six-foot folding tables for programs and public service activities.', 12, 'Good', 'Barangay Hall Storage'],
+    ['Canopy Tent - 10x20', 'Tents', 'Outdoor canopy tent for barangay events.', 4, 'Good', 'Covered Court Storage'],
+    ['Portable Speaker with Microphone', 'Sound Systems', 'Portable sound system with wired microphone.', 2, 'Good', 'Barangay Office'],
+    ['LCD Projector - Epson X05', 'Projectors', 'Projector for trainings, meetings, and presentations.', 1, 'Good', 'Barangay Office'],
+    ['Basketball Ball - Molten, Orange, Size 7', 'Sports Equipment', 'Basketball ball for barangay sports activities.', 4, 'Good', 'Equipment Room']
+  ];
+
+  db.get('SELECT COUNT(*) as total FROM equipment', [], function(err, row) {
+    if (err) {
+      console.error('Sample equipment seed check error:', err.message);
+      return;
+    }
+    if (row.total > 0) return;
+
+    const statement = db.prepare(
+      `INSERT INTO equipment
+       (name, category, description, quantity, available_quantity, condition, location, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+    );
+    items.forEach(function(item) {
+      const [name, category, description, quantity, condition, location] = item;
+      statement.run(name, category, description, quantity, quantity, condition, location, 'Available');
+    });
+    statement.finalize(function(finalizeErr) {
+      if (finalizeErr) console.error('Sample equipment seed error:', finalizeErr.message);
+      else console.log('Sample equipment ready.');
+    });
+  });
+}
 
 function seedTestBorrowerAccount() {
   const email = process.env.TEST_BORROWER_EMAIL || 'testing.borrower@barangayhiram.test';

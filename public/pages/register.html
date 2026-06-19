@@ -114,9 +114,21 @@
               <div class="form-text mt-2">Upload placeholder only. Verification storage will be connected later.</div>
             </div>
           </div>
-          <div class="col-12">
-            <label class="form-label" for="address">Address</label>
-            <textarea class="form-control" id="address" rows="2" required></textarea>
+          <div class="col-md-3">
+            <label class="form-label" for="houseUnit">House / Unit number</label>
+            <input class="form-control" id="houseUnit" placeholder="Example: 123" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="street">Street / Purok</label>
+            <input class="form-control" id="street" placeholder="Example: Road 7" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="barangay">Barangay</label>
+            <input class="form-control" id="barangay" placeholder="Example: Barangay 628" required>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label" for="city">City</label>
+            <input class="form-control" id="city" placeholder="Example: Manila" required>
           </div>
         </div>
 
@@ -178,7 +190,10 @@
       const confirmPassword = document.getElementById('confirmPassword').value;
       const contactNumber = document.getElementById('contact').value.trim();
       const borrowerType = document.getElementById('borrowerType').value;
-      const address = document.getElementById('address').value.trim();
+      const houseUnit = document.getElementById('houseUnit').value.trim();
+      const street = document.getElementById('street').value.trim();
+      const barangay = document.getElementById('barangay').value.trim();
+      const city = document.getElementById('city').value.trim();
 
       const emailError = getEmailError(email);
       const passwordError = getPasswordError(password);
@@ -190,7 +205,9 @@
       if (password !== confirmPassword) return showAlert('danger', 'Password and confirm password must match.');
       if (contactError) return showAlert('danger', contactError);
       if (!borrowerType) return showAlert('danger', 'Please select a borrower type.');
-      if (!address) return showAlert('danger', 'Please enter your address.');
+      if (!houseUnit || !street || !barangay || !city) {
+        return showAlert('danger', 'Please complete your house/unit number, street or purok, barangay, and city.');
+      }
 
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';

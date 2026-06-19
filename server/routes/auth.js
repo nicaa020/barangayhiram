@@ -34,6 +34,23 @@ function cleanText(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function getAddressParts(body) {
+  return {
+    house_unit: cleanText(body.house_unit || body.house_number || body.house),
+    street: cleanText(body.street),
+    barangay: cleanText(body.barangay),
+    city: cleanText(body.city)
+  };
+}
+
+function hasCompleteAddressParts(parts) {
+  return Boolean(parts.house_unit && parts.street && parts.barangay && parts.city);
+}
+
+function formatAddress(parts) {
+  return [parts.house_unit, parts.street, parts.barangay, parts.city].join(', ');
+}
+
 function isSuperAdmin(req) {
   return req.user && req.user.role === 'super_admin';
 }
@@ -328,7 +345,8 @@ router.post('/register-borrower', async function(req, res) {
   const last_name = cleanText(req.body.last_name);
   const full_name = cleanText(req.body.full_name || (first_name + ' ' + last_name).trim());
   const borrower_type = cleanText(req.body.borrower_type || 'Resident');
-  const address = cleanText(req.body.address);
+  const addressParts = getAddressParts(req.body);
+  const address = hasCompleteAddressParts(addressParts) ? formatAddress(addressParts) : cleanText(req.body.address);
   const contact_number = cleanText(req.body.contact_number);
   const valid_id_reference = cleanText(req.body.valid_id_reference);
   let verification_document = cleanText(req.body.verification_document);
@@ -348,8 +366,8 @@ router.post('/register-borrower', async function(req, res) {
   if (!BORROWER_TYPES.includes(borrower_type)) {
     return res.status(400).json({ message: 'Invalid borrower type selected.' });
   }
-  if ((borrower_type === 'Resident' || borrower_type === 'Transient') && !address) {
-    return res.status(400).json({ message: borrower_type + ' borrowers must provide an address.' });
+  if (!hasCompleteAddressParts(addressParts)) {
+    return res.status(400).json({ message: 'Please complete your house/unit number, street, barangay, and city.' });
   }
   if (verification_capture_method !== 'live_camera') {
     return res.status(400).json({ message: 'Verification document must be captured using the live camera.' });
@@ -631,7 +649,8 @@ router.put('/profile', auth, function(req, res) {
   const full_name = cleanText(req.body.full_name || (first_name + ' ' + last_name).trim());
   const contact_number = cleanText(req.body.contact_number);
   const borrower_type = cleanText(req.body.borrower_type || 'Resident');
-  const address = cleanText(req.body.address);
+  const addressParts = getAddressParts(req.body);
+  const address = hasCompleteAddressParts(addressParts) ? formatAddress(addressParts) : cleanText(req.body.address);
 
   if (!username || !full_name || !contact_number) {
     return res.status(400).json({ message: 'Please complete your profile details.' });
@@ -642,6 +661,9 @@ router.put('/profile', auth, function(req, res) {
   if (contactNumberError) return res.status(400).json({ message: contactNumberError });
   if (req.user.role === 'borrower' && !BORROWER_TYPES.includes(borrower_type)) {
     return res.status(400).json({ message: 'Invalid borrower type selected.' });
+  }
+  if (req.user.role === 'borrower' && !hasCompleteAddressParts(addressParts)) {
+    return res.status(400).json({ message: 'Please complete your house/unit number, street, barangay, and city.' });
   }
 
   db.run(

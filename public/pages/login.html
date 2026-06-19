@@ -723,7 +723,7 @@
       if (passwordError) return showAlert('registerError', passwordError);
       if (password !== confirmPassword) return showAlert('registerError', 'Password and confirm password must match.');
       if (!validId) return showAlert('registerError', 'Please enter your ID or reference number.');
-      if ((borrowerType === 'Resident' || borrowerType === 'Transient') && (!houseNumber || !street || !barangay || !city)) {
+      if (!houseNumber || !street || !barangay || !city) {
         return showAlert('registerError', 'Please complete your house/unit number, street or purok, barangay, and city.');
       }
       if (!capturedDocumentData) return showAlert('registerError', 'Please capture your valid government ID with address or school ID using the live camera. Make sure the ID is clear and readable.');
@@ -742,6 +742,10 @@
             borrower_type: borrowerType,
             contact_number: contact,
             address: address,
+            house_unit: houseNumber,
+            street: street,
+            barangay: barangay,
+            city: city,
             valid_id_reference: validId,
             verification_document_name: 'live-camera-verification.jpg',
             verification_document_data: capturedDocumentData,
