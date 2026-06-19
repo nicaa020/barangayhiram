@@ -145,6 +145,9 @@ async function ensureBorrowerEmailConfirmed(user) {
     };
   }
   if (!user.supabase_auth_user_id) {
+    if (user.email_verified_at) {
+      return { confirmed: true, email_verified_at: user.email_verified_at };
+    }
     return {
       confirmed: false,
       message: 'Please verify your email before logging in.'

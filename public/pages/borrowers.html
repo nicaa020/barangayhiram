@@ -181,7 +181,7 @@
             </div>
             <div class="col-md-4 text-end">
               <button class="btn btn-primary" onclick="openAddModal()">
-                <i class="bi bi-person-plus me-2"></i>Add borrower
+                <i class="bi bi-person-plus me-2"></i>Add manual borrower
               </button>
             </div>
           </div>
@@ -228,10 +228,13 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Add Borrower</h5>
+          <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Add Manual Borrower</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
+          <div class="alert alert-info">
+            This creates a manual borrower record for staff use only. It does not create an end-user login account.
+          </div>
           <div class="mb-3">
             <label class="form-label">Full Name <span class="text-danger">*</span></label>
             <input type="text" class="form-control" id="addName" placeholder="e.g. Juan dela Cruz">
@@ -249,7 +252,7 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
           <button type="button" class="btn btn-primary" onclick="addBorrower()">
-            <i class="bi bi-person-plus me-2"></i>Add Borrower
+            <i class="bi bi-person-plus me-2"></i>Add Manual Borrower
           </button>
         </div>
       </div>
@@ -522,7 +525,7 @@
 
         if (res.ok) {
           bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
-          showToast('Borrower registered successfully!', 'success');
+          showToast('Manual borrower record added successfully!', 'success');
           loadBorrowers();
         } else {
           errorDiv.textContent = data.message;

@@ -138,6 +138,7 @@ db.serialize(() => {
     if (err) console.error('Borrower verifications table error:', err.message);
     else console.log('Borrower verifications table ready.');
   });
+  seedTestBorrowerAccount();
 
   db.run(`CREATE TABLE IF NOT EXISTS transactions (
     transaction_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -200,6 +201,7 @@ db.serialize(() => {
     if (err) console.error('Releases table error:', err.message);
     else console.log('Releases table ready.');
   });
+  addColumn('releases', 'request_id', 'INTEGER');
   addColumn('releases', 'transaction_id', 'INTEGER');
   addColumn('releases', 'staff_user_id', 'INTEGER');
   addColumn('releases', 'release_date', 'TEXT');
@@ -266,5 +268,104 @@ db.serialize(() => {
   });
 
 });
+
+function seedTestBorrowerAccount() {
+  const email = process.env.TEST_BORROWER_EMAIL || 'testing.borrower@barangayhiram.test';
+  const password = process.env.TEST_BORROWER_PASSWORD || 'Borrower2026!';
+  const fullName = process.env.TEST_BORROWER_FULL_NAME || 'Testing Borrower';
+  const firstName = process.env.TEST_BORROWER_FIRST_NAME || 'Testing';
+  const lastName = process.env.TEST_BORROWER_LAST_NAME || 'Borrower';
+  const contactNumber = process.env.TEST_BORROWER_CONTACT || '09170000001';
+  const borrowerType = process.env.TEST_BORROWER_TYPE || 'Resident';
+  const address = process.env.TEST_BORROWER_ADDRESS || 'House 1, Road 7, Barangay 628, Manila';
+  const validIdReference = process.env.TEST_BORROWER_ID_REFERENCE || 'TEST-ID-0001';
+  const verifiedAt = new Date().toISOString();
+  const hashed = bcrypt.hashSync(password, 10);
+
+  db.get('SELECT user_id FROM users WHERE username = ? OR email = ?', [email, email], function(err, user) {
+    if (err) {
+      console.error('Test borrower seed check error:', err.message);
+      return;
+    }
+
+    function upsertBorrower(userId) {
+      db.get('SELECT borrower_id FROM borrowers WHERE user_id = ?', [userId], function(err, borrower) {
+        if (err) {
+          console.error('Test borrower profile seed check error:', err.message);
+          return;
+        }
+        const borrowerParams = [firstName, lastName, fullName, borrowerType, address, contactNumber, validIdReference, 'Approved', 'Seeded testing borrower account.'];
+        if (borrower) {
+          db.run(
+            `UPDATE borrowers
+             SET first_name = ?, last_name = ?, full_name = ?, borrower_type = ?, address = ?,
+                 contact_number = ?, valid_id_reference = ?, verification_status = ?, verification_notes = ?
+             WHERE user_id = ?`,
+            borrowerParams.concat([userId])
+          );
+        } else {
+          db.run(
+            `INSERT INTO borrowers
+             (user_id, first_name, last_name, full_name, borrower_type, address, contact_number,
+              valid_id_reference, verification_status, verification_notes)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [userId].concat(borrowerParams)
+          );
+        }
+
+        db.get('SELECT verification_id FROM borrower_verifications WHERE user_id = ?', [userId], function(err, verification) {
+          if (err) return;
+          const verificationParams = [borrowerType, address, validIdReference, 'Approved', 'Seeded testing borrower account.'];
+          if (verification) {
+            db.run(
+              `UPDATE borrower_verifications
+               SET borrower_type = ?, address = ?, valid_id_reference = ?, status = ?, notes = ?
+               WHERE user_id = ?`,
+              verificationParams.concat([userId])
+            );
+          } else {
+            db.run(
+              `INSERT INTO borrower_verifications
+               (user_id, borrower_type, address, valid_id_reference, status, notes)
+               VALUES (?, ?, ?, ?, ?, ?)`,
+              [userId].concat(verificationParams)
+            );
+          }
+        });
+      });
+    }
+
+    if (user) {
+      db.run(
+        `UPDATE users
+         SET username = ?, email = ?, password = ?, first_name = ?, last_name = ?, full_name = ?,
+             role = ?, status = ?, contact_number = ?, email_verified_at = COALESCE(email_verified_at, ?),
+             updated_at = datetime("now")
+         WHERE user_id = ?`,
+        [email, email, hashed, firstName, lastName, fullName, 'borrower', 'Approved', contactNumber, verifiedAt, user.user_id],
+        function(updateErr) {
+          if (updateErr) console.error('Test borrower user update error:', updateErr.message);
+          upsertBorrower(user.user_id);
+        }
+      );
+      return;
+    }
+
+    db.run(
+      `INSERT INTO users
+       (username, email, password, first_name, last_name, full_name, role, status, contact_number, email_verified_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [email, email, hashed, firstName, lastName, fullName, 'borrower', 'Approved', contactNumber, verifiedAt],
+      function(insertErr) {
+        if (insertErr) {
+          console.error('Test borrower user seed error:', insertErr.message);
+          return;
+        }
+        upsertBorrower(this.lastID);
+        console.log('Test borrower account ready.');
+      }
+    );
+  });
+}
 
 module.exports = db;
