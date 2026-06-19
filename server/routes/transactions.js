@@ -21,6 +21,8 @@ const STATUS_FLOW = {
   Cancelled: []
 };
 const RETURN_STATUSES = ['Good Condition', 'Damaged', 'Incomplete'];
+const MAX_BORROW_DAYS = 7;
+const MAX_ADVANCE_RESERVATION_DAYS = 30;
 
 function cleanText(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -28,6 +30,12 @@ function cleanText(value) {
 
 function todayDateString() {
   return new Date().toISOString().slice(0, 10);
+}
+
+function daysBetween(startDate, endDate) {
+  const start = new Date(startDate + 'T00:00:00Z');
+  const end = new Date(endDate + 'T00:00:00Z');
+  return Math.round((end - start) / 86400000);
 }
 
 function truthy(value) {
@@ -270,6 +278,18 @@ router.post('/', auth, function(req, res) {
   if (due_date < date_borrowed) {
     return res.status(400).json({ message: 'Return date cannot be earlier than borrow date.' });
   }
+  if (daysBetween(date_borrowed, due_date) > MAX_BORROW_DAYS) {
+    return res.status(400).json({ message: 'Return date must be within ' + MAX_BORROW_DAYS + ' days from the borrow date.' });
+  }
+  if (daysBetween(todayDateString(), date_borrowed) > MAX_ADVANCE_RESERVATION_DAYS) {
+    return res.status(400).json({ message: 'Borrow date cannot be more than ' + MAX_ADVANCE_RESERVATION_DAYS + ' days ahead.' });
+  }
+  if (purpose.length < 10) {
+    return res.status(400).json({ message: 'Purpose must be at least 10 characters.' });
+  }
+  if (event_location.length < 5) {
+    return res.status(400).json({ message: 'Event/location must be at least 5 characters.' });
+  }
 
   resolveBorrower(req, function(err, borrower_id) {
     if (err) return res.status(400).json({ message: err.message });
@@ -313,8 +333,16 @@ router.post('/', auth, function(req, res) {
             db.get('SELECT * FROM equipment WHERE equipment_id = ?', [equipment_id], function(err, equipment) {
               if (err) return res.status(500).json({ message: err.message });
               if (!equipment) return res.status(404).json({ message: 'Equipment not found.' });
-              if (equipment.status === 'Under Maintenance' || equipment.condition === 'Under Maintenance') {
-                return res.status(400).json({ message: 'This equipment is under maintenance and cannot be borrowed.' });
+              if (['Under Maintenance', 'Unavailable', 'Damaged'].includes(equipment.status) || ['Under Maintenance', 'Damaged'].includes(equipment.condition)) {
+                return res.status(400).json({ message: 'This equipment is not available for borrowing because of its current status or condition.' });
+              }
+              if (Number(equipment.available_quantity || 0) <= 0) {
+                return res.status(400).json({ message: 'This equipment is currently unavailable.' });
+              }
+              if (quantity_borrowed > Number(equipment.available_quantity || 0)) {
+                return res.status(400).json({
+                  message: 'Requested quantity cannot exceed the available quantity. Only ' + Number(equipment.available_quantity || 0) + ' available.'
+                });
               }
 
               db.get(
