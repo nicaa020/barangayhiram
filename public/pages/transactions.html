@@ -431,6 +431,13 @@
 
     async function submitReject() {
       const id = document.getElementById('rejectTransactionId').value;
+      const reason = document.getElementById('rejectReason').value.trim();
+      if (!reason) {
+        const box = document.getElementById('rejectError');
+        box.textContent = 'Admin remarks are required when rejecting a request.';
+        box.classList.remove('d-none');
+        return;
+      }
       const confirmed = await confirmBarangayHiramAction({
         title: 'Reject request?',
         message: 'This borrowing request will be rejected and the borrower will be notified.',
@@ -438,7 +445,7 @@
         confirmClass: 'btn-danger'
       });
       if (!confirmed) return;
-      const ok = await setStatus(id, { status: 'Rejected', reason: document.getElementById('rejectReason').value.trim() }, 'Borrowing request rejected.', 'rejectError');
+      const ok = await setStatus(id, { status: 'Rejected', reason: reason }, 'Borrowing request rejected.', 'rejectError');
       if (ok) bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
     }
 

@@ -417,6 +417,11 @@
         borrowDate.classList.add('is-invalid');
         valid = false;
       }
+      if (borrowDate.value && borrowDate.value < new Date().toISOString().split('T')[0]) {
+        borrowDate.classList.add('is-invalid');
+        showFeedback('danger', 'Borrow date cannot be earlier than today.');
+        valid = false;
+      }
       if (!returnDate.value || (borrowDate.value && returnDate.value < borrowDate.value)) {
         returnDate.classList.add('is-invalid');
         valid = false;
