@@ -623,6 +623,13 @@
     // ── Delete Borrower ──
     async function deleteBorrower() {
       const id = document.getElementById('deleteId').value;
+      const confirmed = await confirmBarangayHiramAction({
+        title: 'Delete borrower?',
+        message: 'This borrower will be deleted only if they have no pending, active, overdue, or unsettled borrowing records.',
+        confirmText: 'Delete',
+        confirmClass: 'btn-danger'
+      });
+      if (!confirmed) return;
       try {
         const res = await fetch('/api/borrowers/' + id, {
           method:  'DELETE',

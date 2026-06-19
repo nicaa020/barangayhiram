@@ -536,6 +536,13 @@
       const id = document.getElementById('deleteId').value;
       const errorDiv = document.getElementById('deleteError');
       errorDiv.classList.add('d-none');
+      const confirmed = await confirmBarangayHiramAction({
+        title: 'Delete equipment?',
+        message: 'This equipment will be deleted only if it is not being borrowed and has no active transaction.',
+        confirmText: 'Delete',
+        confirmClass: 'btn-danger'
+      });
+      if (!confirmed) return;
 
       const res = await api('/api/equipment/' + id, { method: 'DELETE' });
       const data = await res.json();

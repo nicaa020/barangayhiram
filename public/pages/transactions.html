@@ -401,6 +401,13 @@
     }
 
     async function approveRequest(id) {
+      const confirmed = await confirmBarangayHiramAction({
+        title: 'Approve request?',
+        message: 'This borrowing request will be approved. Inventory will not be reduced until equipment is released.',
+        confirmText: 'Approve',
+        confirmClass: 'btn-primary'
+      });
+      if (!confirmed) return;
       await setStatus(id, { status: 'Approved' }, 'Borrowing request approved.', null);
     }
 
@@ -413,6 +420,13 @@
 
     async function submitReject() {
       const id = document.getElementById('rejectTransactionId').value;
+      const confirmed = await confirmBarangayHiramAction({
+        title: 'Reject request?',
+        message: 'This borrowing request will be rejected and the borrower will be notified.',
+        confirmText: 'Reject',
+        confirmClass: 'btn-danger'
+      });
+      if (!confirmed) return;
       const ok = await setStatus(id, { status: 'Rejected', reason: document.getElementById('rejectReason').value.trim() }, 'Borrowing request rejected.', 'rejectError');
       if (ok) bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
     }
@@ -442,6 +456,13 @@
         identity_verified: document.getElementById('identityVerified').checked,
         release_remarks: document.getElementById('releaseRemarks').value.trim()
       };
+      const confirmed = await confirmBarangayHiramAction({
+        title: 'Release equipment?',
+        message: 'This will mark the equipment as released and reduce the available inventory quantity.',
+        confirmText: 'Release',
+        confirmClass: 'btn-success'
+      });
+      if (!confirmed) return;
       const ok = await setStatus(id, payload, 'Equipment released successfully.', 'releaseError');
       if (ok) bootstrap.Modal.getInstance(document.getElementById('releaseModal')).hide();
     }

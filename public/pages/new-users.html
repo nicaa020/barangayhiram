@@ -283,6 +283,13 @@
     }
 
     async function approveUser(id) {
+      const confirmed = await confirmBarangayHiramAction({
+        title: 'Approve borrower?',
+        message: 'This borrower account will be approved and allowed to use borrower features after meeting access requirements.',
+        confirmText: 'Approve',
+        confirmClass: 'btn-success'
+      });
+      if (!confirmed) return;
       await updateVerification(id, 'Approved', '');
     }
 
@@ -338,6 +345,13 @@
 
     async function submitReject() {
       const id = document.getElementById('rejectUserId').value;
+      const confirmed = await confirmBarangayHiramAction({
+        title: 'Reject borrower?',
+        message: 'This borrower account will be rejected. The borrower will not be allowed to borrow equipment.',
+        confirmText: 'Reject',
+        confirmClass: 'btn-danger'
+      });
+      if (!confirmed) return;
       const ok = await updateVerification(id, 'Rejected', document.getElementById('rejectNotes').value.trim());
       if (ok) bootstrap.Modal.getInstance(document.getElementById('rejectModal')).hide();
     }
@@ -351,6 +365,13 @@
     document.getElementById('statusFilter').addEventListener('change', filterUsers);
     document.getElementById('detailsApproveBtn').addEventListener('click', async function() {
       const id = document.getElementById('detailsUserId').value;
+      const confirmed = await confirmBarangayHiramAction({
+        title: 'Approve borrower?',
+        message: 'This borrower account will be approved and allowed to use borrower features after meeting access requirements.',
+        confirmText: 'Approve',
+        confirmClass: 'btn-success'
+      });
+      if (!confirmed) return;
       const ok = await updateVerification(id, 'Approved', '');
       if (ok) bootstrap.Modal.getInstance(document.getElementById('detailsModal')).hide();
     });

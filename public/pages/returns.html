@@ -205,6 +205,13 @@
         errorDiv.classList.remove('d-none');
         return;
       }
+      const confirmed = await confirmBarangayHiramAction({
+        title: 'Process return?',
+        message: 'This will record the return, update inventory, and may restrict the borrower if the item is damaged or incomplete.',
+        confirmText: 'Process return',
+        confirmClass: 'btn-success'
+      });
+      if (!confirmed) return;
       try {
         const res = await api('/api/returns', { method: 'POST', headers: { 'Content-Type': 'application/json', authorization: token }, body: JSON.stringify(payload) });
         const data = await res.json();
