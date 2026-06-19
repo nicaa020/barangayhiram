@@ -656,6 +656,16 @@
     }
 
     async function clearRestriction(id) {
+      const borrower = allBorrowers.find(function(item) { return String(item.borrower_id) === String(id); });
+      const borrowerName = borrower ? borrower.full_name : 'this borrower';
+      const confirmed = await confirmBarangayHiramAction({
+        title: 'Unrestrict borrower?',
+        message: 'Are you sure you want to clear the borrowing restriction for ' + borrowerName + '? They will be allowed to submit borrowing requests again.',
+        confirmText: 'Unrestrict',
+        confirmClass: 'btn-success'
+      });
+      if (!confirmed) return;
+
       try {
         const res = await fetch('/api/borrowers/' + id + '/clear-flag', {
           method: 'PUT',
