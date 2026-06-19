@@ -157,10 +157,12 @@
     function syncReturnedQuantity() {
       const quantityInput = document.getElementById('returnedQuantity');
       const transaction = selectedTransaction();
-      const quantity = transaction ? Number(transaction.quantity_borrowed || transaction.quantity || 0) : 0;
-      quantityInput.max = quantity || '';
-      quantityInput.value = quantity > 0 ? quantity : '';
-      quantityInput.placeholder = quantity > 0 ? 'Max ' + quantity : 'Qty';
+      const borrowedQuantity = transaction ? Number(transaction.quantity_borrowed || transaction.quantity || 0) : 0;
+      const alreadyReturned = transaction ? Number(transaction.returned_quantity_total || 0) : 0;
+      const remainingQuantity = Math.max(borrowedQuantity - alreadyReturned, 0);
+      quantityInput.max = remainingQuantity || '';
+      quantityInput.value = remainingQuantity > 0 ? remainingQuantity : '';
+      quantityInput.placeholder = remainingQuantity > 0 ? 'Max ' + remainingQuantity : 'Qty';
     }
     async function loadReturns() {
       try {
@@ -205,8 +207,15 @@
       }
       const transaction = selectedTransaction();
       const borrowedQuantity = transaction ? Number(transaction.quantity_borrowed || transaction.quantity || 0) : 0;
-      if (borrowedQuantity && payload.returned_quantity > borrowedQuantity) {
-        errorDiv.textContent = 'Returned quantity cannot exceed the borrowed quantity of ' + borrowedQuantity + '.';
+      const alreadyReturned = transaction ? Number(transaction.returned_quantity_total || 0) : 0;
+      const remainingQuantity = Math.max(borrowedQuantity - alreadyReturned, 0);
+      if (borrowedQuantity && remainingQuantity < 1) {
+        errorDiv.textContent = 'This transaction has no remaining quantity to return.';
+        errorDiv.classList.remove('d-none');
+        return;
+      }
+      if (remainingQuantity && payload.returned_quantity > remainingQuantity) {
+        errorDiv.textContent = 'Returned quantity cannot exceed the remaining quantity of ' + remainingQuantity + '.';
         errorDiv.classList.remove('d-none');
         return;
       }

@@ -466,6 +466,8 @@
 
     async function submitRelease() {
       const id = document.getElementById('releaseTransactionId').value;
+      const transaction = findTransaction(id);
+      const errorBox = document.getElementById('releaseError');
       const payload = {
         status: 'Released',
         release_quantity: parseInt(document.getElementById('releaseQuantity').value, 10),
@@ -474,6 +476,27 @@
         identity_verified: document.getElementById('identityVerified').checked,
         release_remarks: document.getElementById('releaseRemarks').value.trim()
       };
+      errorBox.classList.add('d-none');
+      if (!payload.identity_verified) {
+        errorBox.textContent = 'Borrower identity must be manually verified before release.';
+        errorBox.classList.remove('d-none');
+        return;
+      }
+      if (!Number.isInteger(payload.release_quantity) || payload.release_quantity < 1) {
+        errorBox.textContent = 'Released equipment quantity must be at least 1.';
+        errorBox.classList.remove('d-none');
+        return;
+      }
+      if (transaction && payload.release_quantity !== Number(transaction.quantity_borrowed || 0)) {
+        errorBox.textContent = 'Released quantity must match the approved request quantity.';
+        errorBox.classList.remove('d-none');
+        return;
+      }
+      if (!payload.release_condition) {
+        errorBox.textContent = 'Release condition is required.';
+        errorBox.classList.remove('d-none');
+        return;
+      }
       const confirmed = await confirmBarangayHiramAction({
         title: 'Release equipment?',
         message: 'This will mark the equipment as released and reduce the available inventory quantity.',

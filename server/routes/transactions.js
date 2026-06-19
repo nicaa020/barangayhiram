@@ -106,6 +106,7 @@ function transactionSelect(whereSql) {
             t.date_borrowed as borrow_date,
             t.due_date as return_date,
             t.event_location,
+            COALESCE(ret.total_returned, 0) as returned_quantity_total,
             CASE WHEN t.status = 'Released' AND t.due_date < date('now') THEN 'Overdue' ELSE t.status END as display_status,
             rs.full_name as released_by_name,
             ps.full_name as processed_by_name,
@@ -122,7 +123,12 @@ function transactionSelect(whereSql) {
           JOIN borrowers b ON t.borrower_id = b.borrower_id
           JOIN equipment e ON t.equipment_id = e.equipment_id
           LEFT JOIN users rs ON t.released_by = rs.user_id
-          LEFT JOIN users ps ON t.processed_by = ps.user_id` + whereSql;
+          LEFT JOIN users ps ON t.processed_by = ps.user_id
+          LEFT JOIN (
+            SELECT transaction_id, COALESCE(SUM(returned_quantity), 0) as total_returned
+            FROM returns
+            GROUP BY transaction_id
+          ) ret ON ret.transaction_id = t.transaction_id` + whereSql;
 }
 
 router.get('/', auth, function(req, res) {
