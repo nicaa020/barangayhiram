@@ -82,6 +82,19 @@ function findUserByUsernameOrEmail(username) {
   });
 }
 
+function updateUserPasswordHash(userId, password) {
+  return new Promise(function(resolve, reject) {
+    db.run(
+      'UPDATE users SET password = ?, updated_at = datetime("now") WHERE user_id = ?',
+      [bcrypt.hashSync(password, 10), userId],
+      function(err) {
+        if (err) return reject(err);
+        return resolve(this.changes);
+      }
+    );
+  });
+}
+
 function saveVerificationDocument(dataUrl, originalName) {
   if (!dataUrl) return null;
   const match = String(dataUrl).match(/^data:([^;]+);base64,(.+)$/);
@@ -437,7 +450,16 @@ router.post('/login', function(req, res) {
     if (user.status === 'Inactive' || user.status === 'Rejected') {
       return res.status(403).json({ message: 'This account is inactive or rejected. Please contact the administrator.' });
     }
-    const validPassword = bcrypt.compareSync(password, user.password);
+    let validPassword = bcrypt.compareSync(password, user.password);
+    if (!validPassword && user.role === 'borrower' && user.supabase_auth_user_id && supabaseProfiles.isConfigured()) {
+      try {
+        await supabaseProfiles.signInWithPassword(user.email || user.username, password);
+        await updateUserPasswordHash(user.user_id, password);
+        validPassword = true;
+      } catch (err) {
+        validPassword = false;
+      }
+    }
     if (!validPassword) return res.status(401).json({ message: 'Incorrect password.' });
 
     try {
@@ -505,6 +527,45 @@ router.get('/supabase-public-config', function(req, res) {
     url: process.env.SUPABASE_URL || '',
     anon_key: process.env.SUPABASE_ANON_KEY || ''
   });
+});
+
+router.post('/sync-reset-password', async function(req, res) {
+  const accessToken = cleanText(req.body.access_token);
+  const password = req.body.password;
+  const passwordError = validatePassword(password);
+
+  if (passwordError) return res.status(400).json({ message: passwordError });
+  if (!accessToken) return res.status(401).json({ message: 'Password reset session is missing. Please open the latest reset link from your email.' });
+  if (!supabaseProfiles.isConfigured()) return res.status(500).json({ message: 'Supabase Auth is not configured.' });
+
+  try {
+    const authUser = await supabaseProfiles.getUserFromAccessToken(accessToken);
+    const authUserId = authUser && authUser.id;
+    const emailAddress = authUser && authUser.email;
+
+    if (!authUserId) {
+      return res.status(401).json({ message: 'Password reset session is invalid or expired.' });
+    }
+
+    db.get(
+      'SELECT * FROM users WHERE supabase_auth_user_id = ? OR email = ? OR username = ?',
+      [authUserId, emailAddress, emailAddress],
+      async function(err, user) {
+        if (err) return res.status(500).json({ message: 'Database error.' });
+        if (!user) return res.status(404).json({ message: 'BarangayHiram account was not found.' });
+
+        try {
+          await updateUserPasswordHash(user.user_id, password);
+          logActivity(user.user_id, 'Reset password', user.full_name + ' reset password through Supabase Auth');
+          return res.status(200).json({ message: 'Password synchronized successfully.' });
+        } catch (updateErr) {
+          return res.status(500).json({ message: 'Unable to update local password.' });
+        }
+      }
+    );
+  } catch (err) {
+    return res.status(401).json({ message: 'Password reset session is invalid or expired.' });
+  }
 });
 
 router.get('/me', auth, function(req, res) {

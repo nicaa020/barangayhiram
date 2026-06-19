@@ -66,6 +66,26 @@ async function findAuthUserByEmail(email) {
   }) || null;
 }
 
+async function getUserFromAccessToken(accessToken) {
+  if (!accessToken) return null;
+  return supabaseRequest('/auth/v1/user', {
+    method: 'GET',
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  }, SUPABASE_ANON_KEY);
+}
+
+async function signInWithPassword(email, password) {
+  return supabaseRequest('/auth/v1/token?grant_type=password', {
+    method: 'POST',
+    body: {
+      email: email,
+      password: password
+    }
+  }, SUPABASE_ANON_KEY);
+}
+
 async function deleteAuthUser(userId) {
   if (!userId) return;
   try {
@@ -107,5 +127,7 @@ module.exports = {
   createBorrowerProfileAccount,
   getAuthUser,
   findAuthUserByEmail,
+  getUserFromAccessToken,
+  signInWithPassword,
   deleteAuthUser
 };
