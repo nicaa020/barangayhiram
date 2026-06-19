@@ -1164,7 +1164,7 @@ body.bh-ui.borrower-ui .borrower-nav-badge {
   }
 
   body.bh-ui .page-content {
-    padding: 12px !important;
+    padding: 10px !important;
   }
 
   .bh-stats-grid,
@@ -1172,30 +1172,51 @@ body.bh-ui.borrower-ui .borrower-nav-badge {
   .row.g-2,
   .row.g-3,
   .row.g-4 {
-    row-gap: 10px;
+    row-gap: 8px;
   }
 
   .bh-stats-grid,
   .report-summary-grid {
-    grid-template-columns: 1fr !important;
-    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px;
   }
 
   body.bh-ui .stat-card {
-    min-height: auto;
-    padding: 12px 14px !important;
+    display: block !important;
+    min-height: auto !important;
+    padding: 9px 10px !important;
+    border-radius: 7px !important;
+    gap: 6px !important;
   }
 
   body.bh-ui .stat-info .number {
-    font-size: 20px !important;
+    font-size: 18px !important;
+  }
+
+  body.bh-ui .stat-info .label {
+    gap: 4px;
+    margin-bottom: 3px;
+    font-size: 12px !important;
+    line-height: 1.2;
+  }
+
+  body.bh-ui .stat-info .label i {
+    width: 12px;
+    font-size: 12px;
+  }
+
+  body.bh-ui .bh-stat-sub {
+    margin-top: 1px;
+    font-size: 11px !important;
+    line-height: 1.2;
   }
 
   body.bh-ui .card {
-    border-radius: 8px;
+    border-radius: 7px;
   }
 
   body.bh-ui .card-header {
-    padding: 10px 12px;
+    padding: 8px 10px;
     align-items: stretch !important;
   }
 
@@ -1207,7 +1228,20 @@ body.bh-ui.borrower-ui .borrower-nav-badge {
 
   body.bh-ui .card-body,
   body.bh-ui .bh-filter-card .card-body {
-    padding: 12px;
+    padding: 10px;
+  }
+
+  body.bh-ui .dashboard-alert {
+    min-height: auto;
+    padding: 8px 10px;
+  }
+
+  .report-summary-item {
+    padding: 8px 10px;
+  }
+
+  .report-summary-item strong {
+    font-size: 17px;
   }
 
   body.bh-ui .row > [class*="col-"] {
