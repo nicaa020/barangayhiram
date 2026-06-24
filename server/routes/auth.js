@@ -23,6 +23,9 @@ const ALL_ROLES = ['super_admin', 'admin', 'staff', 'borrower'];
 const USER_STATUSES = ['Pending', 'Approved', 'Rejected', 'Active', 'Inactive'];
 const BORROWER_TYPES = ['Resident', 'Student', 'Transient'];
 const UPLOAD_DIR = path.join(__dirname, '../../public/uploads/verifications');
+const SUPABASE_URL = (process.env.SUPABASE_URL || '').replace(/\/+$/, '');
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const SUPABASE_STORAGE_BUCKET = process.env.SUPABASE_STORAGE_BUCKET || '';
 const ALLOWED_DOCUMENT_TYPES = {
   'image/jpeg': 'jpg',
   'image/png': 'png',
@@ -116,7 +119,7 @@ function updateUserPasswordHash(userId, password) {
   });
 }
 
-function saveVerificationDocument(dataUrl, originalName) {
+function parseVerificationDocument(dataUrl) {
   if (!dataUrl) return null;
   const match = String(dataUrl).match(/^data:([^;]+);base64,(.+)$/);
   if (!match || !ALLOWED_DOCUMENT_TYPES[match[1]]) {
@@ -126,15 +129,65 @@ function saveVerificationDocument(dataUrl, originalName) {
   if (buffer.length > 5 * 1024 * 1024) {
     throw new Error('Verification document must not exceed 5MB.');
   }
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+  return {
+    buffer: buffer,
+    contentType: match[1],
+    extension: ALLOWED_DOCUMENT_TYPES[match[1]]
+  };
+}
+
+function verificationFileName(originalName, extension) {
   const safeBase = String(originalName || 'verification')
     .replace(/\.[^.]+$/, '')
     .replace(/[^A-Za-z0-9_-]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 40) || 'verification';
-  const fileName = Date.now() + '-' + Math.round(Math.random() * 1e9) + '-' + safeBase + '.' + ALLOWED_DOCUMENT_TYPES[match[1]];
+  return Date.now() + '-' + Math.round(Math.random() * 1e9) + '-' + safeBase + '.' + extension;
+}
+
+function hasSupabaseStorage() {
+  return Boolean(SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY && SUPABASE_STORAGE_BUCKET && typeof fetch === 'function');
+}
+
+async function uploadVerificationToSupabase(document, fileName) {
+  const objectPath = 'borrower-verifications/' + fileName;
+  const uploadUrl = SUPABASE_URL + '/storage/v1/object/' +
+    encodeURIComponent(SUPABASE_STORAGE_BUCKET) + '/' +
+    objectPath.split('/').map(encodeURIComponent).join('/');
+
+  const response = await fetch(uploadUrl, {
+    method: 'POST',
+    headers: {
+      apikey: SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: 'Bearer ' + SUPABASE_SERVICE_ROLE_KEY,
+      'Content-Type': document.contentType,
+      'x-upsert': 'false'
+    },
+    body: document.buffer
+  });
+
+  if (!response.ok) {
+    const message = await response.text().catch(function() { return ''; });
+    throw new Error('Unable to upload verification document to Supabase Storage. ' + (message || ''));
+  }
+
+  return SUPABASE_URL + '/storage/v1/object/public/' +
+    encodeURIComponent(SUPABASE_STORAGE_BUCKET) + '/' +
+    objectPath.split('/').map(encodeURIComponent).join('/');
+}
+
+async function saveVerificationDocument(dataUrl, originalName) {
+  const document = parseVerificationDocument(dataUrl);
+  if (!document) return null;
+  const fileName = verificationFileName(originalName, document.extension);
+
+  if (hasSupabaseStorage()) {
+    return uploadVerificationToSupabase(document, fileName);
+  }
+
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
   const filePath = path.join(UPLOAD_DIR, fileName);
-  fs.writeFileSync(filePath, buffer);
+  fs.writeFileSync(filePath, document.buffer);
   return '/uploads/verifications/' + fileName;
 }
 
@@ -392,7 +445,7 @@ router.post('/register-borrower', async function(req, res) {
 
   try {
     if (verification_document_data) {
-      verification_document = saveVerificationDocument(verification_document_data, verification_document_name);
+      verification_document = await saveVerificationDocument(verification_document_data, verification_document_name);
     }
   } catch (err) {
     return res.status(400).json({ message: err.message });

@@ -85,6 +85,16 @@ DB_PATH=./barangayhiram.db
 
 For group testing, the default values are okay. For real use, change `JWT_SECRET` to a longer private value.
 
+For Railway deployment with borrower ID uploads, create a public Supabase Storage bucket and add:
+
+```env
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+SUPABASE_STORAGE_BUCKET=verification-documents
+```
+
+When `SUPABASE_STORAGE_BUCKET` is set, captured borrower verification documents are uploaded to Supabase Storage instead of Railway's temporary app folder.
+
 ## Run The Project
 
 Start the server:
